@@ -16,7 +16,8 @@
 window.HUB_CONFIG = {
   SUPABASE_URL: "https://zysvapigcsjnimpjgryv.supabase.co",
   SUPABASE_ANON_KEY: "sb_publishable_h6CZL7l6UFrPSrLODPjS6Q_kWtxagfc",
-  EMAIL_DOMAIN: "users.cammio.app"
+  EMAIL_DOMAIN: "users.cammio.app",
+  UPLOAD_URL: "https://platform.krock.io/dashboard/projects"
 };
 </script>
 <style>
@@ -218,7 +219,8 @@ const T={
  publish:{ar:"ابعت للكلاينت",en:"Send to client"}, hold:{ar:"استنى",en:"Hold"}, assign:{ar:"وافق وسلّم",en:"Approve & assign"},
  name:{ar:"الاسم",en:"Name"}, create:{ar:"اعمل الحساب",en:"Create"}, ping:{ar:"اسأله",en:"Ping"}, pinged:{ar:"اتسأل ✓",en:"Pinged ✓"},
  sActive:{ar:"شغال",en:"active"}, sReview:{ar:"مراجعة",en:"review"}, sLate:{ar:"متأخر",en:"late"}, sAppr:{ar:"مستني موافقتك",en:"to approve"},
- copy:{ar:"نسخ",en:"Copy"}, edit:{ar:"تعديل",en:"Edit"}, tasksTab:{ar:"مهام",en:"Tasks"}, newTask:{ar:"مهمة جديدة",en:"New task"}, task:{ar:"مهمة",en:"Task"},
+ copy:{ar:"نسخ",en:"Copy"}, edit:{ar:"تعديل",en:"Edit"}, tasksTab:{ar:"مهام",en:"Tasks"}, upload:{ar:"رفع جديد",en:"New upload"}, step1:{ar:"١. ارفع على Krock",en:"1. Upload on Krock"}, step2:{ar:"٢. الصق اللينك هنا",en:"2. Paste the link here"},
+ deliver:{ar:"تسليم: ارفع وابعت اللينك",en:"Deliver: upload & send link"}, finishT:{ar:"خلّصت المهمة",en:"Finish task"}, resLink:{ar:"لينك التسليم (اختياري)",en:"Delivery link (optional)"}, delivered:{ar:"التسليم",en:"Delivery"}, sendFinish:{ar:"ابعت وخلّص",en:"Send & finish"}, newTask:{ar:"مهمة جديدة",en:"New task"}, task:{ar:"مهمة",en:"Task"},
  tTitle:{ar:"المهمة",en:"Task"}, tNotes:{ar:"تفاصيل (اختياري)",en:"Details (optional)"}, tLink:{ar:"لينك (اختياري)",en:"Link (optional)"}, tDue:{ar:"الديدلاين",en:"Due"},
  tStages:{ar:"المراحل",en:"Stages"}, tStagePh:{ar:"اكتب مرحلة ودوس Enter",en:"Type a stage, press Enter"}, add:{ar:"ضيف",en:"Add"}, tFor:{ar:"لمين",en:"For"},
  tNeed:{ar:"اختار إديتور واكتب المهمة",en:"Pick an editor and write the task"}, delTask:{ar:"مسح المهمة",en:"Delete task"}, noStages:{ar:"من غير مراحل: خلصت / لسه",en:"No stages: done / not done"}, markDone:{ar:"خلصت",en:"Done"}, role:{ar:"النوع",en:"Role"}, editUser:{ar:"تعديل الحساب",en:"Edit account"}, curPass:{ar:"الباسورد الحالي",en:"Current password"},
@@ -241,6 +243,7 @@ const TOURS={
   ["bell",{ar:"أول ما الدرافت يجهز هيوصلك إشعار هنا.",en:"When a draft is ready you'll be notified here."}],
   ["me",{ar:"من هنا تغيّر صورتك واسمك والباسورد.",en:"Change your photo, name and password here."}]],
  editor:[["tabs",{ar:"تاسكاتك: المتأخر، النهارده، بكره.",en:"Your tasks: late, today, tomorrow."}],
+  ["upload",{ar:"ارفع شغلك على Krock من هنا، وبعدها الصق اللينك في الفيديو.",en:"Upload your work on Krock here, then paste the link on the video."}],
   ["upd",{ar:"حدّث مرحلتك من هنا. بتروح لـCammio الأول.",en:"Update your stage here. It goes to Cammio first."}],
   ["chk",{ar:"كل ٣ ساعات هنسألك إنت فين.",en:"Every 3 hours we'll ask where you are."}],
   ["bell",{ar:"مشاريع جديدة وملاحظات الكلاينت بتوصل هنا.",en:"New projects and client notes land here."}],
@@ -288,7 +291,7 @@ const ico={
 /* ================= DATA LAYER ================= */
 const vFromDb=r=>({id:r.id,project:r.project,n:r.n,due:Date.parse(r.due),stage:r.stage,pub:r.pub,round:r.round,rs:r.rs,link:r.link||"",pending:r.pending,isNew:r.is_new,upd:Date.parse(r.updated_at)});
 const pFromDb=r=>({id:r.id,client:r.client,title:r.title,type:r.type,drive:r.drive,ref:r.ref||"",notes:r.notes||"",count:r.count,cad:r.cad,first:Date.parse(r.first),status:r.status,editor:r.editor,created:Date.parse(r.created_at)});
-const tFromDb=r=>({id:r.id,kind:"task",editor:r.editor,title:r.title,notes:r.notes||"",link:r.link||"",due:Date.parse(r.due),stages:r.stages||[],stage:r.stage,isNew:r.is_new,upd:Date.parse(r.updated_at)});
+const tFromDb=r=>({resLink:r.result_link||"",id:r.id,kind:"task",editor:r.editor,title:r.title,notes:r.notes||"",link:r.link||"",due:Date.parse(r.due),stages:r.stages||[],stage:r.stage,isNew:r.is_new,upd:Date.parse(r.updated_at)});
 const tTotal=x=>Math.max(1,x.stages.length), tDone=x=>x.stage>=tTotal(x);
 const vToDb=p=>{const o={};for(const k in p){if(k==="isNew")o.is_new=p[k];else if(k==="due")o.due=new Date(p[k]).toISOString();else o[k]=p[k];}return o;};
 const email=u=>`${u}@${CFG.EMAIL_DOMAIN||"users.cammio.app"}`;
@@ -353,7 +356,7 @@ const api = LIVE ? {
  async setRole(id,role){const r=await sb.from("profiles").update({role}).eq("id",id);if(r.error)throw r.error;await this.loadAll();},
  async updateUser(id,{name,username,role,password}){const {error}=await sb.rpc("admin_update_user",{p_id:id,p_name:name||null,p_username:username||null,p_role:role||null,p_password:password||null});if(error)throw new Error(t("accErr"));await this.loadAll();},
  async createTask(f){const {error}=await sb.from("tasks").insert({editor:f.editor,title:f.title,notes:f.notes,link:f.link,due:new Date(f.due).toISOString(),stages:f.stages});if(error)throw error;await this.loadAll();},
- async updTask(id,p){const o={...p};if("isNew" in o){o.is_new=o.isNew;delete o.isNew;}if("due" in o)o.due=new Date(o.due).toISOString();const {error}=await sb.from("tasks").update(o).eq("id",id);if(error)throw error;await this.loadAll();},
+ async updTask(id,p){const o={...p};if("isNew" in o){o.is_new=o.isNew;delete o.isNew;}if("resLink" in o){o.result_link=o.resLink;delete o.resLink;}if("due" in o)o.due=new Date(o.due).toISOString();const {error}=await sb.from("tasks").update(o).eq("id",id);if(error)throw error;await this.loadAll();},
  async delTask(id){const {error}=await sb.from("tasks").delete().eq("id",id);if(error)throw error;await this.loadAll();},
  async deleteUser(id){const {error}=await sb.rpc("admin_delete_user",{p_id:id});if(error)throw error;await this.loadAll();},
  async updProfile(patch){const r=await sb.from("profiles").update(patch).eq("id",S.me);if(r.error)throw r.error;Object.assign(profiles[S.me],patch);},
@@ -497,7 +500,7 @@ function editorView(){
  const tab=S.tab||(g.late.length?"late":g.today.length?"today":"later");
  const firstId=(g[tab].find(v=>v.kind==="task"?!tDone(v):!updDisabled(v))||{}).id;
  return `${topBar()}<div class="main">
-  <div class="head"><h1>${t("tasks")}</h1><button class="btn line sm row" data-a="checkin" data-tour="chk"><span class="dot pulse"></span>${t("nextIn")} · ${(Math.round(nextChk()/H*10)/10)}${t("h")}</button></div>
+  <div class="head"><h1>${t("tasks")}</h1><div class="row"><a class="btn y sm" href="${esc(CFG.UPLOAD_URL)}" target="_blank" rel="noopener" style="text-decoration:none" data-tour="upload">+ ${t("upload")} ${ico.ext}</a><button class="btn line sm row" data-a="checkin" data-tour="chk"><span class="dot pulse"></span>${t("nextIn")} · ${(Math.round(nextChk()/H*10)/10)}${t("h")}</button></div></div>
   <div class="tabs" data-tour="tabs">${keys.map(k=>`<button class="tab ${tab===k?"on":""}" data-a="tab" data-t="${k}">${t(k)}${g[k].length?(k==="late"||k==="today"?`<em>${g[k].length}</em>`:` <span class="muted">${g[k].length}</span>`):""}</button>`).join("")}</div>
   <div class="list">${g[tab].length?g[tab].map(v=>v.kind==="task"?taskItem(v,v.id===firstId):editorItem(v,v.id===firstId)).join(""):`<div class="empty">${t("noTasks")}</div>`}</div></div>`;
 }
@@ -509,7 +512,9 @@ function editorItem(v,first){
  const R=`${status}${v.stage<7?`<button class="btn sm ${v.stage<5&&!v.pending?"":"line"}" data-a="updMenu" data-v="${v.id}" ${first?'data-tour="upd"':""} ${updDisabled(v)?"disabled":""}>${t("update")}</button>`:""}`;
  let det=`${steps(v.stage)}${links(p)}`;
  if(v.pending) det+=`<div class="box tiny">${v.pending.type==="draft"?`${t("draft")} ${v.pending.round}`:ST(v.pending.stage)} → ${t("toCammio")}</div>`;
- else if(v.stage===5||(v.stage===6&&v.rs==="revising")) det+=`<div class="box"><label>${t("krockLink")} · ${t("draft")} ${v.stage===5?1:v.round+1}</label><div class="row"><input id="lk_${v.id}" placeholder="https://platform.krock.io/…"><button class="btn sm" data-a="eDraft" data-v="${v.id}">${t("sendDraft")}</button></div></div>`;
+ else if(v.stage===5||(v.stage===6&&v.rs==="revising")||(S.draftOpen===v.id&&v.stage<6)) det+=`<div class="box y"><b>${t("draft")} ${v.stage===6?v.round+1:1}</b>
+  <div class="row" style="margin:10px 0"><a class="btn line sm" href="${esc(CFG.UPLOAD_URL)}" target="_blank" rel="noopener" style="text-decoration:none">${t("step1")} ${ico.ext}</a></div>
+  <label>${t("step2")}</label><div class="row"><input id="lk_${v.id}" placeholder="https://platform.krock.io/…"><button class="btn sm" data-a="eDraft" data-v="${v.id}">${t("sendDraft")}</button></div></div>`;
  else if(v.stage===6&&v.rs==="notes") det+=`<div class="box y"><b>${t("clientNotes")} · ${t("draft")} ${v.round}</b><div class="acts"><a class="btn line sm" href="${esc(v.link)}" target="_blank" rel="noopener" style="text-decoration:none">${t("openKrock")} ${ico.ext}</a><button class="btn sm" data-a="eGot" data-v="${v.id}">${t("gotNotes")}</button></div></div>`;
  return item(v.id,L,R,det);
 }
@@ -517,7 +522,7 @@ function taskItem(x,first){
  const done=tDone(x);
  const L=`<div class="t row">${x.isNew?`<span class="chip y">${t("newTag")}</span>`:""}${esc(x.title)}</div><div class="s"><span class="chip">${t("task")}</span>${fd(x.due)}${!done&&x.due<Date.now()?` · <span style="color:var(--red)">${t("late")}</span>`:""}</div>`;
  const R=`<span class="chip ${done?"k":""}">${esc(tStageName(x))}</span>${done?"":`<button class="btn sm" data-a="tMenu" data-t="${x.id}" ${first?'data-tour="upd"':""}>${t("update")}</button>`}`;
- const det=`${tSteps(x)}${x.stages.length?`<div class="opt" style="margin-bottom:12px">${x.stages.map((st,i)=>`<span class="chip ${i<x.stage?"k":i===x.stage?"y":""}">${esc(st)}</span>`).join("")}</div>`:""}<dl class="kv">${x.link?`<dt>${t("tLink").split(" ")[0]}</dt><dd><a href="${esc(x.link)}" target="_blank" rel="noopener">${t("open")} ${ico.ext}</a></dd>`:""}${x.notes?`<dt>${t("notes")}</dt><dd>${esc(x.notes)}</dd>`:""}</dl>`;
+ const det=`${tSteps(x)}${x.stages.length?`<div class="opt" style="margin-bottom:12px">${x.stages.map((st,i)=>`<span class="chip ${i<x.stage?"k":i===x.stage?"y":""}">${esc(st)}</span>`).join("")}</div>`:""}<dl class="kv">${x.resLink?`<dt>${t("delivered")}</dt><dd><a href="${esc(x.resLink)}" target="_blank" rel="noopener">${t("open")} ${ico.ext}</a></dd>`:""}${x.link?`<dt>${t("tLink").split(" ")[0]}</dt><dd><a href="${esc(x.link)}" target="_blank" rel="noopener">${t("open")} ${ico.ext}</a></dd>`:""}${x.notes?`<dt>${t("notes")}</dt><dd>${esc(x.notes)}</dd>`:""}</dl>`;
  return item(x.id,L,R,det);
 }
 function checkinSheet(){
@@ -547,7 +552,7 @@ function adminView(){
  if(tab==="tasks") body=`<div class="item" style="padding:12px 16px"><button class="btn y sm" data-a="newTask">+ ${t("newTask")}</button></div>`+(tasks.length?tasks.slice().sort((a,b)=>tDone(a)-tDone(b)||a.due-b.due).map(x=>item(x.id,
   `<div class="t">${esc(x.title)} <span class="muted" style="font-weight:400">· ${esc(nm(x.editor))}</span></div><div class="s">${fd(x.due)} · ${ago(x.upd)}</div>`,
   `${!tDone(x)&&x.due<Date.now()?`<span class="chip r">${t("late")}</span>`:""}<span class="chip ${tDone(x)?"k":""}">${esc(tStageName(x))}</span>`,
-  `${tSteps(x)}${x.notes?`<p class="tiny muted" style="margin-bottom:10px">${esc(x.notes)}</p>`:""}<div class="acts"><button class="btn line sm" data-a="editTask" data-t="${x.id}">${t("edit")}</button><button class="btn line sm" data-a="pingTask" data-t="${x.id}">${t("ping")} ${esc(nm(x.editor))}</button></div>`)).join(""):`<div class="empty">${t("noTasks")}</div>`);
+  `${tSteps(x)}${x.notes?`<p class="tiny muted" style="margin-bottom:10px">${esc(x.notes)}</p>`:""}${x.resLink?`<dl class="kv"><dt>${t("delivered")}</dt><dd><a href="${esc(x.resLink)}" target="_blank" rel="noopener">${t("open")} ${ico.ext}</a></dd></dl>`:""}<div class="acts"><button class="btn line sm" data-a="editTask" data-t="${x.id}">${t("edit")}</button><button class="btn line sm" data-a="pingTask" data-t="${x.id}">${t("ping")} ${esc(nm(x.editor))}</button></div>`)).join(""):`<div class="empty">${t("noTasks")}</div>`);
  if(tab==="acc") body=`<div class="item" style="padding:14px 16px"><form id="af" class="row" style="flex-wrap:wrap">
   <input name="name" placeholder="${t("name")}" style="flex:1;min-width:120px"><input name="u" placeholder="${t("user")}" style="flex:1;min-width:110px" autocapitalize="off" spellcheck="false"><input name="p" placeholder="${t("pass")} (6+)" style="flex:1;min-width:100px">
   <select name="role" style="width:auto"><option value="client">${t("client")}</option><option value="editor">${t("editor")}</option></select><button class="btn sm" type="submit">${t("create")}</button></form></div>`+
@@ -564,6 +569,12 @@ function adminView(){
 }
 
 /* sheets */
+function finSheet(){const x=T_(S.finT);if(!x)return "";
+ return `<header>${t("finishT")}<button class="ico" data-a="closeAll">${ico.x}</button></header>
+ <div class="body"><b>${esc(x.title)}</b>
+  <a class="btn line" href="${esc(CFG.UPLOAD_URL)}" target="_blank" rel="noopener" style="text-decoration:none;text-align:center">${t("step1")} ${ico.ext}</a>
+  <div><label>${t("resLink")}</label><input id="finLink" placeholder="https://…"></div>
+  <button class="btn" data-a="finSend">${t("sendFinish")}</button></div>`;}
 function taskSheet(){
  const f=S.tf; const eds=Object.keys(profiles).filter(u=>role(u)==="editor");
  return `<header>${S.editT?t("edit"):t("newTask")}<button class="ico" data-a="closeAll">${ico.x}</button></header>
@@ -619,7 +630,7 @@ function render(){
  const r=S.me?role(S.me):null;
  root.innerHTML=!S.me?loginView():r==="client"?clientView():r==="editor"?editorView():adminView();
  const sh=document.getElementById("sheet");
- sh.innerHTML=S.sheet==="req"?reqSheet():S.sheet==="chk"?checkinSheet():S.sheet==="bell"?bellSheet():S.sheet==="set"?settingsSheet():S.sheet==="user"?editUserSheet():S.sheet==="task"?taskSheet():"";
+ sh.innerHTML=S.sheet==="req"?reqSheet():S.sheet==="chk"?checkinSheet():S.sheet==="bell"?bellSheet():S.sheet==="set"?settingsSheet():S.sheet==="user"?editUserSheet():S.sheet==="task"?taskSheet():S.sheet==="fin"?finSheet():"";
  sh.classList.toggle("on",!!S.sheet);document.getElementById("scrim").classList.toggle("on",!!S.sheet);
  const lf=document.getElementById("lf");if(lf)lf.onsubmit=doLogin;
  const rf=document.getElementById("rf");if(rf){rf.onsubmit=doReq;rf.oninput=e=>{if(e.target.name)S.form[e.target.name]=e.target.value;};}
@@ -701,9 +712,10 @@ document.addEventListener("click",e=>{
   case "updMenu":{
    if(v.stage>=5){S.open=v.id;render();const i=document.getElementById("lk_"+v.id);i&&i.focus();return;}
    const r=b.getBoundingClientRect();const m=document.createElement("div");m.className="menu";
-   m.innerHTML=[1,2,3,4,5].map(i=>`<button data-a="eStage" data-v="${v.id}" data-s="${i}" ${i<=v.stage?"disabled":""}><span class="dot" style="background:${i===v.stage+1?"var(--y)":"var(--line)"}"></span>${ST(i)}</button>`).join("");
+   m.innerHTML=[1,2,3,4,5].map(i=>`<button data-a="eStage" data-v="${v.id}" data-s="${i}" ${i<=v.stage?"disabled":""}><span class="dot" style="background:${i===v.stage+1?"var(--y)":"var(--line)"}"></span>${ST(i)}</button>`).join("")+`<button data-a="openDraft" data-v="${v.id}"><span class="dot"></span>${t("deliver")}</button>`;
    document.body.appendChild(m);const mw=m.offsetWidth;
    m.style.top=(r.bottom+window.scrollY+6)+"px";m.style.left=Math.max(8,Math.min(window.innerWidth-mw-8,(LANG==="ar"?r.left:r.right-mw)))+"px";return;}
+  case "openDraft":document.querySelectorAll(".menu").forEach(m=>m.remove());S.draftOpen=v.id;S.open=v.id;render();{const i=document.getElementById("lk_"+v.id);i&&i.focus();}return;
   case "eStage":{const ns=+b.dataset.s;document.querySelectorAll(".menu").forEach(m=>m.remove());
    run(async()=>{await api.updVideo(v.id,{stage:ns,pending:{type:"stage",stage:ns}});
     await api.notifyAdmins(`${nm(me)}: ${vnAr(v)} ← ${STar(ns)} (${nm(p.client)})`,`${nm(me)}: ${vnEn(v)} → ${STen(ns)} (${nm(p.client)})`);toast(t("toCammio"));});return;}
@@ -739,12 +751,15 @@ document.addEventListener("click",e=>{
    S.delArm=false;run(async()=>{await api.delTask(S.editT);S.sheet=null;S.editT=null;toast(t("deleted"));});return;
   case "pingTask":{const x=T_(b.dataset.t);run(async()=>{await api.notify(x.editor,`Cammio: إنت فين في "${x.title}"؟`,`Cammio: where are you on "${x.title}"?`);toast(t("pinged"));});return;}
   case "tMenu":{const x=T_(b.dataset.t);
-   if(!x.stages.length){run(async()=>{await api.updTask(x.id,{stage:1});await api.notifyAdmins(`${nm(me)} خلّص: ${x.title}`,`${nm(me)} finished: ${x.title}`);toast("✓");});return;}
+   if(!x.stages.length){S.finT=x.id;S.sheet="fin";render();return;}
    const r=b.getBoundingClientRect();const m=document.createElement("div");m.className="menu";
    m.innerHTML=x.stages.map((st,i)=>`<button data-a="tStage" data-t="${x.id}" data-s="${i+1}" ${i<x.stage?"disabled":""}><span class="dot" style="background:${i===x.stage?"var(--y)":"var(--line)"}"></span>${esc(st)}</button>`).join("");
    document.body.appendChild(m);const mw=m.offsetWidth;m.style.top=(r.bottom+window.scrollY+6)+"px";m.style.left=Math.max(8,Math.min(window.innerWidth-mw-8,(LANG==="ar"?r.left:r.right-mw)))+"px";return;}
   case "tStage":{const x=T_(b.dataset.t),ns=+b.dataset.s;document.querySelectorAll(".menu").forEach(m=>m.remove());
+   if(ns>=x.stages.length){S.finT=x.id;S.sheet="fin";render();return;}
    run(async()=>{await api.updTask(x.id,{stage:ns});const st=x.stages[ns-1]||"";await api.notifyAdmins(`${nm(me)}: ${x.title} ← ${st}${ns>=x.stages.length?" ✓":""}`,`${nm(me)}: ${x.title} → ${st}${ns>=x.stages.length?" ✓":""}`);toast("✓");});return;}
+  case "finSend":{const x=T_(S.finT);const lk=(document.getElementById("finLink").value||"").trim();if(lk&&!/^https?:\/\//.test(lk)){toast(t("krockLink"));return;}
+   run(async()=>{await api.updTask(x.id,{stage:tTotal(x)===x.stages.length?x.stages.length:1,resLink:lk});await api.notifyAdmins(`${nm(me)} خلّص: ${x.title}${lk?" — "+lk:""}`,`${nm(me)} finished: ${x.title}${lk?" — "+lk:""}`);S.sheet=null;S.finT=null;toast("✓");});return;}
   case "editUser":S.editU=b.dataset.u;S.editRole=null;S.showPw=false;S.delArm=false;S.sheet="user";break;
   case "editRole":S.editRole=b.dataset.r;break;
   case "togglePw":S.showPw=!S.showPw;break;
