@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cammio Studio Hub</title>
+<meta name="description" content="Cammio Studio">
+<meta property="og:title" content="Cammio Studio">
+<meta property="og:description" content="by Cammio Studio">
+<meta name="theme-color" content="#F6F6F3">
+<meta name="color-scheme" content="light">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Inter+Tight:wght@400;500;600;700&family=Mrs+Saint+Delafield&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<script>
+/* ====== CONFIG — paste your Supabase keys here to go live. Empty = demo mode. ====== */
+window.HUB_CONFIG = {
+  SUPABASE_URL: "https://zysvapigcsjnimpjgryv.supabase.co",
+  SUPABASE_ANON_KEY: "sb_publishable_h6CZL7l6UFrPSrLODPjS6Q_kWtxagfc",
+  EMAIL_DOMAIN: "users.cammio.app"
+};
+</script>
+<style>
+:root{--bg:#F6F6F3;--card:#FFFFFF;--ink:#0B0B0B;--mute:#8A8A85;--line:#E6E6E1;--soft:#EFEFEA;--y:#FFD400;--red:#E5484D}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%;background:var(--bg);color:var(--ink)}
+body{font-family:"Inter Tight","IBM Plex Sans Arabic",-apple-system,system-ui,"Segoe UI",Tahoma,sans-serif;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+[dir=rtl] body{font-family:"IBM Plex Sans Arabic","Inter Tight",system-ui,sans-serif}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+a{color:inherit}
+input,textarea,select{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:11px 12px;width:100%;outline:none;transition:border-color .15s}
+input:focus,textarea:focus,select:focus{border-color:var(--ink)}
+textarea{min-height:84px;resize:vertical}
+label{display:block;font-size:12px;color:var(--mute);margin-bottom:6px}
+.muted{color:var(--mute)} .tiny{font-size:12px}
+.row{display:flex;align-items:center;gap:8px}
+.grow{flex:1;min-width:0}
+.btn{background:var(--ink);color:#fff;border-radius:10px;padding:10px 16px;font-weight:600;font-size:13px;white-space:nowrap;transition:transform .15s,opacity .15s}
+.btn:hover{transform:translateY(-1px)}
+.btn.y{background:var(--y);color:var(--ink)}
+.btn.line{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.line:hover{border-color:var(--ink)}
+.btn.sm{padding:7px 11px;font-size:12px;border-radius:8px}
+.btn[disabled],.btn.busy{opacity:.3;pointer-events:none}
+.ico{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;position:relative;transition:border-color .15s;flex:none}
+.ico:hover{border-color:var(--ink)}
+.ico b{position:absolute;top:-3px;inset-inline-end:-3px;background:var(--y);font-size:10px;min-width:16px;height:16px;border-radius:8px;display:grid;place-items:center;padding:0 4px}
+.av{width:26px;height:26px;border-radius:50%;background:var(--ink);color:#fff;display:inline-grid;place-items:center;font-size:11px;font-weight:600;flex:none;overflow:hidden}
+.av img{width:100%;height:100%;object-fit:cover}
+.av.lg{width:64px;height:64px;font-size:22px}
+.chip{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:2px 9px;white-space:nowrap;color:var(--mute)}
+.chip.y{background:var(--y);border-color:var(--y);color:var(--ink)}
+.chip.k{background:var(--ink);border-color:var(--ink);color:#fff}
+.chip.r{border-color:var(--red);color:var(--red)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--y);display:inline-block;flex:none}
+.dot.pulse{animation:pulse 2s infinite}
+
+/* signature */
+.sig{position:fixed;bottom:12px;right:16px;z-index:5;pointer-events:none;display:flex;align-items:flex-end;gap:2px;direction:ltr;opacity:.85}
+.sig small{font-family:"Inter Tight",sans-serif;font-size:10px;color:var(--mute);margin-bottom:9px;animation:sigby 8s ease-in-out infinite}
+.sig svg{overflow:visible}
+.sig text{font-family:"Mrs Saint Delafield",cursive;font-size:34px;fill:transparent;stroke:var(--ink);stroke-width:.7;stroke-dasharray:700;stroke-dashoffset:700;animation:sig 8s ease-in-out infinite}
+@keyframes sig{0%{stroke-dashoffset:700;fill:rgba(11,11,11,0);opacity:1}38%{stroke-dashoffset:0;fill:rgba(11,11,11,0)}50%{fill:rgba(11,11,11,1)}78%{fill:rgba(11,11,11,1);opacity:1;stroke-dashoffset:0}92%{opacity:0;stroke-dashoffset:0}100%{opacity:0;stroke-dashoffset:700}}
+@keyframes sigby{0%,5%{opacity:0}15%,78%{opacity:1}92%,100%{opacity:0}}
+
+/* login */
+.login{min-height:100vh;display:grid;place-items:center;padding:20px;overflow:hidden;position:relative}
+.lbox{width:min(340px,100%);position:relative}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--soft);border-radius:12px;padding:4px;margin-bottom:16px;position:relative}
+.seg button{padding:10px;border-radius:9px;font-weight:600;color:var(--mute);position:relative;z-index:1;transition:color .2s}
+.seg button.on{color:var(--ink)}
+.seg i{position:absolute;top:4px;bottom:4px;width:calc(50% - 4px);background:var(--card);border-radius:9px;box-shadow:0 1px 3px rgba(0,0,0,.08);transition:inset-inline-start .3s cubic-bezier(.2,.8,.2,1)}
+.lform{display:grid;gap:10px}
+.lform .btn{padding:13px;margin-top:4px}
+.err{color:var(--red);font-size:12px;min-height:18px}
+.demo{position:absolute;bottom:18px;inset-inline-start:18px;font-size:11px;color:var(--mute)}
+.demo button{text-decoration:underline;color:var(--mute);font-size:11px}
+.corner{position:absolute;top:18px;inset-inline-end:18px}
+.lines{position:absolute;inset:0;pointer-events:none;opacity:.5}
+
+/* app */
+.top{height:60px;display:flex;align-items:center;gap:8px;padding:0 24px;border-bottom:1px solid var(--line);background:var(--bg);position:sticky;top:0;z-index:20}
+.me{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:3px 10px 3px 3px;transition:border-color .15s}
+[dir=rtl] .me{padding:3px 3px 3px 10px}
+.me:hover{border-color:var(--ink)}
+.main{max-width:980px;margin:0 auto;padding:28px 24px 90px}
+.head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.head h1{font-size:22px;font-weight:600;letter-spacing:-.02em}
+.tabs{display:flex;gap:2px;background:var(--soft);border-radius:11px;padding:3px;margin-bottom:16px;overflow-x:auto;width:fit-content;max-width:100%}
+.tab{padding:7px 13px;border-radius:8px;color:var(--mute);font-weight:500;white-space:nowrap;font-size:13px;display:flex;align-items:center;gap:6px}
+.tab.on{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.tab em{font-style:normal;font-size:10px;background:var(--y);border-radius:8px;padding:0 6px;color:var(--ink)}
+.list{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.item{border-bottom:1px solid var(--line)}
+.item:last-child{border-bottom:0}
+.it{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:14px 16px;cursor:pointer;transition:background .15s}
+.it:hover{background:#FBFBF9}
+.it .t{font-weight:600}
+.it .s{font-size:12px;color:var(--mute);margin-top:2px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.meta{display:flex;align-items:center;gap:8px}
+.det{display:none;padding:4px 16px 18px;animation:fade .25s}
+.item.open .det{display:block}
+.item.open .it{background:#FBFBF9}
+.empty{padding:40px 16px;text-align:center;color:var(--mute)}
+.steps{display:flex;gap:3px;margin:6px 0 14px}
+.steps span{flex:1;height:4px;border-radius:2px;background:var(--line);position:relative;overflow:hidden}
+.steps span.on{background:var(--ink)}
+.steps span.cur{background:var(--y)}
+.steps span.cur:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.8),transparent);animation:sh 1.6s infinite}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:13px;margin-bottom:14px}
+.kv dt{color:var(--mute)}
+.kv a{text-decoration:underline;text-underline-offset:3px}
+.box{border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--bg)}
+.box.y{border-color:var(--y);background:#FFFBE6}
+.rd{display:flex;gap:4px}
+.rd i{width:16px;height:4px;border-radius:2px;background:var(--line)}
+.rd i.on{background:var(--ink)}
+.acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+.st{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+.st b{font-size:24px;font-weight:600;letter-spacing:-.02em;display:block;line-height:1.1}
+.st span{font-size:12px;color:var(--mute)}
+.st.hl b{background:linear-gradient(transparent 62%,var(--y) 62%);display:inline}
+.loading{min-height:100vh;display:grid;place-items:center;color:var(--mute)}
+
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.25);z-index:40;opacity:0;pointer-events:none;transition:.25s}
+.scrim.on{opacity:1;pointer-events:auto}
+.sheet{position:fixed;top:0;bottom:0;inset-inline-end:0;width:min(420px,100%);background:var(--card);z-index:50;border-inline-start:1px solid var(--line);transform:translateX(105%);transition:transform .3s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column}
+[dir=rtl] .sheet{transform:translateX(-105%)}
+.sheet.on{transform:none!important}
+.sheet header{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;border-bottom:1px solid var(--line);font-weight:600}
+.sheet .body{padding:18px;overflow:auto;flex:1;display:grid;gap:14px;align-content:start}
+.opt{display:flex;gap:6px;flex-wrap:wrap}
+.opt button{border:1px solid var(--line);border-radius:8px;padding:7px 11px;font-size:12px;color:var(--mute)}
+.opt button.on{border-color:var(--ink);color:var(--ink);background:var(--soft)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sep{height:1px;background:var(--line);margin:4px 0}
+.nt{padding:13px 18px;border-bottom:1px solid var(--line);font-size:13px;display:flex;gap:10px}
+.nt small{display:block;color:var(--mute);font-size:11px;margin-top:2px}
+.toasts{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:90;display:grid;gap:6px;justify-items:center}
+.toast{background:var(--ink);color:#fff;border-radius:10px;padding:11px 14px;font-size:13px;max-width:340px;display:flex;gap:8px;align-items:center;animation:pop .3s cubic-bezier(.2,.8,.2,1)}
+.menu{position:absolute;z-index:30;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.08);padding:5px;min-width:200px;animation:pop .2s}
+.menu button{display:flex;width:100%;text-align:start;padding:8px 10px;border-radius:8px;font-size:13px;gap:8px;align-items:center}
+.menu button:hover{background:var(--soft)}
+.menu button[disabled]{opacity:.35}
+.avpick{display:flex;align-items:center;gap:14px}
+.avpick label{margin:0;cursor:pointer;color:var(--ink);text-decoration:underline;text-underline-offset:3px;font-size:13px}
+.avpick input{display:none}
+
+.tour-ring{position:fixed;z-index:95;border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,.55),0 0 0 2px var(--y);transition:all .35s cubic-bezier(.2,.8,.2,1);pointer-events:none}
+.tour-tip{position:fixed;z-index:96;background:var(--card);border-radius:14px;padding:16px;width:min(290px,calc(100vw - 32px));box-shadow:0 14px 40px rgba(0,0,0,.2);transition:top .35s cubic-bezier(.2,.8,.2,1),left .35s cubic-bezier(.2,.8,.2,1)}
+.tour-tip p{font-size:14px;margin:6px 0 14px}
+.tour-block{position:fixed;inset:0;z-index:94}
+
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,212,0,.7)}50%{box-shadow:0 0 0 6px rgba(255,212,0,0)}}
+@keyframes sh{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.rise{animation:rise .6s cubic-bezier(.2,.8,.2,1) both}
+@media(max-width:640px){.stats{grid-template-columns:1fr 1fr}.main{padding:20px 14px 90px}.top{padding:0 14px}.me .nm{display:none}.me{padding:3px!important}.it .meta .chip.hide-m{display:none}}
+</style>
+</head>
+<body>
+<script>
+/* on-screen diagnostics: shows any error instead of a blank page */
+window.__hubErrs=[];
+function __hubShow(msg){window.__hubErrs.push(msg);var b=document.getElementById("hub-diag");if(!b){b=document.createElement("div");b.id="hub-diag";b.style.cssText="position:fixed;left:12px;right:12px;bottom:60px;z-index:999;background:#fff3f3;color:#a00;border:1px solid #e5484d;border-radius:10px;padding:10px 12px;font:12px/1.5 monospace;direction:ltr;white-space:pre-wrap;max-height:40vh;overflow:auto";(document.body||document.documentElement).appendChild(b);}b.textContent="Error (send a screenshot to Claude):\n"+window.__hubErrs.join("\n")+"\n\n"+navigator.userAgent;}
+window.addEventListener("error",function(e){__hubShow((e.message||"error")+" @ line "+(e.lineno||"?"));});
+window.addEventListener("unhandledrejection",function(e){__hubShow("promise: "+((e.reason&&e.reason.message)||e.reason));});
+setTimeout(function(){var r=document.getElementById("root");if(r&&r.querySelector(".loading"))__hubShow("page script did not start");},12000);
+</script>
+<div id="root"><div class="loading">…</div></div>
+<div class="scrim" id="scrim" data-a="closeAll"></div>
+<aside class="sheet" id="sheet"></aside>
+<div class="toasts" id="toasts"></div>
+<div id="tour"></div>
+<div class="sig" aria-hidden="true"><small>by</small><svg width="168" height="40" viewBox="0 0 168 40"><text x="2" y="32" textLength="160" lengthAdjust="spacingAndGlyphs">Cammio Studio</text></svg></div>
+
+<script>
+const CFG = window.HUB_CONFIG || {};
+const LIVE = !!(CFG.SUPABASE_URL && CFG.SUPABASE_ANON_KEY);
+
+/* ===== i18n ===== */
+const T={
+ client:{ar:"كلاينت",en:"Client"}, editor:{ar:"إديتور",en:"Editor"}, admin:{ar:"أدمن",en:"Admin"}, pending:{ar:"مستني",en:"Pending"},
+ user:{ar:"اسم المستخدم",en:"Username"}, pass:{ar:"الباسورد",en:"Password"}, enter:{ar:"دخول",en:"Sign in"},
+ badLogin:{ar:"اليوزر أو الباسورد غلط",en:"Wrong username or password"}, wrongSide:{ar:"الحساب ده مش من النوع ده",en:"This account isn't on this side"},
+ noRole:{ar:"الحساب لسه متفعّلش",en:"Account not activated yet"},
+ demo:{ar:"تجربة",en:"Demo"}, out:{ar:"خروج",en:"Sign out"}, help:{ar:"جولة",en:"Tour"}, err:{ar:"حصل خطأ، جرّب تاني",en:"Something went wrong, try again"},
+ enableN:{ar:"فعّل الإشعارات",en:"Enable notifications"},
+ myVideos:{ar:"فيديوهاتي",en:"My videos"}, newReq:{ar:"طلب جديد",en:"New request"},
+ active:{ar:"شغّال",en:"Active"}, waiting:{ar:"مستني",en:"Pending"}, delivered:{ar:"اتسلّم",en:"Delivered"},
+ reviewNow:{ar:"محتاج مراجعتك",en:"Needs your review"},
+ editorL:{ar:"الإديتور",en:"Editor"}, stage:{ar:"المرحلة",en:"Stage"}, due:{ar:"الديدلاين",en:"Due"},
+ material:{ar:"الماتيريال",en:"Material"}, reference:{ar:"الريفرنس",en:"Reference"}, notes:{ar:"الملاحظات",en:"Notes"}, open:{ar:"فتح",en:"Open"},
+ draft:{ar:"درافت",en:"Draft"}, openKrock:{ar:"افتح على Krock",en:"Open on Krock"},
+ notesDone:{ar:"خلصت ملاحظاتي",en:"Notes done"}, approve:{ar:"اعتماد نهائي",en:"Approve final"},
+ rounds:{ar:"المراجعات",en:"Rounds"}, noRounds:{ar:"خلصت الـ٣ مراجعات",en:"All 3 rounds used"},
+ notesSent:{ar:"ملاحظاتك وصلت للإديتور",en:"Your notes reached the editor"}, revising:{ar:"الإديتور بيعدّل",en:"Editor is revising"},
+ underReview:{ar:"الطلب بيتراجع",en:"Request under review"},
+ fTitle:{ar:"اسم المشروع",en:"Project name"}, fType:{ar:"النوع",en:"Type"},
+ tReels:{ar:"ريلز",en:"Reels"}, tLong:{ar:"يوتيوب طويل",en:"Long-form"}, tMotion:{ar:"موشن",en:"Motion"},
+ fDrive:{ar:"لينك الدرايف",en:"Drive link"}, fRef:{ar:"ريفرنس (اختياري)",en:"Reference (optional)"},
+ fNotes:{ar:"ملاحظات للإديتور",en:"Notes for the editor"}, fCount:{ar:"عدد الفيديوهات",en:"Videos"},
+ fFirst:{ar:"أول ديدلاين",en:"First deadline"}, fCad:{ar:"التسليم",en:"Delivery"},
+ cOnce:{ar:"مرة واحدة",en:"All at once"}, cDaily:{ar:"كل يوم",en:"Daily"}, c2:{ar:"كل يومين",en:"Every 2 days"}, cWeek:{ar:"كل أسبوع",en:"Weekly"},
+ send:{ar:"ابعت",en:"Send"}, sent:{ar:"اتبعت ✓",en:"Sent ✓"}, need:{ar:"الاسم ولينك الدرايف مطلوبين",en:"Name and Drive link are required"},
+ st0:{ar:"جديد",en:"New"}, st1:{ar:"اتستلم",en:"Received"}, st2:{ar:"تحضير",en:"Prep"}, st3:{ar:"فيرست كات",en:"First cut"},
+ st4:{ar:"جرافيكس",en:"Graphics"}, st5:{ar:"ساوند",en:"Sound"}, st6:{ar:"مراجعة",en:"Review"}, st7:{ar:"اتسلّم",en:"Delivered"},
+ tasks:{ar:"التاسكات",en:"Tasks"}, today:{ar:"النهارده",en:"Today"}, late:{ar:"متأخر",en:"Late"}, tomorrow:{ar:"بكره",en:"Tomorrow"}, later:{ar:"بعدين",en:"Later"}, done:{ar:"خلص",en:"Done"},
+ update:{ar:"تحديث",en:"Update"}, toCammio:{ar:"عند Cammio",en:"With Cammio"},
+ sendDraft:{ar:"ابعت الدرافت",en:"Send draft"}, krockLink:{ar:"لينك Krock",en:"Krock link"},
+ gotNotes:{ar:"استلمت التعديلات",en:"Got the notes"}, clientNotes:{ar:"الكلاينت كتب ملاحظاته",en:"Client left notes"},
+ waitClient:{ar:"عند الكلاينت",en:"With client"}, newTag:{ar:"جديد",en:"New"},
+ checkin:{ar:"إنت فين؟",en:"Where are you?"}, checkinSub:{ar:"كل ٣ ساعات",en:"Every 3 hours"}, save:{ar:"ابعت لـCammio",en:"Send to Cammio"},
+ nextIn:{ar:"التشييك الجاي",en:"Next check-in"}, noTasks:{ar:"مفيش حاجة هنا",en:"Nothing here"},
+ approvals:{ar:"موافقات",en:"Approvals"}, requests:{ar:"طلبات",en:"Requests"}, all:{ar:"الكل",en:"All"}, accounts:{ar:"الحسابات",en:"Accounts"},
+ publish:{ar:"ابعت للكلاينت",en:"Send to client"}, hold:{ar:"استنى",en:"Hold"}, assign:{ar:"وافق وسلّم",en:"Approve & assign"},
+ name:{ar:"الاسم",en:"Name"}, create:{ar:"اعمل الحساب",en:"Create"}, ping:{ar:"اسأله",en:"Ping"}, pinged:{ar:"اتسأل ✓",en:"Pinged ✓"},
+ sActive:{ar:"شغال",en:"active"}, sReview:{ar:"مراجعة",en:"review"}, sLate:{ar:"متأخر",en:"late"}, sAppr:{ar:"مستني موافقتك",en:"to approve"},
+ copy:{ar:"نسخ",en:"Copy"}, copied:{ar:"اتنسخ ✓",en:"Copied ✓"}, setRole:{ar:"فعّل كـ",en:"Activate as"},
+ accErr:{ar:"اليوزر موجود أو الباسورد أقل من ٦ حروف",en:"Username taken or password under 6 characters"},
+ now:{ar:"دلوقتي",en:"now"}, m:{ar:"د",en:"m"}, h:{ar:"س",en:"h"}, d:{ar:"ي",en:"d"},
+ next:{ar:"التالي",en:"Next"}, finish:{ar:"تمام",en:"Got it"}, skip:{ar:"تخطي",en:"Skip"},
+ settings:{ar:"حسابي",en:"My account"}, photo:{ar:"غيّر الصورة",en:"Change photo"}, titleL:{ar:"الوصف",en:"Title"}, titlePh:{ar:"مثلاً: Video editor",en:"e.g. Video editor"},
+ langL:{ar:"اللغة",en:"Language"}, saveS:{ar:"احفظ",en:"Save"}, saved:{ar:"اتحفظ ✓",en:"Saved ✓"},
+ newPass:{ar:"باسورد جديد",en:"New password"}, changePass:{ar:"غيّر الباسورد",en:"Change password"}, passShort:{ar:"٦ حروف على الأقل",en:"At least 6 characters"},
+};
+let LANG=(()=>{try{return localStorage.getItem("hub_lang")||"ar"}catch(_){return "ar"}})();
+const t=k=>T[k]?T[k][LANG]:k; const ST=i=>t("st"+i); const STen=i=>T["st"+i].en; const STar=i=>T["st"+i].ar;
+
+const TOURS={
+ client:[["new",{ar:"ابدأ من هنا: حط لينك الدرايف وملاحظاتك.",en:"Start here: drop your Drive link and notes."}],
+  ["row",{ar:"كل فيديو، مع الإديتور بتاعه والمرحلة اللي هو فيها.",en:"Every video, its editor and current stage."}],
+  ["bell",{ar:"أول ما الدرافت يجهز هيوصلك إشعار هنا.",en:"When a draft is ready you'll be notified here."}],
+  ["me",{ar:"من هنا تغيّر صورتك واسمك والباسورد.",en:"Change your photo, name and password here."}]],
+ editor:[["tabs",{ar:"تاسكاتك: المتأخر، النهارده، بكره.",en:"Your tasks: late, today, tomorrow."}],
+  ["upd",{ar:"حدّث مرحلتك من هنا. بتروح لـCammio الأول.",en:"Update your stage here. It goes to Cammio first."}],
+  ["chk",{ar:"كل ٣ ساعات هنسألك إنت فين.",en:"Every 3 hours we'll ask where you are."}],
+  ["bell",{ar:"مشاريع جديدة وملاحظات الكلاينت بتوصل هنا.",en:"New projects and client notes land here."}],
+  ["me",{ar:"صورتك وبياناتك من هنا.",en:"Your photo and details live here."}]],
+ admin:[["tab-appr",{ar:"تحديثات التيم مستنياك قبل ما توصل للكلاينت.",en:"Team updates wait for you before reaching clients."}],
+  ["tab-req",{ar:"طلبات الكلاينتس الجديدة: وافق واختار الإديتور.",en:"New client requests: approve and pick an editor."}],
+  ["tab-acc",{ar:"اعمل يوزر وباسورد لكل حد وابعتهوله.",en:"Create a username & password for each person."}]],
+};
+
+/* ===== state ===== */
+const H=36e5,D=24*H; const sod=x=>{const d=new Date(x);d.setHours(0,0,0,0);return d.getTime()};
+let profiles={}, projects=[], videos=[], notifs=[];
+let S={me:null,side:"client",tab:null,open:null,sheet:null,form:{type:"tReels",cad:"c2",count:4},err:"",ready:false,busy:false};
+
+/* ===== helpers ===== */
+const F=(f,n)=>f.querySelector(`[name="${n}"]`);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const nm=u=>profiles[u]?.name||profiles[u]?.username||"—";
+const role=u=>profiles[u]?.role;
+const av=(u,cls="")=>{const p=profiles[u];return `<span class="av ${cls}">${p&&p.avatar_url?`<img src="${esc(p.avatar_url)}" alt="">`:esc((nm(u)||"?")[0])}</span>`};
+const fd=ts=>new Date(ts).toLocaleDateString(LANG==="ar"?"ar-EG":"en-GB",{day:"numeric",month:"short"});
+function ago(ts){const m=Math.round((Date.now()-ts)/6e4);if(m<1)return t("now");if(m<60)return m+t("m");if(m<1440)return Math.round(m/60)+t("h");return Math.round(m/1440)+t("d");}
+const V=id=>videos.find(v=>v.id===id), P=id=>projects.find(p=>p.id===id);
+const isLong=v=>P(v.project)?.type==="tLong";
+const vn=v=>(isLong(v)?(LANG==="ar"?"فيديو":"Video"):(LANG==="ar"?"ريل":"Reel"))+" "+v.n;
+const vnAr=v=>(isLong(v)?"فيديو":"ريل")+" "+v.n, vnEn=v=>(isLong(v)?"Video":"Reel")+" "+v.n;
+const isLate=v=>v.stage<7&&v.due<Date.now();
+function steps(s){let h="";for(let i=1;i<=7;i++)h+=`<span class="${i<s?"on":i===s?(s===7?"on":"cur"):""}"></span>`;return `<div class="steps">${h}</div>`;}
+function used(v){if(v.pub<6)return 0;if(v.rs==="awaiting")return v.round-1;if(v.pub===7)return Math.max(0,v.round-1);return v.round;}
+function rd(n){let h="";for(let i=1;i<=3;i++)h+=`<i class="${i<=n?"on":""}"></i>`;return `<span class="rd">${h}</span>`;}
+function toast(m){const e=document.createElement("div");e.className="toast";e.innerHTML=`<span class="dot"></span>${esc(m)}`;document.getElementById("toasts").appendChild(e);setTimeout(()=>{e.style.transition=".3s";e.style.opacity=0;setTimeout(()=>e.remove(),300)},3600);}
+function sysNotify(text){try{if("Notification" in window&&Notification.permission==="granted"&&document.hidden)new Notification("Cammio Studio",{body:text});}catch(_){}}
+const ico={
+ bell:`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>`,
+ help:`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>`,
+ out:`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>`,
+ x:`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>`,
+ ext:`↗`,
+};
+
+/* ================= DATA LAYER ================= */
+const vFromDb=r=>({id:r.id,project:r.project,n:r.n,due:Date.parse(r.due),stage:r.stage,pub:r.pub,round:r.round,rs:r.rs,link:r.link||"",pending:r.pending,isNew:r.is_new,upd:Date.parse(r.updated_at)});
+const pFromDb=r=>({id:r.id,client:r.client,title:r.title,type:r.type,drive:r.drive,ref:r.ref||"",notes:r.notes||"",count:r.count,cad:r.cad,first:Date.parse(r.first),status:r.status,editor:r.editor,created:Date.parse(r.created_at)});
+const vToDb=p=>{const o={};for(const k in p){if(k==="isNew")o.is_new=p[k];else if(k==="due")o.due=new Date(p[k]).toISOString();else o[k]=p[k];}return o;};
+const email=u=>`${u}@${CFG.EMAIL_DOMAIN||"users.cammio.app"}`;
+
+let sb=null, chan=null, reloadT=null;
+const api = LIVE ? {
+ async init(){
+  const load=src=>new Promise((res,rej)=>{const s=document.createElement("script");s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);});
+  try{await load("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js");}
+  catch(_){await load("https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js");}
+  sb=supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false,lock:async(_n,_t,fn)=>await fn()}});
+  const {data}=await Promise.race([sb.auth.getSession(),new Promise(r=>setTimeout(()=>r({data:{}}),5000))]);
+  if(data.session){const p=await this.myProfile(data.session.user.id); if(p&&p.role!=="pending"){S.me=p.id;await this.loadAll();this.subscribe();}}
+ },
+ async myProfile(id){const {data}=await sb.from("profiles").select("*").eq("id",id).single();if(data)profiles[data.id]=data;return data;},
+ async login(u,pw,side){
+  const {data,error}=await sb.auth.signInWithPassword({email:email(u),password:pw});
+  if(error) throw new Error(t("badLogin"));
+  const p=await this.myProfile(data.user.id);
+  if(!p||p.role==="pending"){await sb.auth.signOut();throw new Error(t("noRole"));}
+  const ok=side==="client"?p.role==="client":p.role!=="client";
+  if(!ok){await sb.auth.signOut();throw new Error(t("wrongSide"));}
+  S.me=p.id; await this.loadAll(); this.subscribe();
+ },
+ async logout(){if(chan){sb.removeChannel(chan);chan=null;}await sb.auth.signOut();profiles={};projects=[];videos=[];notifs=[];},
+ async loadAll(){
+  const [a,b,c,d]=await Promise.all([
+   sb.from("profiles").select("*"),
+   sb.from("projects").select("*").order("created_at",{ascending:false}),
+   sb.from("videos").select("*").order("n"),
+   sb.from("notifs").select("*").eq("user_id",S.me).order("created_at",{ascending:false}).limit(60)]);
+  profiles={};(a.data||[]).forEach(p=>profiles[p.id]=p);
+  projects=(b.data||[]).map(pFromDb); videos=(c.data||[]).map(vFromDb);
+  notifs=(d.data||[]).map(n=>({id:n.id,ar:n.ar,en:n.en,read:n.read,time:Date.parse(n.created_at)}));
+  const me=profiles[S.me]; if(me&&me.lang&&me.lang!==LANG){LANG=me.lang;}
+ },
+ subscribe(){
+  if(chan) sb.removeChannel(chan);
+  const kick=()=>{clearTimeout(reloadT);reloadT=setTimeout(async()=>{await this.loadAll();render();},250);};
+  chan=sb.channel("hub")
+   .on("postgres_changes",{event:"*",schema:"public",table:"videos"},kick)
+   .on("postgres_changes",{event:"*",schema:"public",table:"projects"},kick)
+   .on("postgres_changes",{event:"*",schema:"public",table:"profiles"},kick)
+   .on("postgres_changes",{event:"INSERT",schema:"public",table:"notifs",filter:`user_id=eq.${S.me}`},pl=>{const n=pl.new;const txt=LANG==="ar"?n.ar:n.en;toast(txt);sysNotify(txt);kick();})
+   .subscribe();
+ },
+ async createProject(f){const {error}=await sb.from("projects").insert({client:S.me,title:f.title,type:f.type,drive:f.drive,ref:f.ref,notes:f.notes,count:f.count,cad:f.cad,first:new Date(f.first).toISOString()});if(error)throw error;await this.loadAll();},
+ async updVideo(id,patch){const {error}=await sb.from("videos").update(vToDb(patch)).eq("id",id);if(error)throw error;Object.assign(V(id),patch,{upd:Date.now()});},
+ async updProject(id,patch){const {error}=await sb.from("projects").update(patch).eq("id",id);if(error)throw error;await this.loadAll();},
+ async notify(uid,ar,en){if(!uid)return;await sb.from("notifs").insert({user_id:uid,ar,en});},
+ async notifyAdmins(ar,en){await sb.rpc("notify_admins",{p_ar:ar,p_en:en});},
+ async markRead(){notifs.forEach(n=>n.read=true);await sb.from("notifs").update({read:true}).eq("user_id",S.me).eq("read",false);},
+ async createAccount({name,username,password,role}){
+  const {error}=await sb.rpc("admin_create_user",{p_username:username,p_name:name,p_password:password,p_role:role});
+  if(error) throw new Error(t("accErr"));
+  await this.loadAll();
+ },
+ async setRole(id,role){const r=await sb.from("profiles").update({role}).eq("id",id);if(r.error)throw r.error;await this.loadAll();},
+ async updProfile(patch){const r=await sb.from("profiles").update(patch).eq("id",S.me);if(r.error)throw r.error;Object.assign(profiles[S.me],patch);},
+ async uploadAvatar(file){const ext=(file.name.split(".").pop()||"jpg").toLowerCase();const path=`${S.me}/avatar-${Date.now()}.${ext}`;
+  const up=await sb.storage.from("avatars").upload(path,file,{upsert:true,contentType:file.type});if(up.error)throw up.error;
+  return sb.storage.from("avatars").getPublicUrl(path).data.publicUrl;},
+ async changePassword(pw){const {error}=await sb.auth.updateUser({password:pw});if(error)throw error;},
+} : (()=>{ /* ---------- DEMO (in-memory) ---------- */
+ const passwords={}; const nbox={};
+ const seed=()=>{
+  const T0=sod(Date.now());
+  const mk=(id,name,r,title="")=>{profiles[id]={id,username:id,name,role:r,avatar_url:"",title,lang:"ar"};passwords[id]="1234";nbox[id]=[];};
+  mk("cammio","Cammio","admin","Team lead");mk("ahmed","Ahmed","editor","Video editor");mk("peter","Peter","editor","Motion + reels");
+  mk("ali","Ali Zakaria","client");mk("rakan","Rakan Ali","client");mk("naggar","Ahmed El Naggar","client");
+  projects=[
+   {id:"p1",client:"ali",title:"ريلز نوفمبر",type:"tReels",drive:"https://drive.google.com/drive/folders/ali-nov",ref:"https://instagram.com/reel/example",notes:"نفس ستايل الريلز اللي فاتت، كابشن كلمة بكلمة.",count:4,cad:"c2",first:T0-2*D+20*H,status:"active",editor:"ahmed",created:Date.now()-4*D},
+   {id:"p2",client:"rakan",title:"يوتيوب: قصة البداية",type:"tLong",drive:"https://drive.google.com/drive/folders/rakan",ref:"",notes:"الصور حسب السكرين شوتس اللي في الفولدر.",count:1,cad:"cOnce",first:T0+5*D+20*H,status:"pending",editor:null,created:Date.now()-3*H},
+   {id:"p3",client:"naggar",title:"Product launch",type:"tReels",drive:"https://drive.google.com/drive/folders/naggar",ref:"",notes:"English captions + minimal motion.",count:2,cad:"cDaily",first:T0+20*H,status:"active",editor:"peter",created:Date.now()-2*D}];
+  videos=[];projects.forEach(gen);
+  Object.assign(V("p1v1"),{stage:7,pub:7,round:2,upd:Date.now()-D});
+  Object.assign(V("p1v2"),{stage:6,pub:6,round:1,rs:"awaiting",link:"https://platform.krock.io/review/demo1",upd:Date.now()-2*H});
+  Object.assign(V("p1v3"),{stage:3,pub:2,pending:{type:"stage",stage:3},upd:Date.now()-50*6e4});
+  Object.assign(V("p1v4"),{stage:1,pub:1,upd:Date.now()-5*H});
+  Object.assign(V("p3v1"),{stage:6,pub:6,round:1,rs:"notes",link:"https://platform.krock.io/review/demo2",upd:Date.now()-40*6e4});
+  Object.assign(V("p3v2"),{stage:5,pub:4,pending:{type:"draft",link:"https://platform.krock.io/review/demo3",round:1},upd:Date.now()-20*6e4});
+  const sn=(u,ar,en,a)=>nbox[u].push({ar,en,time:Date.now()-a,read:a>3*H});
+  sn("ali","درافت ١ من ريل ٢ جاهز","Draft 1 of Reel 2 is ready",2*H);
+  sn("cammio","Peter بعت درافت ١ — ريل ٢ (Ahmed El Naggar)","Peter sent Draft 1 — Reel 2 (Ahmed El Naggar)",20*6e4);
+  sn("cammio","Ahmed: ريل ٣ ← فيرست كات","Ahmed: Reel 3 → First cut",50*6e4);
+  sn("peter","Ahmed El Naggar كتب ملاحظاته — ريل ١","Ahmed El Naggar left notes — Reel 1",40*6e4);
+ };
+ function gen(p){const s={cOnce:0,cDaily:1,c2:2,cWeek:7}[p.cad];for(let i=0;i<p.count;i++)videos.push({id:p.id+"v"+(i+1),project:p.id,n:i+1,due:p.first+i*s*D,stage:0,pub:0,round:0,rs:null,link:"",pending:null,isNew:false,upd:Date.now()});}
+ const push=(u,ar,en)=>{(nbox[u]=nbox[u]||[]).unshift({ar,en,time:Date.now(),read:false});if(u===S.me){toast(LANG==="ar"?ar:en);}};
+ return {
+  async init(){seed();},
+  async login(u,pw,side){const p=profiles[u];if(!p||passwords[u]!==pw)throw new Error(t("badLogin"));
+   if(p.role==="pending")throw new Error(t("noRole"));
+   const ok=side==="client"?p.role==="client":p.role!=="client";if(!ok)throw new Error(t("wrongSide"));S.me=u;this.sync();},
+  sync(){notifs=nbox[S.me]||[];},
+  async logout(){},
+  async createProject(f){const p={id:"p"+Date.now().toString(36),client:S.me,title:f.title,type:f.type,drive:f.drive,ref:f.ref,notes:f.notes,count:f.count,cad:f.cad,first:new Date(f.first).getTime(),status:"pending",editor:null,created:Date.now()};projects.unshift(p);gen(p);},
+  async updVideo(id,patch){Object.assign(V(id),patch,{upd:Date.now()});},
+  async updProject(id,patch){Object.assign(P(id),patch);},
+  async notify(uid,ar,en){if(uid)push(uid,ar,en);},
+  async notifyAdmins(ar,en){Object.keys(profiles).filter(u=>profiles[u].role==="admin").forEach(u=>push(u,ar,en));},
+  async markRead(){notifs.forEach(n=>n.read=true);},
+  async createAccount({name,username,password,role}){if(profiles[username]||password.length<6)throw new Error(t("accErr"));profiles[username]={id:username,username,name,role,avatar_url:"",title:"",lang:"ar"};passwords[username]=password;nbox[username]=[];},
+  async setRole(id,r){profiles[id].role=r;},
+  async updProfile(patch){Object.assign(profiles[S.me],patch);},
+  async uploadAvatar(file){return await new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.onerror=rej;fr.readAsDataURL(file);});},
+  async changePassword(pw){passwords[S.me]=pw;},
+  demoPass:u=>passwords[u],
+ };
+})();
+
+/* ================= VIEWS ================= */
+function loginView(){
+ return `<div class="login">
+  <svg class="lines" width="100%" height="100%"><defs><pattern id="g" width="48" height="48" patternUnits="userSpaceOnUse"><path d="M48 0H0V48" fill="none" stroke="#E6E6E1" stroke-width="1"/></pattern></defs><rect width="100%" height="100%" fill="url(#g)"/></svg>
+  <div class="corner"><button class="btn line sm" data-a="lang">${LANG==="ar"?"EN":"ع"}</button></div>
+  <div class="lbox rise">
+   <div class="seg"><i style="inset-inline-start:${S.side==="client"?"4px":"50%"}"></i>
+    <button class="${S.side==="client"?"on":""}" data-a="side" data-s="client">${t("client")}</button>
+    <button class="${S.side==="editor"?"on":""}" data-a="side" data-s="editor">${t("editor")}</button></div>
+   <form class="lform" id="lf">
+    <input name="u" placeholder="${t("user")}" autocomplete="username" autocapitalize="off" spellcheck="false">
+    <input name="p" type="password" placeholder="${t("pass")}" autocomplete="current-password">
+    <div class="err">${esc(S.err)}</div>
+    <button class="btn ${S.busy?"busy":""}" type="submit">${t("enter")}</button>
+   </form>
+  </div>
+  ${LIVE?"":`<div class="demo">${t("demo")}: ${["ali","ahmed","peter","cammio"].map(u=>`<button data-a="fill" data-u="${u}">${u}</button>`).join(" · ")} — 1234</div>`}
+ </div>`;
+}
+function topBar(){
+ const un=notifs.filter(n=>!n.read).length;
+ const canAsk=("Notification" in window)&&Notification.permission==="default";
+ return `<div class="top"><div class="grow"></div>
+  ${canAsk?`<button class="btn line sm" data-a="askN">🔔 ${t("enableN")}</button>`:""}
+  <button class="btn line sm" data-a="lang">${LANG==="ar"?"EN":"ع"}</button>
+  <button class="ico" data-a="tour" data-tour="help" title="${t("help")}">${ico.help}</button>
+  <button class="ico" data-a="bell" data-tour="bell">${ico.bell}${un?`<b>${un}</b>`:""}</button>
+  <button class="me" data-a="settings" data-tour="me">${av(S.me)}<span class="tiny nm">${esc(nm(S.me))}</span></button>
+  <button class="ico" data-a="logout" title="${t("out")}">${ico.out}</button></div>`;
+}
+function item(id,L,R,det){const o=S.open===id;return `<div class="item ${o?"open":""}"><div class="it" data-a="toggle" data-id="${id}"><div class="grow">${L}</div><div class="meta">${R}</div></div><div class="det">${o?det:""}</div></div>`;}
+function links(p){return `<dl class="kv"><dt>${t("material")}</dt><dd><a href="${esc(p.drive)}" target="_blank" rel="noopener">Drive ${ico.ext}</a></dd>${p.ref?`<dt>${t("reference")}</dt><dd><a href="${esc(p.ref)}" target="_blank" rel="noopener">${t("open")} ${ico.ext}</a></dd>`:""}${p.notes?`<dt>${t("notes")}</dt><dd>${esc(p.notes)}</dd>`:""}</dl>`;}
+
+/* client */
+function clientView(){
+ const ps=projects.filter(p=>p.client===S.me);
+ const vs=videos.filter(v=>ps.some(p=>p.id===v.project));
+ const tab=S.tab||"active";
+ const need=vs.filter(v=>P(v.project).status==="active"&&v.pub===6&&v.rs==="awaiting");
+ const g={active:vs.filter(v=>P(v.project).status==="active"&&v.pub<7).sort((a,b)=>(b.rs==="awaiting")-(a.rs==="awaiting")||a.due-b.due),
+  waiting:vs.filter(v=>P(v.project).status==="pending"),delivered:vs.filter(v=>v.pub===7)};
+ return `${topBar()}<div class="main">
+  <div class="head"><h1>${t("myVideos")}</h1><button class="btn y" data-a="newReq" data-tour="new">+ ${t("newReq")}</button></div>
+  <div class="tabs">${["active","waiting","delivered"].map(k=>`<button class="tab ${tab===k?"on":""}" data-a="tab" data-t="${k}">${t(k)}${k==="active"&&need.length?`<em>${need.length}</em>`:g[k].length&&k!=="active"?` <span class="muted">${g[k].length}</span>`:""}</button>`).join("")}</div>
+  <div class="list" data-tour="row">${g[tab].length?g[tab].map(clientItem).join(""):`<div class="empty">${t("noTasks")}</div>`}</div></div>`;
+}
+function clientItem(v){
+ const p=P(v.project),pend=p.status==="pending";
+ const L=`<div class="t row">${v.rs==="awaiting"&&v.pub===6?'<span class="dot pulse"></span>':""}${vn(v)}</div><div class="s">${esc(p.title)}${p.editor?` · ${esc(nm(p.editor))}`:""}</div>`;
+ const R=pend?`<span class="chip">${t("underReview")}</span>`:`${v.pub===6&&v.rs==="awaiting"?`<span class="chip y">${t("reviewNow")}</span>`:`<span class="chip ${v.pub===7?"k":""}">${ST(v.pub)}</span>`}<span class="chip hide-m">${fd(v.due)}</span>`;
+ let det=pend?links(p):`${steps(v.pub)}<dl class="kv"><dt>${t("editorL")}</dt><dd class="row">${av(p.editor)} ${esc(nm(p.editor))}</dd><dt>${t("stage")}</dt><dd>${ST(v.pub)}</dd><dt>${t("due")}</dt><dd>${fd(v.due)}</dd></dl>`;
+ if(!pend&&v.pub===6){const u=used(v);
+  if(v.rs==="awaiting") det+=`<div class="box y"><div class="row"><b class="grow">${t("draft")} ${v.round}</b><span class="tiny muted">${t("rounds")}</span>${rd(u)}</div>
+   <div class="acts"><a class="btn sm" href="${esc(v.link)}" target="_blank" rel="noopener" style="text-decoration:none">${t("openKrock")} ${ico.ext}</a>
+   <button class="btn line sm" data-a="cNotes" data-v="${v.id}" ${u>=3?"disabled":""}>${t("notesDone")}</button>
+   <button class="btn y sm" data-a="cApprove" data-v="${v.id}">${t("approve")}</button></div>${u>=3?`<div class="tiny muted" style="margin-top:8px">${t("noRounds")}</div>`:""}</div>`;
+  else det+=`<div class="box row"><span class="grow tiny">${v.rs==="notes"?t("notesSent"):t("revising")}</span>${rd(u)}</div>`;}
+ return item(v.id,L,R,det);
+}
+function reqSheet(){
+ const f=S.form;const o=(k,vals)=>`<div class="opt">${vals.map(x=>`<button type="button" class="${f[k]===x?"on":""}" data-a="fo" data-k="${k}" data-v="${x}">${t(x)}</button>`).join("")}</div>`;
+ return `<header>${t("newReq")}<button class="ico" data-a="closeAll">${ico.x}</button></header>
+ <form class="body" id="rf">
+  <div><label>${t("fTitle")}</label><input name="title" value="${esc(f.title||"")}"></div>
+  <div><label>${t("fType")}</label>${o("type",["tReels","tLong","tMotion"])}</div>
+  <div><label>${t("fDrive")}</label><input name="drive" type="url" placeholder="https://drive.google.com/…" value="${esc(f.drive||"")}"></div>
+  <div><label>${t("fRef")}</label><input name="ref" type="url" placeholder="https://…" value="${esc(f.ref||"")}"></div>
+  <div><label>${t("fNotes")}</label><textarea name="notes">${esc(f.notes||"")}</textarea></div>
+  <div class="two"><div><label>${t("fCount")}</label><input name="count" type="number" min="1" max="60" value="${f.count}"></div><div><label>${t("fFirst")}</label><input name="first" type="date" value="${esc(f.first||"")}"></div></div>
+  <div><label>${t("fCad")}</label>${o("cad",["cOnce","cDaily","c2","cWeek"])}</div>
+  <button class="btn" type="submit">${t("send")}</button></form>`;
+}
+
+/* editor */
+function bucket(v){if(v.stage===7)return"done";const T0=sod(Date.now()),d=sod(v.due);if(v.due<Date.now())return"late";if(d===T0)return"today";if(d===T0+D)return"tomorrow";return"later";}
+function nextChk(){let last=0;try{last=+localStorage.getItem("hub_chk_"+S.me)||0}catch(_){}if(!last){last=Date.now();try{localStorage.setItem("hub_chk_"+S.me,last)}catch(_){}}return Math.max(0,last+3*H-Date.now());}
+function editorView(){
+ const mine=videos.filter(v=>{const p=P(v.project);return p&&p.editor===S.me&&p.status==="active"});
+ const keys=["late","today","tomorrow","later","done"];const g={};keys.forEach(k=>g[k]=mine.filter(v=>bucket(v)===k).sort((a,b)=>a.due-b.due));
+ const tab=S.tab||(g.late.length?"late":g.today.length?"today":"later");
+ const firstId=(g[tab].find(v=>!updDisabled(v))||{}).id;
+ return `${topBar()}<div class="main">
+  <div class="head"><h1>${t("tasks")}</h1><button class="btn line sm row" data-a="checkin" data-tour="chk"><span class="dot pulse"></span>${t("nextIn")} · ${(Math.round(nextChk()/H*10)/10)}${t("h")}</button></div>
+  <div class="tabs" data-tour="tabs">${keys.map(k=>`<button class="tab ${tab===k?"on":""}" data-a="tab" data-t="${k}">${t(k)}${g[k].length?(k==="late"||k==="today"?`<em>${g[k].length}</em>`:` <span class="muted">${g[k].length}</span>`):""}</button>`).join("")}</div>
+  <div class="list">${g[tab].length?g[tab].map(v=>editorItem(v,v.id===firstId)).join(""):`<div class="empty">${t("noTasks")}</div>`}</div></div>`;
+}
+const updDisabled=v=>!!v.pending||v.stage===7||(v.stage===6&&v.rs==="awaiting");
+function editorItem(v,first){
+ const p=P(v.project);
+ const status=v.pending?`<span class="chip y">${t("toCammio")}</span>`:v.stage===6&&v.rs==="notes"?`<span class="chip k">${t("clientNotes")}</span>`:v.stage===6&&v.rs==="awaiting"?`<span class="chip">${t("waitClient")}</span>`:`<span class="chip ${v.stage===7?"k":""}">${ST(v.stage)}</span>`;
+ const L=`<div class="t row">${v.isNew?`<span class="chip y">${t("newTag")}</span>`:""}${vn(v)} <span class="muted" style="font-weight:400">· ${esc(nm(p.client))}</span></div><div class="s">${esc(p.title)} · ${fd(v.due)}${isLate(v)?` · <span style="color:var(--red)">${t("late")}</span>`:""}</div>`;
+ const R=`${status}${v.stage<7?`<button class="btn sm ${v.stage<5&&!v.pending?"":"line"}" data-a="updMenu" data-v="${v.id}" ${first?'data-tour="upd"':""} ${updDisabled(v)?"disabled":""}>${t("update")}</button>`:""}`;
+ let det=`${steps(v.stage)}${links(p)}`;
+ if(v.pending) det+=`<div class="box tiny">${v.pending.type==="draft"?`${t("draft")} ${v.pending.round}`:ST(v.pending.stage)} → ${t("toCammio")}</div>`;
+ else if(v.stage===5||(v.stage===6&&v.rs==="revising")) det+=`<div class="box"><label>${t("krockLink")} · ${t("draft")} ${v.stage===5?1:v.round+1}</label><div class="row"><input id="lk_${v.id}" placeholder="https://platform.krock.io/…"><button class="btn sm" data-a="eDraft" data-v="${v.id}">${t("sendDraft")}</button></div></div>`;
+ else if(v.stage===6&&v.rs==="notes") det+=`<div class="box y"><b>${t("clientNotes")} · ${t("draft")} ${v.round}</b><div class="acts"><a class="btn line sm" href="${esc(v.link)}" target="_blank" rel="noopener" style="text-decoration:none">${t("openKrock")} ${ico.ext}</a><button class="btn sm" data-a="eGot" data-v="${v.id}">${t("gotNotes")}</button></div></div>`;
+ return item(v.id,L,R,det);
+}
+function checkinSheet(){
+ const vs=videos.filter(v=>{const p=P(v.project);return p&&p.editor===S.me&&p.status==="active"&&v.stage<5&&!v.pending});
+ return `<header><span>${t("checkin")} <span class="muted tiny">· ${t("checkinSub")}</span></span><button class="ico" data-a="closeAll">${ico.x}</button></header>
+ <div class="body">${vs.length?vs.map(v=>`<div><label>${vn(v)} · ${esc(nm(P(v.project).client))}</label><select data-ci="${v.id}">${[0,1,2,3,4,5].map(i=>`<option value="${i}" ${i===v.stage?"selected":""}>${ST(i)}</option>`).join("")}</select></div>`).join(""):`<div class="muted">${t("noTasks")}</div>`}
+ <button class="btn" data-a="ciSave">${t("save")}</button></div>`;
+}
+
+/* admin */
+function adminView(){
+ const act=videos.filter(v=>P(v.project)?.status==="active");
+ const appr=act.filter(v=>v.pending), reqs=projects.filter(p=>p.status==="pending");
+ const tab=S.tab||"appr"; const eds=Object.keys(profiles).filter(u=>role(u)==="editor");
+ const tabs=[["appr",t("approvals"),appr.length],["req",t("requests"),reqs.length],["all",t("all"),0],["acc",t("accounts"),Object.values(profiles).filter(p=>p.role==="pending").length]];
+ let body="";
+ if(tab==="appr") body=appr.length?appr.map(v=>{const p=P(v.project);const what=v.pending.type==="draft"?`${t("draft")} ${v.pending.round}`:`${ST(v.pub)} → ${ST(v.pending.stage)}`;
+  return item(v.id,`<div class="t">${vn(v)} <span class="muted" style="font-weight:400">· ${esc(nm(p.client))}</span></div><div class="s">${esc(nm(p.editor))} · ${ago(v.upd)}</div>`,
+  `<span class="chip y">${what}</span><button class="btn line sm" data-a="hold" data-v="${v.id}">${t("hold")}</button><button class="btn sm" data-a="pub" data-v="${v.id}">${t("publish")}</button>`,
+  `${steps(v.pending.type==="draft"?6:v.pending.stage)}${v.pending.type==="draft"?`<dl class="kv"><dt>Krock</dt><dd><a href="${esc(v.pending.link)}" target="_blank" rel="noopener">${t("open")} ${ico.ext}</a></dd></dl>`:""}${links(p)}`)}).join(""):`<div class="empty">${t("noTasks")}</div>`;
+ if(tab==="req") body=reqs.length?reqs.map(p=>item(p.id,`<div class="t">${esc(p.title)}</div><div class="s">${esc(nm(p.client))} · ${p.count} × ${t(p.type)} · ${t(p.cad)} · ${fd(p.first)}</div>`,`<span class="chip">${ago(p.created)}</span>`,
+  `${links(p)}<div class="row"><select id="as_${p.id}" style="width:auto">${eds.map(e=>`<option value="${e}">${esc(nm(e))}</option>`).join("")}</select><button class="btn sm" data-a="assign" data-p="${p.id}" ${eds.length?"":"disabled"}>${t("assign")}</button></div>`)).join(""):`<div class="empty">${t("noTasks")}</div>`;
+ if(tab==="all") body=act.length?act.slice().sort((a,b)=>(a.stage===7)-(b.stage===7)||a.due-b.due).map(v=>{const p=P(v.project);
+  return item(v.id,`<div class="t">${vn(v)} <span class="muted" style="font-weight:400">· ${esc(nm(p.client))}</span></div><div class="s">${esc(nm(p.editor))} · ${ago(v.upd)}</div>`,
+  `${isLate(v)?`<span class="chip r">${t("late")}</span>`:""}<span class="chip ${v.stage===7?"k":""}">${ST(v.stage)}</span><span class="chip hide-m">${fd(v.due)}</span>`,
+  `${steps(v.stage)}<dl class="kv"><dt>${t("client")}</dt><dd>${ST(v.pub)}</dd><dt>${t("editor")}</dt><dd>${ST(v.stage)}</dd></dl>${links(p)}${v.stage<7?`<button class="btn line sm" data-a="ping" data-v="${v.id}">${t("ping")} ${esc(nm(p.editor))}</button>`:""}`)}).join(""):`<div class="empty">${t("noTasks")}</div>`;
+ if(tab==="acc") body=`<div class="item" style="padding:14px 16px"><form id="af" class="row" style="flex-wrap:wrap">
+  <input name="name" placeholder="${t("name")}" style="flex:1;min-width:120px"><input name="u" placeholder="${t("user")}" style="flex:1;min-width:110px" autocapitalize="off" spellcheck="false"><input name="p" placeholder="${t("pass")} (6+)" style="flex:1;min-width:100px">
+  <select name="role" style="width:auto"><option value="client">${t("client")}</option><option value="editor">${t("editor")}</option></select><button class="btn sm" type="submit">${t("create")}</button></form></div>`+
+  Object.keys(profiles).sort((a,b)=>(role(b)==="pending")-(role(a)==="pending")).map(u=>`<div class="item"><div class="it" style="cursor:default"><div class="grow row">${av(u)}<div><div class="t">${esc(nm(u))}</div><div class="s">@${esc(profiles[u].username)}${profiles[u].title?` · ${esc(profiles[u].title)}`:""}</div></div></div><div class="meta">
+   ${role(u)==="pending"?`<button class="btn line sm" data-a="setRole" data-u="${u}" data-r="client">${t("setRole")}${t("client")}</button><button class="btn line sm" data-a="setRole" data-u="${u}" data-r="editor">${t("editor")}</button>`:`<span class="chip ${role(u)==="admin"?"k":""}">${t(role(u))}</span>`}
+   ${role(u)!=="admin"&&role(u)!=="pending"?`<button class="btn line sm" data-a="copyLogin" data-u="${u}">${t("copy")}</button>`:""}</div></div></div>`).join("");
+ return `${topBar()}<div class="main">
+  <div class="stats"><div class="st ${appr.length?"hl":""}"><b>${appr.length}</b><br><span>${t("sAppr")}</span></div>
+   <div class="st"><b>${act.filter(v=>v.stage<7).length}</b><span>${t("sActive")}</span></div>
+   <div class="st"><b>${act.filter(v=>v.stage===6).length}</b><span>${t("sReview")}</span></div>
+   <div class="st"><b style="${act.filter(isLate).length?"color:var(--red)":""}">${act.filter(isLate).length}</b><span>${t("sLate")}</span></div></div>
+  <div class="tabs">${tabs.map(([k,l,n])=>`<button class="tab ${tab===k?"on":""}" data-a="tab" data-t="${k}" data-tour="tab-${k}">${l}${n?`<em>${n}</em>`:""}</button>`).join("")}</div>
+  <div class="list">${body}</div></div>`;
+}
+
+/* sheets */
+function bellSheet(){return `<header>${ico.bell}<span class="grow"></span><button class="ico" data-a="closeAll">${ico.x}</button></header><div style="overflow:auto">${notifs.length?notifs.map(n=>`<div class="nt">${n.read?'<span style="width:7px;flex:none"></span>':'<span class="dot" style="margin-top:6px"></span>'}<div>${esc(LANG==="ar"?n.ar:n.en)}<small>${ago(n.time)}</small></div></div>`).join(""):`<div class="empty">${t("noTasks")}</div>`}</div>`;}
+function settingsSheet(){
+ const p=profiles[S.me];
+ return `<header>${t("settings")}<button class="ico" data-a="closeAll">${ico.x}</button></header>
+ <div class="body">
+  <div class="avpick">${av(S.me,"lg")}<div><label for="avf">${t("photo")}</label><input id="avf" type="file" accept="image/*"><div class="tiny muted">@${esc(p.username)} · ${t(p.role)}</div></div></div>
+  <form id="sf" style="display:grid;gap:14px">
+   <div><label>${t("name")}</label><input name="name" value="${esc(p.name)}"></div>
+   <div><label>${t("titleL")}</label><input name="title" value="${esc(p.title||"")}" placeholder="${t("titlePh")}"></div>
+   <div><label>${t("langL")}</label><div class="opt"><button type="button" class="${LANG==="ar"?"on":""}" data-a="setLang" data-l="ar">العربية</button><button type="button" class="${LANG==="en"?"on":""}" data-a="setLang" data-l="en">English</button></div></div>
+   <button class="btn" type="submit">${t("saveS")}</button>
+  </form>
+  <div class="sep"></div>
+  <form id="pf" style="display:grid;gap:10px"><div><label>${t("newPass")}</label><input name="np" type="password" placeholder="${t("passShort")}" autocomplete="new-password"></div><button class="btn line" type="submit">${t("changePass")}</button></form>
+ </div>`;
+}
+
+/* ================= RENDER ================= */
+function render(){
+ document.documentElement.lang=LANG;document.documentElement.dir=LANG==="ar"?"rtl":"ltr";
+ const root=document.getElementById("root");
+ if(!S.ready){root.innerHTML=`<div class="loading">…</div>`;return;}
+ const r=S.me?role(S.me):null;
+ root.innerHTML=!S.me?loginView():r==="client"?clientView():r==="editor"?editorView():adminView();
+ const sh=document.getElementById("sheet");
+ sh.innerHTML=S.sheet==="req"?reqSheet():S.sheet==="chk"?checkinSheet():S.sheet==="bell"?bellSheet():S.sheet==="set"?settingsSheet():"";
+ sh.classList.toggle("on",!!S.sheet);document.getElementById("scrim").classList.toggle("on",!!S.sheet);
+ const lf=document.getElementById("lf");if(lf)lf.onsubmit=doLogin;
+ const rf=document.getElementById("rf");if(rf){rf.onsubmit=doReq;rf.oninput=e=>{if(e.target.name)S.form[e.target.name]=e.target.value;};}
+ const af=document.getElementById("af");if(af)af.onsubmit=doAcc;
+ const sf=document.getElementById("sf");if(sf)sf.onsubmit=doSettings;
+ const pf=document.getElementById("pf");if(pf)pf.onsubmit=doPass;
+ const avf=document.getElementById("avf");if(avf)avf.onchange=doAvatar;
+}
+async function run(fn){try{await fn();}catch(e){console.error(e);toast(e&&e.message&&!/^[a-z_ ]+$/i.test(e.message)?e.message:t("err"));}render();}
+
+async function doLogin(e){
+ e.preventDefault();const u=F(e.target,"u").value.trim().toLowerCase(),pw=F(e.target,"p").value;
+ if(!u||!pw)return;S.busy=true;render();
+ try{await Promise.race([window.__initP,new Promise(r=>setTimeout(r,15000))]);if(LIVE&&!sb)throw new Error(t("err"));await api.login(u,pw,S.side);S.err="";S.tab=null;S.open=null;S.busy=false;render();
+  let seen=false;try{seen=localStorage.getItem("hub_tour_"+S.me)}catch(_){}
+  if(!seen){try{localStorage.setItem("hub_tour_"+S.me,"1")}catch(_){}setTimeout(startTour,450);}
+ }catch(err){S.err=err.message||t("badLogin");S.busy=false;render();}
+}
+async function doReq(e){
+ e.preventDefault();const f=S.form;if(!f.title||!f.drive){toast(t("need"));return;}
+ const T0=sod(Date.now());
+ const first=f.first?new Date(f.first+"T20:00:00").getTime():T0+2*D+20*H;
+ await run(async()=>{await api.createProject({title:f.title,type:f.type,drive:f.drive,ref:f.ref||"",notes:f.notes||"",count:Math.max(1,Math.min(60,+f.count||1)),cad:f.cad,first});
+  await api.notifyAdmins(`${nm(S.me)}: طلب جديد — ${f.title}`,`${nm(S.me)}: new request — ${f.title}`);
+  S.form={type:"tReels",cad:"c2",count:4};S.sheet=null;S.tab="waiting";toast(t("sent"));});
+}
+async function doAcc(e){
+ e.preventDefault();const f=e.target;const username=F(f,"u").value.trim().toLowerCase().replace(/[^a-z0-9._-]/g,""),name=F(f,"name").value.trim(),password=F(f,"p").value,r=F(f,"role").value;
+ if(!name||!username||password.length<6){toast(t("accErr"));return;}
+ await run(async()=>{await api.createAccount({name,username,password,role:r});toast("@"+username+" ✓");});
+}
+async function doSettings(e){e.preventDefault();const f=e.target;await run(async()=>{await api.updProfile({name:F(f,"name").value.trim()||profiles[S.me].name,title:F(f,"title").value.trim(),lang:LANG});toast(t("saved"));});}
+async function doPass(e){e.preventDefault();const np=F(e.target,"np").value;if(np.length<6){toast(t("passShort"));return;}await run(async()=>{await api.changePassword(np);toast(t("saved"));});}
+async function doAvatar(e){const file=e.target.files[0];if(!file)return;if(file.size>3e6){toast("≤ 3MB");return;}await run(async()=>{const url=await api.uploadAvatar(file);await api.updProfile({avatar_url:url});toast(t("saved"));});}
+
+/* ================= ACTIONS ================= */
+document.addEventListener("click",e=>{
+ const b=e.target.closest("[data-a]");
+ if(!e.target.closest(".menu")) document.querySelectorAll(".menu").forEach(m=>m.remove());
+ if(!b)return;
+ const a=b.dataset.a, v=b.dataset.v?V(b.dataset.v):null, p=v?P(v.project):null;
+ const me=S.me;
+ switch(a){
+  case "lang":LANG=LANG==="ar"?"en":"ar";try{localStorage.setItem("hub_lang",LANG)}catch(_){}render();if(S.me)api.updProfile({lang:LANG}).catch(()=>{});return;
+  case "setLang":LANG=b.dataset.l;try{localStorage.setItem("hub_lang",LANG)}catch(_){}break;
+  case "side":S.side=b.dataset.s;S.err="";break;
+  case "fill":{if(LIVE)return;S.side=role(b.dataset.u)==="client"?"client":"editor";render();const f=document.getElementById("lf");F(f,"u").value=b.dataset.u;F(f,"p").value=api.demoPass(b.dataset.u);return;}
+  case "logout":run(async()=>{await api.logout();S.me=null;S.sheet=null;S.tab=null;});return;
+  case "tab":S.tab=b.dataset.t;S.open=null;break;
+  case "toggle":if(e.target.closest("button,a,select,input"))return;S.open=S.open===b.dataset.id?null:b.dataset.id;{const vv=V(b.dataset.id);if(vv&&vv.isNew&&role(me)==="editor"){vv.isNew=false;api.updVideo(vv.id,{isNew:false}).catch(()=>{});}}break;
+  case "newReq":S.sheet="req";break;
+  case "settings":S.sheet="set";break;
+  case "bell":S.sheet="bell";render();run(()=>api.markRead());return;
+  case "checkin":S.sheet="chk";break;
+  case "closeAll":S.sheet=null;break;
+  case "tour":startTour();return;
+  case "askN":try{Notification.requestPermission().then(render,render);}catch(_){}return;
+  case "fo":S.form[b.dataset.k]=b.dataset.v;break;
+  /* client */
+  case "cNotes":run(async()=>{await api.updVideo(v.id,{rs:"notes"});
+   await api.notify(p.editor,`${nm(p.client)} كتب ملاحظاته — ${vnAr(v)}`,`${nm(p.client)} left notes — ${vnEn(v)}`);
+   await api.notifyAdmins(`${nm(p.client)} راجع درافت ${v.round} — ${vnAr(v)}`,`${nm(p.client)} reviewed Draft ${v.round} — ${vnEn(v)}`);toast(t("sent"));});return;
+  case "cApprove":run(async()=>{await api.updVideo(v.id,{stage:7,pub:7,rs:null});
+   await api.notify(p.editor,`${vnAr(v)} اتعمد نهائي ✓`,`${vnEn(v)} approved ✓`);await api.notifyAdmins(`${nm(p.client)} اعتمد ${vnAr(v)}`,`${nm(p.client)} approved ${vnEn(v)}`);toast("✓");});return;
+  /* editor */
+  case "updMenu":{
+   if(v.stage>=5){S.open=v.id;render();const i=document.getElementById("lk_"+v.id);i&&i.focus();return;}
+   const r=b.getBoundingClientRect();const m=document.createElement("div");m.className="menu";
+   m.innerHTML=[1,2,3,4,5].map(i=>`<button data-a="eStage" data-v="${v.id}" data-s="${i}" ${i<=v.stage?"disabled":""}><span class="dot" style="background:${i===v.stage+1?"var(--y)":"var(--line)"}"></span>${ST(i)}</button>`).join("");
+   document.body.appendChild(m);const mw=m.offsetWidth;
+   m.style.top=(r.bottom+window.scrollY+6)+"px";m.style.left=Math.max(8,Math.min(window.innerWidth-mw-8,(LANG==="ar"?r.left:r.right-mw)))+"px";return;}
+  case "eStage":{const ns=+b.dataset.s;document.querySelectorAll(".menu").forEach(m=>m.remove());
+   run(async()=>{await api.updVideo(v.id,{stage:ns,pending:{type:"stage",stage:ns}});
+    await api.notifyAdmins(`${nm(me)}: ${vnAr(v)} ← ${STar(ns)} (${nm(p.client)})`,`${nm(me)}: ${vnEn(v)} → ${STen(ns)} (${nm(p.client)})`);toast(t("toCammio"));});return;}
+  case "eDraft":{const lk=document.getElementById("lk_"+v.id).value.trim();if(!/^https?:\/\//.test(lk)){toast(t("krockLink"));return;}
+   const rn=v.stage===5?1:v.round+1;
+   run(async()=>{await api.updVideo(v.id,{pending:{type:"draft",link:lk,round:rn}});
+    await api.notifyAdmins(`${nm(me)} بعت درافت ${rn} — ${vnAr(v)} (${nm(p.client)})`,`${nm(me)} sent Draft ${rn} — ${vnEn(v)} (${nm(p.client)})`);toast(t("toCammio"));});return;}
+  case "eGot":run(async()=>{await api.updVideo(v.id,{rs:"revising"});await api.notify(p.client,`الإديتور بيعدّل ${vnAr(v)}`,`The editor is revising ${vnEn(v)}`);});return;
+  case "ciSave":{const sels=[...document.querySelectorAll("[data-ci]")];
+   run(async()=>{let ch=0;for(const s of sels){const x=V(s.dataset.ci),ns=+s.value;if(ns!==x.stage){await api.updVideo(x.id,{stage:ns,pending:{type:"stage",stage:ns}});ch++;}}
+    await api.notifyAdmins(`${nm(me)} عمل تشييك (${ch} تحديث)`,`${nm(me)} checked in (${ch} updates)`);
+    try{localStorage.setItem("hub_chk_"+me,Date.now())}catch(_){}S.sheet=null;toast(t("toCammio"));});return;}
+  /* admin */
+  case "pub":{const pd=v.pending;
+   run(async()=>{if(pd.type==="draft"){await api.updVideo(v.id,{stage:6,pub:6,round:pd.round,link:pd.link,rs:"awaiting",pending:null});
+     await api.notify(p.client,`درافت ${pd.round} من ${vnAr(v)} جاهز تشوفه`,`Draft ${pd.round} of ${vnEn(v)} is ready`);await api.notify(p.editor,`Cammio بعت درافت ${pd.round} للكلاينت`,`Cammio sent Draft ${pd.round} to the client`);}
+    else{await api.updVideo(v.id,{pub:pd.stage,pending:null});await api.notify(p.client,`${vnAr(v)}: ${STar(pd.stage)}`,`${vnEn(v)}: ${STen(pd.stage)}`);}
+    S.open=null;toast("✓");});return;}
+  case "hold":run(async()=>{await api.updVideo(v.id,{pending:null});await api.notify(p.editor,`Cammio وقّف التحديث — ${vnAr(v)}، كلّمه`,`Cammio held the update — ${vnEn(v)}, check with him`);S.open=null;});return;
+  case "assign":{const pp=P(b.dataset.p),ed=document.getElementById("as_"+pp.id).value;
+   run(async()=>{await api.updProject(pp.id,{status:"active",editor:ed});
+    for(const x of videos.filter(x=>x.project===pp.id)) await api.updVideo(x.id,{isNew:true});
+    await api.notify(ed,`مشروع جديد: ${pp.title} (${nm(pp.client)})`,`New project: ${pp.title} (${nm(pp.client)})`);
+    await api.notify(pp.client,`${pp.title} مع ${nm(ed)}`,`${pp.title} is with ${nm(ed)}`);S.open=null;toast("✓");});return;}
+  case "ping":run(async()=>{await api.notify(p.editor,`Cammio: إنت فين في ${vnAr(v)}؟`,`Cammio: where are you on ${vnEn(v)}?`);toast(t("pinged"));});return;
+  case "setRole":run(async()=>{await api.setRole(b.dataset.u,b.dataset.r);toast("✓");});return;
+  case "copyLogin":{const u=b.dataset.u;const txt=`${location.href.split("#")[0]}\n${LANG==="ar"?"يوزر":"user"}: ${profiles[u].username}`;
+   try{navigator.clipboard.writeText(txt).then(()=>toast(t("copied")),()=>toast(txt.replace(/\n/g," · ")));}catch(_){toast(txt.replace(/\n/g," · "));}return;}
+ }
+ render();
+});
+
+/* ================= TOUR ================= */
+let TS=null;
+function startTour(){if(!S.me)return;const st=(TOURS[role(S.me)]||[]).filter(([k])=>document.querySelector(`[data-tour="${k}"]`));if(!st.length)return;TS={st,i:0};drawTour();}
+function drawTour(){
+ const host=document.getElementById("tour");if(!TS){host.innerHTML="";return;}
+ const [k,txt]=TS.st[TS.i];const el=document.querySelector(`[data-tour="${k}"]`);if(!el){TS=null;host.innerHTML="";return;}
+ el.scrollIntoView({block:"nearest"});const r=el.getBoundingClientRect(),pad=6,last=TS.i===TS.st.length-1;
+ host.innerHTML=`<div class="tour-block"></div><div class="tour-ring" style="top:${r.top-pad}px;left:${r.left-pad}px;width:${r.width+pad*2}px;height:${r.height+pad*2}px"></div>
+ <div class="tour-tip" id="tip"><div class="row tiny muted"><span class="dot"></span>${TS.i+1} / ${TS.st.length}</div><p>${txt[LANG]}</p>
+ <div class="row"><button class="tiny muted grow" style="text-align:start" data-tr="skip">${last?"":t("skip")}</button><button class="btn sm ${last?"y":""}" data-tr="next">${last?t("finish"):t("next")}</button></div></div>`;
+ const tip=document.getElementById("tip");const tw=tip.offsetWidth,th=tip.offsetHeight;
+ let top=r.bottom+14;if(top+th>innerHeight-10)top=r.top-th-14;let left=r.left+r.width/2-tw/2;left=Math.max(12,Math.min(innerWidth-tw-12,left));
+ tip.style.top=Math.max(10,top)+"px";tip.style.left=left+"px";
+}
+document.getElementById("tour").addEventListener("click",e=>{const b=e.target.closest("[data-tr]");if(!b)return;if(b.dataset.tr==="skip"||TS.i===TS.st.length-1)TS=null;else TS.i++;drawTour();});
+addEventListener("resize",()=>TS&&drawTour());
+
+/* 3-hour check-in for editors (while the site is open) */
+setInterval(()=>{if(S.me&&role(S.me)==="editor"){if(nextChk()===0&&S.sheet!=="chk"){S.sheet="chk";render();toast(t("checkin"));sysNotify(t("checkin"));}else if(!S.sheet&&!TS){const el=document.querySelector('[data-tour="chk"]');if(el)el.lastChild.textContent=`${t("nextIn")} · ${(Math.round(nextChk()/H*10)/10)}${t("h")}`;}}},60000);
+
+window.__initP=(async()=>{try{await api.init();}catch(e){console.error(e);}})();
+S.ready=true;render();
+window.__initP.then(()=>{if(S.me)render();});
+</script>
+</body>
+</html>
