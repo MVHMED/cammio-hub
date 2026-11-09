@@ -218,7 +218,10 @@ const T={
  publish:{ar:"ابعت للكلاينت",en:"Send to client"}, hold:{ar:"استنى",en:"Hold"}, assign:{ar:"وافق وسلّم",en:"Approve & assign"},
  name:{ar:"الاسم",en:"Name"}, create:{ar:"اعمل الحساب",en:"Create"}, ping:{ar:"اسأله",en:"Ping"}, pinged:{ar:"اتسأل ✓",en:"Pinged ✓"},
  sActive:{ar:"شغال",en:"active"}, sReview:{ar:"مراجعة",en:"review"}, sLate:{ar:"متأخر",en:"late"}, sAppr:{ar:"مستني موافقتك",en:"to approve"},
- copy:{ar:"نسخ",en:"Copy"}, copied:{ar:"اتنسخ ✓",en:"Copied ✓"}, setRole:{ar:"فعّل كـ",en:"Activate as"},
+ copy:{ar:"نسخ",en:"Copy"}, edit:{ar:"تعديل",en:"Edit"}, role:{ar:"النوع",en:"Role"}, editUser:{ar:"تعديل الحساب",en:"Edit account"}, curPass:{ar:"الباسورد الحالي",en:"Current password"},
+ passUnknown:{ar:"الشخص غيّره بنفسه أو اتعمل قبل الميزة دي — حط باسورد جديد",en:"Changed by the user or created earlier — set a new one"},
+ setPass:{ar:"باسورد جديد (اختياري)",en:"New password (optional)"}, show:{ar:"إظهار",en:"Show"}, hide:{ar:"إخفاء",en:"Hide"},
+ del:{ar:"مسح الحساب",en:"Delete account"}, delSure:{ar:"متأكد؟ دوس تاني للمسح",en:"Sure? Tap again to delete"}, deleted:{ar:"اتمسح ✓",en:"Deleted ✓"}, copyLogin:{ar:"نسخ بيانات الدخول",en:"Copy login"}, copied:{ar:"اتنسخ ✓",en:"Copied ✓"}, setRole:{ar:"فعّل كـ",en:"Activate as"},
  accErr:{ar:"اليوزر موجود أو الباسورد أقل من ٦ حروف",en:"Username taken or password under 6 characters"},
  now:{ar:"دلوقتي",en:"now"}, m:{ar:"د",en:"m"}, h:{ar:"س",en:"h"}, d:{ar:"ي",en:"d"},
  next:{ar:"التالي",en:"Next"}, finish:{ar:"تمام",en:"Got it"}, skip:{ar:"تخطي",en:"Skip"},
@@ -246,7 +249,7 @@ const TOURS={
 
 /* ===== state ===== */
 const H=36e5,D=24*H; const sod=x=>{const d=new Date(x);d.setHours(0,0,0,0);return d.getTime()};
-let profiles={}, projects=[], videos=[], notifs=[];
+let profiles={}, projects=[], videos=[], notifs=[], creds={};
 let S={me:null,side:"client",tab:null,open:null,sheet:null,form:{type:"tReels",cad:"c2",count:4},err:"",ready:false,busy:false};
 
 /* ===== helpers ===== */
@@ -312,6 +315,7 @@ const api = LIVE ? {
   projects=(b.data||[]).map(pFromDb); videos=(c.data||[]).map(vFromDb);
   notifs=(d.data||[]).map(n=>({id:n.id,ar:n.ar,en:n.en,read:n.read,time:Date.parse(n.created_at)}));
   const me=profiles[S.me]; if(me&&me.lang&&me.lang!==LANG){LANG=me.lang;}
+  creds={}; if(me&&me.role==="admin"){const c=await sb.from("admin_creds").select("*");(c.data||[]).forEach(r=>creds[r.user_id]=r.password);}
  },
  subscribe(){
   if(chan) sb.removeChannel(chan);
@@ -335,11 +339,13 @@ const api = LIVE ? {
   await this.loadAll();
  },
  async setRole(id,role){const r=await sb.from("profiles").update({role}).eq("id",id);if(r.error)throw r.error;await this.loadAll();},
+ async updateUser(id,{name,username,role,password}){const {error}=await sb.rpc("admin_update_user",{p_id:id,p_name:name||null,p_username:username||null,p_role:role||null,p_password:password||null});if(error)throw new Error(t("accErr"));await this.loadAll();},
+ async deleteUser(id){const {error}=await sb.rpc("admin_delete_user",{p_id:id});if(error)throw error;await this.loadAll();},
  async updProfile(patch){const r=await sb.from("profiles").update(patch).eq("id",S.me);if(r.error)throw r.error;Object.assign(profiles[S.me],patch);},
  async uploadAvatar(file){const ext=(file.name.split(".").pop()||"jpg").toLowerCase();const path=`${S.me}/avatar-${Date.now()}.${ext}`;
   const up=await sb.storage.from("avatars").upload(path,file,{upsert:true,contentType:file.type});if(up.error)throw up.error;
   return sb.storage.from("avatars").getPublicUrl(path).data.publicUrl;},
- async changePassword(pw){const {error}=await sb.auth.updateUser({password:pw});if(error)throw error;},
+ async changePassword(pw){const {error}=await sb.auth.updateUser({password:pw});if(error)throw error;await sb.rpc("forget_my_cred");},
 } : (()=>{ /* ---------- DEMO (in-memory) ---------- */
  const passwords={}; const nbox={};
  const seed=()=>{
@@ -379,11 +385,13 @@ const api = LIVE ? {
   async notify(uid,ar,en){if(uid)push(uid,ar,en);},
   async notifyAdmins(ar,en){Object.keys(profiles).filter(u=>profiles[u].role==="admin").forEach(u=>push(u,ar,en));},
   async markRead(){notifs.forEach(n=>n.read=true);},
-  async createAccount({name,username,password,role}){if(profiles[username]||password.length<6)throw new Error(t("accErr"));profiles[username]={id:username,username,name,role,avatar_url:"",title:"",lang:"ar"};passwords[username]=password;nbox[username]=[];},
+  async createAccount({name,username,password,role}){if(profiles[username]||password.length<6)throw new Error(t("accErr"));profiles[username]={id:username,username,name,role,avatar_url:"",title:"",lang:"ar"};passwords[username]=password;creds[username]=password;nbox[username]=[];},
   async setRole(id,r){profiles[id].role=r;},
+  async updateUser(id,{name,username,role,password}){const p=profiles[id];if(name)p.name=name;if(role)p.role=role;if(username&&username!==p.username){if(Object.values(profiles).some(x=>x.username===username))throw new Error(t("accErr"));p.username=username;}if(password){if(password.length<6)throw new Error(t("accErr"));passwords[id]=password;creds[id]=password;}},
+  async deleteUser(id){delete profiles[id];projects.forEach(p=>{if(p.editor===id){p.editor=null;p.status="pending";}});const mine=projects.filter(p=>p.client===id).map(p=>p.id);projects=projects.filter(p=>p.client!==id);videos=videos.filter(v=>!mine.includes(v.project));},
   async updProfile(patch){Object.assign(profiles[S.me],patch);},
   async uploadAvatar(file){return await new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.onerror=rej;fr.readAsDataURL(file);});},
-  async changePassword(pw){passwords[S.me]=pw;},
+  async changePassword(pw){passwords[S.me]=pw;delete creds[S.me];},
   demoPass:u=>passwords[u],
  };
 })();
@@ -515,7 +523,7 @@ function adminView(){
   <select name="role" style="width:auto"><option value="client">${t("client")}</option><option value="editor">${t("editor")}</option></select><button class="btn sm" type="submit">${t("create")}</button></form></div>`+
   Object.keys(profiles).sort((a,b)=>(role(b)==="pending")-(role(a)==="pending")).map(u=>`<div class="item"><div class="it" style="cursor:default"><div class="grow row">${av(u)}<div><div class="t">${esc(nm(u))}</div><div class="s">@${esc(profiles[u].username)}${profiles[u].title?` · ${esc(profiles[u].title)}`:""}</div></div></div><div class="meta">
    ${role(u)==="pending"?`<button class="btn line sm" data-a="setRole" data-u="${u}" data-r="client">${t("setRole")}${t("client")}</button><button class="btn line sm" data-a="setRole" data-u="${u}" data-r="editor">${t("editor")}</button>`:`<span class="chip ${role(u)==="admin"?"k":""}">${t(role(u))}</span>`}
-   ${role(u)!=="admin"&&role(u)!=="pending"?`<button class="btn line sm" data-a="copyLogin" data-u="${u}">${t("copy")}</button>`:""}</div></div></div>`).join("");
+   ${role(u)!=="admin"?`<button class="btn line sm" data-a="editUser" data-u="${u}">${t("edit")}</button>`:""}</div></div></div>`).join("");
  return `${topBar()}<div class="main">
   <div class="stats"><div class="st ${appr.length?"hl":""}"><b>${appr.length}</b><br><span>${t("sAppr")}</span></div>
    <div class="st"><b>${act.filter(v=>v.stage<7).length}</b><span>${t("sActive")}</span></div>
@@ -526,6 +534,21 @@ function adminView(){
 }
 
 /* sheets */
+function editUserSheet(){
+ const u=S.editU,p=profiles[u];if(!p)return "";const pw=creds[u];
+ return `<header>${t("editUser")}<button class="ico" data-a="closeAll">${ico.x}</button></header>
+ <form class="body" id="uf">
+  <div class="row">${av(u,"lg")}<div><b>${esc(p.name)}</b><div class="tiny muted">@${esc(p.username)}</div></div></div>
+  <div><label>${t("name")}</label><input name="name" value="${esc(p.name)}"></div>
+  <div><label>${t("user")}</label><input name="username" value="${esc(p.username)}" autocapitalize="off" spellcheck="false"></div>
+  <div><label>${t("role")}</label><div class="opt">${["client","editor"].map(r=>`<button type="button" class="${(S.editRole||p.role)===r?"on":""}" data-a="editRole" data-r="${r}">${t(r)}</button>`).join("")}</div></div>
+  <div class="box"><label>${t("curPass")}</label>${pw?`<div class="row"><code class="grow" style="font-size:14px;letter-spacing:.04em">${S.showPw?esc(pw):"••••••••"}</code><button type="button" class="btn line sm" data-a="togglePw">${S.showPw?t("hide"):t("show")}</button><button type="button" class="btn line sm" data-a="copyLogin" data-u="${u}">${t("copyLogin")}</button></div>`:`<div class="tiny muted">${t("passUnknown")}</div>`}</div>
+  <div><label>${t("setPass")}</label><input name="password" placeholder="${t("passShort")}" autocomplete="off"></div>
+  <button class="btn" type="submit">${t("saveS")}</button>
+  <div class="sep"></div>
+  <button type="button" class="btn line" style="color:var(--red);border-color:${S.delArm?"var(--red)":"var(--line)"}" data-a="delUser" data-u="${u}">${S.delArm?t("delSure"):t("del")}</button>
+ </form>`;
+}
 function bellSheet(){return `<header>${ico.bell}<span class="grow"></span><button class="ico" data-a="closeAll">${ico.x}</button></header><div style="overflow:auto">${notifs.length?notifs.map(n=>`<div class="nt">${n.read?'<span style="width:7px;flex:none"></span>':'<span class="dot" style="margin-top:6px"></span>'}<div>${esc(LANG==="ar"?n.ar:n.en)}<small>${ago(n.time)}</small></div></div>`).join(""):`<div class="empty">${t("noTasks")}</div>`}</div>`;}
 function settingsSheet(){
  const p=profiles[S.me];
@@ -551,7 +574,7 @@ function render(){
  const r=S.me?role(S.me):null;
  root.innerHTML=!S.me?loginView():r==="client"?clientView():r==="editor"?editorView():adminView();
  const sh=document.getElementById("sheet");
- sh.innerHTML=S.sheet==="req"?reqSheet():S.sheet==="chk"?checkinSheet():S.sheet==="bell"?bellSheet():S.sheet==="set"?settingsSheet():"";
+ sh.innerHTML=S.sheet==="req"?reqSheet():S.sheet==="chk"?checkinSheet():S.sheet==="bell"?bellSheet():S.sheet==="set"?settingsSheet():S.sheet==="user"?editUserSheet():"";
  sh.classList.toggle("on",!!S.sheet);document.getElementById("scrim").classList.toggle("on",!!S.sheet);
  const lf=document.getElementById("lf");if(lf)lf.onsubmit=doLogin;
  const rf=document.getElementById("rf");if(rf){rf.onsubmit=doReq;rf.oninput=e=>{if(e.target.name)S.form[e.target.name]=e.target.value;};}
@@ -559,6 +582,7 @@ function render(){
  const sf=document.getElementById("sf");if(sf)sf.onsubmit=doSettings;
  const pf=document.getElementById("pf");if(pf)pf.onsubmit=doPass;
  const avf=document.getElementById("avf");if(avf)avf.onchange=doAvatar;
+ const uf=document.getElementById("uf");if(uf)uf.onsubmit=doEditUser;
 }
 async function run(fn){try{await fn();}catch(e){console.error(e);toast(e&&e.message&&!/^[a-z_ ]+$/i.test(e.message)?e.message:t("err"));}render();}
 
@@ -584,6 +608,10 @@ async function doAcc(e){
  await run(async()=>{await api.createAccount({name,username,password,role:r});toast("@"+username+" ✓");});
 }
 async function doSettings(e){e.preventDefault();const f=e.target;await run(async()=>{await api.updProfile({name:F(f,"name").value.trim()||profiles[S.me].name,title:F(f,"title").value.trim(),lang:LANG});toast(t("saved"));});}
+async function doEditUser(e){e.preventDefault();const f=e.target,u=S.editU,p=profiles[u];
+ const name=F(f,"name").value.trim(),username=F(f,"username").value.trim().toLowerCase().replace(/[^a-z0-9._-]/g,""),password=F(f,"password").value,r=S.editRole||p.role;
+ if(password&&password.length<6){toast(t("passShort"));return;}
+ await run(async()=>{await api.updateUser(u,{name:name!==p.name?name:null,username:username&&username!==p.username?username:null,role:r!==p.role?r:null,password:password||null});S.showPw=!!password;toast(t("saved"));});}
 async function doPass(e){e.preventDefault();const np=F(e.target,"np").value;if(np.length<6){toast(t("passShort"));return;}await run(async()=>{await api.changePassword(np);toast(t("saved"));});}
 async function doAvatar(e){const file=e.target.files[0];if(!file)return;if(file.size>3e6){toast("≤ 3MB");return;}await run(async()=>{const url=await api.uploadAvatar(file);await api.updProfile({avatar_url:url});toast(t("saved"));});}
 
@@ -649,7 +677,12 @@ document.addEventListener("click",e=>{
     await api.notify(pp.client,`${pp.title} مع ${nm(ed)}`,`${pp.title} is with ${nm(ed)}`);S.open=null;toast("✓");});return;}
   case "ping":run(async()=>{await api.notify(p.editor,`Cammio: إنت فين في ${vnAr(v)}؟`,`Cammio: where are you on ${vnEn(v)}?`);toast(t("pinged"));});return;
   case "setRole":run(async()=>{await api.setRole(b.dataset.u,b.dataset.r);toast("✓");});return;
-  case "copyLogin":{const u=b.dataset.u;const txt=`${location.href.split("#")[0]}\n${LANG==="ar"?"يوزر":"user"}: ${profiles[u].username}`;
+  case "editUser":S.editU=b.dataset.u;S.editRole=null;S.showPw=false;S.delArm=false;S.sheet="user";break;
+  case "editRole":S.editRole=b.dataset.r;break;
+  case "togglePw":S.showPw=!S.showPw;break;
+  case "delUser":if(!S.delArm){S.delArm=true;render();setTimeout(()=>{if(S.delArm){S.delArm=false;render();}},4000);return;}
+   S.delArm=false;run(async()=>{await api.deleteUser(b.dataset.u);S.sheet=null;toast(t("deleted"));});return;
+  case "copyLogin":{const u=b.dataset.u;const txt=`${location.href.split("#")[0]}\n${LANG==="ar"?"يوزر":"user"}: ${profiles[u].username}${creds[u]?`\n${LANG==="ar"?"باسورد":"password"}: ${creds[u]}`:""}`;
    try{navigator.clipboard.writeText(txt).then(()=>toast(t("copied")),()=>toast(txt.replace(/\n/g," · ")));}catch(_){toast(txt.replace(/\n/g," · "));}return;}
  }
  render();
