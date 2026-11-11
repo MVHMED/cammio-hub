@@ -219,7 +219,8 @@ const T={
  publish:{ar:"ابعت للكلاينت",en:"Send to client"}, hold:{ar:"استنى",en:"Hold"}, assign:{ar:"وافق وسلّم",en:"Approve & assign"},
  name:{ar:"الاسم",en:"Name"}, create:{ar:"اعمل الحساب",en:"Create"}, ping:{ar:"اسأله",en:"Ping"}, pinged:{ar:"اتسأل ✓",en:"Pinged ✓"},
  sActive:{ar:"شغال",en:"active"}, sReview:{ar:"مراجعة",en:"review"}, sLate:{ar:"متأخر",en:"late"}, sAppr:{ar:"مستني موافقتك",en:"to approve"},
- copy:{ar:"نسخ",en:"Copy"}, edit:{ar:"تعديل",en:"Edit"}, tasksTab:{ar:"مهام",en:"Tasks"}, money:{ar:"الفلوس",en:"Money"}, ledger:{ar:"سجلّي",en:"My record"}, mDone:{ar:"فيديو اتسلّم",en:"delivered"}, mEarned:{ar:"المستحق",en:"Earned"},
+ copy:{ar:"نسخ",en:"Copy"}, edit:{ar:"تعديل",en:"Edit"}, tasksTab:{ar:"مهام",en:"Tasks"}, projL:{ar:"المشروع",en:"Project"}, projName:{ar:"اسم المشروع",en:"Project name"}, members:{ar:"مين يشوف المشروع",en:"Who can see this project"}, owner:{ar:"صاحب الطلب",en:"Owner"},
+ noteToEd:{ar:"نوتة للإديتور",en:"Note to editor"}, askEd:{ar:"اسأل الإديتور هو فين",en:"Ask the editor for status"}, askedEd:{ar:"اتبعت للإديتور ✓",en:"Sent to the editor ✓"}, theEditor:{ar:"الإديتور",en:"The editor"}, started:{ar:"بدأ الشغل على",en:"Work started on"}, money:{ar:"الفلوس",en:"Money"}, ledger:{ar:"سجلّي",en:"My record"}, mDone:{ar:"فيديو اتسلّم",en:"delivered"}, mEarned:{ar:"المستحق",en:"Earned"},
  mLate:{ar:"تأخير",en:"Late"}, mEarly:{ar:"بدري",en:"Early"}, mDeduct:{ar:"الخصم",en:"Deduction"}, mNet:{ar:"الصافي",en:"Net"}, mNotYet:{ar:"لسه",en:"Not yet"},
  mRule:{ar:"مسموح {a} تأخير في الشهر · بعدها كل تأخير بـ {p} · كل تسليم بدري بيشيل تأخير",en:"{a} lates allowed per month · then {p} each · every early delivery cancels one"},
  sAllow:{ar:"تأخيرات مسموحة في الشهر",en:"Allowed lates / month"}, sPenalty:{ar:"خصم كل تأخير زيادة",en:"Deduction per extra late"}, sEarly:{ar:"يعتبر بدري لو قبل الديدلاين بـ (ساعات)",en:"Counts as early if this many hours before due"},
@@ -265,7 +266,7 @@ const TOURS={
 
 /* ===== state ===== */
 const H=36e5,D=24*H; const sod=x=>{const d=new Date(x);d.setHours(0,0,0,0);return d.getTime()};
-let profiles={}, projects=[], videos=[], notifs=[], creds={}, tasks=[], vnotes=[], rates={}, settings={late_allowance:"3",late_penalty:"0",early_hours:"24",currency:"EGP"};
+let profiles={}, projects=[], videos=[], notifs=[], creds={}, tasks=[], vnotes=[], members=[], rates={}, settings={late_allowance:"3",late_penalty:"0",early_hours:"24",currency:"EGP"};
 let S={me:null,side:"client",tab:null,open:null,sheet:null,form:{type:"tReels",cad:"c2",count:4},err:"",ready:false,busy:false};
 
 /* ===== helpers ===== */
@@ -282,6 +283,8 @@ const vn=v=>(isLong(v)?(LANG==="ar"?"فيديو":"Video"):(LANG==="ar"?"ريل":
 const vnAr=v=>(isLong(v)?"فيديو":"ريل")+" "+v.n, vnEn=v=>(isLong(v)?"Video":"Reel")+" "+v.n;
 const isLate=v=>v.stage<7&&v.due<Date.now();
 function steps(s){let h="";for(let i=1;i<=7;i++)h+=`<span class="${i<s?"on":i===s?(s===7?"on":"cur"):""}"></span>`;return `<div class="steps">${h}</div>`;}
+const isMine=p=>!!p&&(p.client===S.me||members.some(m=>m.project===p.id&&m.client===S.me));
+const clientsOf=p=>[p.client].concat(members.filter(m=>m.project===p.id).map(m=>m.client)).filter((x,i,a)=>x&&a.indexOf(x)===i);
 const ym=ts=>{const d=new Date(ts);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");};
 const curMonth=()=>S.month||ym(Date.now());
 const money=n=>`${Math.round(n).toLocaleString(LANG==="ar"?"ar-EG":"en-US")} ${esc(settings.currency||"")}`;
@@ -345,7 +348,7 @@ const ico={
 const vFromDb=r=>({deliveredAt:r.delivered_at?Date.parse(r.delivered_at):null,deliveredBy:r.delivered_by,price:r.price==null?null:+r.price,id:r.id,project:r.project,n:r.n,due:Date.parse(r.due),stage:r.stage,pub:r.pub,round:r.round,rs:r.rs,link:r.link||"",pending:r.pending,isNew:r.is_new,upd:Date.parse(r.updated_at)});
 const pFromDb=r=>({id:r.id,client:r.client,title:r.title,type:r.type,drive:r.drive,ref:r.ref||"",notes:r.notes||"",count:r.count,cad:r.cad,first:Date.parse(r.first),status:r.status,editor:r.editor,created:Date.parse(r.created_at)});
 const tFromDb=r=>({resLink:r.result_link||"",id:r.id,kind:"task",editor:r.editor,title:r.title,notes:r.notes||"",link:r.link||"",due:Date.parse(r.due),stages:r.stages||[],stage:r.stage,isNew:r.is_new,upd:Date.parse(r.updated_at)});
-const nFromDb=r=>({id:r.id,video:r.video,tc:r.tc||"",cue:r.cue||"",visual:r.visual||"",sfx:r.sfx||"",done:!!r.done,sort:r.sort||0});
+const nFromDb=r=>({author:r.author,id:r.id,video:r.video,tc:r.tc||"",cue:r.cue||"",visual:r.visual||"",sfx:r.sfx||"",done:!!r.done,sort:r.sort||0});
 const tcSec=tc=>{const p=String(tc||"").split(":").map(Number);if(p.some(isNaN)||!tc)return 1e9;return p.reduce((a,b)=>a*60+b,0);};
 const notesOf=vid=>vnotes.filter(n=>n.video===vid).sort((a,b)=>tcSec(a.tc)-tcSec(b.tc)||a.sort-b.sort);
 function parseNotes(text){const out=[];const isTc=c=>/^\d{1,2}:\d{2}(:\d{2})?([.,]\d+)?$/.test(c);
@@ -382,7 +385,7 @@ const api = LIVE ? {
  },
  async logout(){if(chan){sb.removeChannel(chan);chan=null;}await sb.auth.signOut();profiles={};projects=[];videos=[];notifs=[];},
  async loadAll(){
-  const [a,b,c,d,e,f,g,h]=await Promise.all([
+  const [a,b,c,d,e,f,g,h,k]=await Promise.all([
    sb.from("profiles").select("*"),
    sb.from("projects").select("*").order("created_at",{ascending:false}),
    sb.from("videos").select("*").order("n"),
@@ -390,7 +393,9 @@ const api = LIVE ? {
    sb.from("tasks").select("*").order("due"),
    sb.from("video_notes").select("*").order("sort"),
    sb.from("editor_rates").select("*"),
-   sb.from("settings").select("*")]);
+   sb.from("settings").select("*"),
+   sb.from("project_members").select("*")]);
+  members=(k.data||[]);
   rates={};(g.data||[]).forEach(r=>{(rates[r.editor]=rates[r.editor]||{})[r.type]=+r.price;});
   (h.data||[]).forEach(r=>settings[r.key]=r.value);
   vnotes=(f.data||[]).map(nFromDb);
@@ -412,6 +417,7 @@ const api = LIVE ? {
    .on("postgres_changes",{event:"*",schema:"public",table:"video_notes"},kick)
    .on("postgres_changes",{event:"*",schema:"public",table:"editor_rates"},kick)
    .on("postgres_changes",{event:"*",schema:"public",table:"settings"},kick)
+   .on("postgres_changes",{event:"*",schema:"public",table:"project_members"},kick)
    .on("postgres_changes",{event:"INSERT",schema:"public",table:"notifs",filter:`user_id=eq.${S.me}`},pl=>{const n=pl.new;const txt=LANG==="ar"?n.ar:n.en;toast(txt);sysNotify(txt);kick();})
    .subscribe();
  },
@@ -428,6 +434,10 @@ const api = LIVE ? {
  },
  async setRole(id,role){const r=await sb.from("profiles").update({role}).eq("id",id);if(r.error)throw r.error;await this.loadAll();},
  async updateUser(id,{name,username,role,password}){const {error}=await sb.rpc("admin_update_user",{p_id:id,p_name:name||null,p_username:username||null,p_role:role||null,p_password:password||null});if(error)throw new Error(t("accErr"));await this.loadAll();},
+ async notifyEditor(pid,ar,en){const {error}=await sb.rpc("notify_project_editor",{p_project:pid,p_ar:ar,p_en:en});if(error)throw error;},
+ async notifyClients(pid,ar,en){const {error}=await sb.rpc("notify_project_clients",{p_project:pid,p_ar:ar,p_en:en});if(error)throw error;},
+ async addMember(pid,cid){const {error}=await sb.from("project_members").insert({project:pid,client:cid});if(error)throw error;await this.loadAll();},
+ async removeMember(pid,cid){const {error}=await sb.from("project_members").delete().eq("project",pid).eq("client",cid);if(error)throw error;await this.loadAll();},
  async setRate(editor,type,price){(rates[editor]=rates[editor]||{})[type]=price;const {error}=await sb.from("editor_rates").upsert({editor,type,price});if(error)throw error;},
  async setSetting(key,value){settings[key]=value;const {error}=await sb.from("settings").upsert({key,value});if(error)throw error;},
  async setPackage(id,n){profiles[id].package_size=n;const {error}=await sb.from("profiles").update({package_size:n}).eq("id",id);if(error)throw error;},
@@ -450,7 +460,7 @@ const api = LIVE ? {
   const T0=sod(Date.now());
   const mk=(id,name,r,title="")=>{profiles[id]={id,username:id,name,role:r,avatar_url:"",title,lang:"ar"};passwords[id]="1234";nbox[id]=[];};
   mk("cammio","Cammio","admin","Team lead");mk("ahmed","Ahmed","editor","Video editor");mk("peter","Peter","editor","Motion + reels");
-  mk("ali","Ali Zakaria","client");mk("rakan","Rakan Ali","client");mk("naggar","Ahmed El Naggar","client");
+  mk("ali","Ali Zakaria","client");mk("marketer","Ali's Marketer","client");mk("rakan","Rakan Ali","client");mk("naggar","Ahmed El Naggar","client");
   projects=[
    {id:"p1",client:"ali",title:"ريلز نوفمبر",type:"tReels",drive:"https://drive.google.com/drive/folders/ali-nov",ref:"https://instagram.com/reel/example",notes:"نفس ستايل الريلز اللي فاتت، كابشن كلمة بكلمة.",count:4,cad:"c2",first:T0-2*D+20*H,status:"active",editor:"ahmed",created:Date.now()-4*D},
    {id:"p2",client:"rakan",title:"يوتيوب: قصة البداية",type:"tLong",drive:"https://drive.google.com/drive/folders/rakan",ref:"",notes:"الصور حسب السكرين شوتس اللي في الفولدر.",count:1,cad:"cOnce",first:T0+5*D+20*H,status:"pending",editor:null,created:Date.now()-3*H},
@@ -462,6 +472,7 @@ const api = LIVE ? {
   Object.assign(V("p1v4"),{stage:1,pub:1,upd:Date.now()-5*H});
   Object.assign(V("p3v1"),{stage:6,pub:6,round:1,rs:"notes",link:"https://platform.krock.io/review/demo2",upd:Date.now()-40*6e4});
   Object.assign(V("p3v2"),{stage:5,pub:4,pending:{type:"draft",link:"https://platform.krock.io/review/demo3",round:1},upd:Date.now()-20*6e4});
+  members=[{project:"p1",client:"marketer"}];
   rates={ahmed:{tReels:150,tLong:600,tMotion:800},peter:{tReels:200,tLong:800,tMotion:1200}};settings={late_allowance:"2",late_penalty:"50",early_hours:"24",currency:"EGP"};profiles.ali.package_size=30;
   Object.assign(V("p1v1"),{deliveredAt:V("p1v1").due-30*H,deliveredBy:"ahmed"});Object.assign(V("p1v2"),{deliveredAt:V("p1v2").due+5*H,deliveredBy:"ahmed"});
   Object.assign(V("p3v1"),{deliveredAt:V("p3v1").due-2*H,deliveredBy:"peter"});
@@ -492,9 +503,13 @@ const api = LIVE ? {
   async setRole(id,r){profiles[id].role=r;},
   async updateUser(id,{name,username,role,password}){const p=profiles[id];if(name)p.name=name;if(role)p.role=role;if(username&&username!==p.username){if(Object.values(profiles).some(x=>x.username===username))throw new Error(t("accErr"));p.username=username;}if(password){if(password.length<6)throw new Error(t("accErr"));passwords[id]=password;creds[id]=password;}},
   async setRate(editor,type,price){(rates[editor]=rates[editor]||{})[type]=price;},
+  async notifyEditor(pid,ar,en){const p=P(pid);if(p.editor)push(p.editor,ar,en);},
+  async notifyClients(pid,ar,en){clientsOf(P(pid)).filter(c=>c!==S.me).forEach(c=>push(c,ar,en));},
+  async addMember(pid,cid){members.push({project:pid,client:cid});},
+  async removeMember(pid,cid){members=members.filter(m=>!(m.project===pid&&m.client===cid));},
   async setSetting(key,value){settings[key]=value;},
   async setPackage(id,n){profiles[id].package_size=n;},
-  async addNotes(vid,rows){const base=notesOf(vid).length;rows.forEach((r,i)=>vnotes.push({id:"n"+Math.random().toString(36).slice(2),video:vid,...r,done:false,sort:base+i}));},
+  async addNotes(vid,rows){const base=notesOf(vid).length;rows.forEach((r,i)=>vnotes.push({id:"n"+Math.random().toString(36).slice(2),video:vid,...r,author:S.me,done:false,sort:base+i}));},
   async setNote(id,done){vnotes.find(x=>x.id===id).done=done;},
   async delNote(id){vnotes=vnotes.filter(x=>x.id!==id);},
   async clearNotes(vid){vnotes=vnotes.filter(x=>x.video!==vid);},
@@ -525,7 +540,7 @@ function loginView(){
     <button class="btn ${S.busy?"busy":""}" type="submit">${t("enter")}</button>
    </form>
   </div>
-  ${LIVE?"":`<div class="demo">${t("demo")}: ${["ali","ahmed","peter","cammio"].map(u=>`<button data-a="fill" data-u="${u}">${u}</button>`).join(" · ")} — 1234</div>`}
+  ${LIVE?"":`<div class="demo">${t("demo")}: ${["ali","marketer","ahmed","peter","cammio"].map(u=>`<button data-a="fill" data-u="${u}">${u}</button>`).join(" · ")} — 1234</div>`}
  </div>`;
 }
 function topBar(){
@@ -544,7 +559,7 @@ function links(p){return `<dl class="kv"><dt>${t("material")}</dt><dd><a href="$
 
 /* client */
 function clientView(){
- const ps=projects.filter(p=>p.client===S.me);
+ const ps=projects.filter(isMine);
  const vs=videos.filter(v=>ps.some(p=>p.id===v.project));
  const tab=S.tab||"active";
  const need=vs.filter(v=>P(v.project).status==="active"&&v.pub===6&&v.rs==="awaiting");
@@ -561,9 +576,10 @@ function clientView(){
 }
 function clientItem(v){
  const p=P(v.project),pend=p.status==="pending";
- const L=`<div class="t row">${v.rs==="awaiting"&&v.pub===6?'<span class="dot pulse"></span>':""}${vn(v)}</div><div class="s">${esc(p.title)}${p.editor?` · ${esc(nm(p.editor))}`:""}</div>`;
+ const L=`<div class="t row">${v.rs==="awaiting"&&v.pub===6?'<span class="dot pulse"></span>':""}${vn(v)}</div><div class="s">${esc(p.title)}</div>`;
  const R=pend?`<span class="chip">${t("underReview")}</span>`:`${v.pub===6&&v.rs==="awaiting"?`<span class="chip y">${t("reviewNow")}</span>`:`<span class="chip ${v.pub===7?"k":""}">${ST(v.pub)}</span>`}<span class="chip hide-m">${fd(v.due)}</span>`;
- let det=pend?links(p):`${steps(v.pub)}<dl class="kv"><dt>${t("editorL")}</dt><dd class="row">${av(p.editor)} ${esc(nm(p.editor))}</dd><dt>${t("stage")}</dt><dd>${ST(v.pub)}</dd><dt>${t("due")}</dt><dd>${fd(v.due)}</dd></dl>`;
+ let det=pend?links(p):`${steps(v.pub)}<dl class="kv"><dt>${t("editorL")}</dt><dd>${t("theEditor")} · ${ST(v.pub)}</dd><dt>${t("stage")}</dt><dd>${ST(v.pub)}</dd><dt>${t("due")}</dt><dd>${fd(v.due)}</dd></dl>`;
+ if(!pend){det+=notesList(v.id,false)+`<div class="acts" style="margin-bottom:10px"><button class="btn line sm" data-a="notesOpen" data-v="${v.id}">+ ${t("noteToEd")}</button>${v.pub<7?`<button class="btn line sm" data-a="askEd" data-v="${v.id}">${t("askEd")}</button>`:""}</div>`;}
  if(!pend&&v.pub===6){const u=used(v);
   if(v.rs==="awaiting") det+=`<div class="box y"><div class="row"><b class="grow">${t("draft")} ${v.round}</b><span class="tiny muted">${t("rounds")}</span>${rd(u)}</div>
    <div class="acts"><a class="btn sm" href="${esc(v.link)}" target="_blank" rel="noopener" style="text-decoration:none">${t("openKrock")} ${ico.ext}</a>
@@ -643,7 +659,7 @@ function adminView(){
  if(tab==="all") body=act.length?act.slice().sort((a,b)=>(a.stage===7)-(b.stage===7)||a.due-b.due).map(v=>{const p=P(v.project);
   return item(v.id,`<div class="t">${vn(v)} <span class="muted" style="font-weight:400">· ${esc(nm(p.client))}</span></div><div class="s">${esc(nm(p.editor))} · ${ago(v.upd)}</div>`,
   `${notesChip(v.id)}${isLate(v)?`<span class="chip r">${t("late")}</span>`:""}<span class="chip ${v.stage===7?"k":""}">${ST(v.stage)}</span><span class="chip hide-m">${fd(v.due)}</span>`,
-  `${steps(v.stage)}<dl class="kv"><dt>${t("client")}</dt><dd>${ST(v.pub)}</dd><dt>${t("editor")}</dt><dd>${ST(v.stage)}</dd></dl>${notesList(v.id,false)}${links(p)}<div class="acts"><button class="btn sm" data-a="notesOpen" data-v="${v.id}">${t("notesL")} (${notesOf(v.id).length})</button>${v.stage<7?`<button class="btn line sm" data-a="ping" data-v="${v.id}">${t("ping")} ${esc(nm(p.editor))}</button>`:""}</div>`)}).join(""):`<div class="empty">${t("noTasks")}</div>`;
+  `${steps(v.stage)}<dl class="kv"><dt>${t("client")}</dt><dd>${ST(v.pub)}</dd><dt>${t("editor")}</dt><dd>${ST(v.stage)}</dd></dl>${notesList(v.id,false)}${links(p)}<div class="acts"><button class="btn sm" data-a="notesOpen" data-v="${v.id}">${t("notesL")} (${notesOf(v.id).length})</button><button class="btn line sm" data-a="projOpen" data-p="${p.id}">${t("projL")}: ${esc(p.title)} · ${clientsOf(p).length} 👤</button>${v.stage<7?`<button class="btn line sm" data-a="ping" data-v="${v.id}">${t("ping")} ${esc(nm(p.editor))}</button>`:""}</div>`)}).join(""):`<div class="empty">${t("noTasks")}</div>`;
  if(tab==="money") return `${topBar()}<div class="main"><div class="tabs">${tabs.map(([k,l,n])=>`<button class="tab ${tab===k?"on":""}" data-a="tab" data-t="${k}" data-tour="tab-${k}">${l}${n?`<em>${n}</em>`:""}</button>`).join("")}</div>${moneyAdmin()}</div>`;
  if(tab==="tasks") body=`<div class="item" style="padding:12px 16px"><button class="btn y sm" data-a="newTask">+ ${t("newTask")}</button></div>`+(tasks.length?tasks.slice().sort((a,b)=>tDone(a)-tDone(b)||a.due-b.due).map(x=>item(x.id,
   `<div class="t">${esc(x.title)} <span class="muted" style="font-weight:400">· ${esc(nm(x.editor))}</span></div><div class="s">${fd(x.due)} · ${ago(x.upd)}</div>`,
@@ -665,8 +681,14 @@ function adminView(){
 }
 
 /* sheets */
-function notesSheet(){const v=V(S.notesV);if(!v)return "";const p=P(v.project);const ns=notesOf(v.id);const pv=parseNotes(S.paste||"");
- return `<header>${t("notesL")} · ${vn(v)} <span class="muted tiny">${esc(nm(p.client))}</span><button class="ico" data-a="closeAll">${ico.x}</button></header>
+function projSheet(){const p=P(S.projP);if(!p)return "";const cls=Object.keys(profiles).filter(u=>role(u)==="client");
+ return `<header>${t("projL")}<button class="ico" data-a="closeAll">${ico.x}</button></header>
+ <div class="body"><form id="pjf" style="display:grid;gap:10px"><div><label>${t("projName")}</label><input name="title" value="${esc(p.title)}"></div><button class="btn sm" type="submit">${t("saveS")}</button></form>
+  <div class="sep"></div><label style="margin:0">${t("members")}</label>
+  <div style="display:grid;gap:6px">${cls.map(c=>{const own=c===p.client,on=own||members.some(m=>m.project===p.id&&m.client===c);
+   return `<button class="row" style="justify-content:space-between;border:1px solid ${on?"var(--ink)":"var(--line)"};border-radius:10px;padding:8px 10px" ${own?"disabled":`data-a="memToggle" data-u="${c}"`}><span class="row">${av(c)} ${esc(nm(c))} <span class="tiny muted">@${esc(profiles[c].username)}</span></span><span class="chip ${on?"k":""}">${own?t("owner"):on?"✓":"+"}</span></button>`;}).join("")}</div></div>`;}
+function notesSheet(){const v=V(S.notesV);if(!v)return "";const p=P(v.project);const ns=notesOf(v.id);const pv=parseNotes(S.paste||"");const isAdm=role(S.me)==="admin";
+ return `<header>${t("notesL")} · ${vn(v)} <span class="muted tiny">${esc(p.title)}</span><button class="ico" data-a="closeAll">${ico.x}</button></header>
  <div class="body">
   <div><label>${t("nPaste")}</label><textarea id="pasteBox" placeholder="${t("nPastePh")}" style="min-height:110px;font-size:12px">${esc(S.paste||"")}</textarea>
    ${pv.length?`<div class="row" style="margin-top:8px"><span class="chip y">${pv.length} ${t("nFound")}</span><span class="grow"></span><button class="btn sm" data-a="pasteAdd">${t("nAddAll")}</button></div>
@@ -677,8 +699,8 @@ function notesSheet(){const v=V(S.notesV);if(!v)return "";const p=P(v.project);c
    <input name="visual" placeholder="${t("nVisual")}"><input name="sfx" placeholder="${t("nSfx")}">
    <button class="btn line sm" type="submit">${t("add")}</button></form>
   <div class="sep"></div>
-  ${ns.length?`<div>${ns.map(n=>`<div class="row" style="padding:7px 0;border-bottom:1px solid var(--line);align-items:flex-start"><span style="font-family:ui-monospace,monospace;font-size:12px;background:${n.done?"var(--soft)":"var(--y)"};border-radius:5px;padding:1px 6px;direction:ltr">${esc(n.tc||"—")}</span><span class="grow tiny"><b>${esc(n.cue)}</b> ${esc(n.visual)}${n.sfx?` · <span class="muted">${esc(n.sfx)}</span>`:""}</span><button class="tiny muted" data-a="noteDel" data-n="${n.id}">✕</button></div>`).join("")}</div>
-   <button class="btn line sm" style="color:var(--red)" data-a="notesClear">${S.delArm?t("delSure"):t("nClear")}</button>`:""}
+  ${ns.length?`<div>${ns.map(n=>`<div class="row" style="padding:7px 0;border-bottom:1px solid var(--line);align-items:flex-start"><span style="font-family:ui-monospace,monospace;font-size:12px;background:${n.done?"var(--soft)":"var(--y)"};border-radius:5px;padding:1px 6px;direction:ltr">${esc(n.tc||"—")}</span><span class="grow tiny"><b>${esc(n.cue)}</b> ${esc(n.visual)}${n.sfx?` · <span class="muted">${esc(n.sfx)}</span>`:""}${n.done?` <span class="chip k">✓</span>`:""}</span>${isAdm||n.author===S.me?`<button class="tiny muted" data-a="noteDel" data-n="${n.id}">✕</button>`:""}</div>`).join("")}</div>
+   ${isAdm?`<button class="btn line sm" style="color:var(--red)" data-a="notesClear">${S.delArm?t("delSure"):t("nClear")}</button>`:""}`:""}
  </div>`;}
 function finSheet(){const x=T_(S.finT);if(!x)return "";
  return `<header>${t("finishT")}<button class="ico" data-a="closeAll">${ico.x}</button></header>
@@ -742,7 +764,7 @@ function render(){
  const r=S.me?role(S.me):null;
  root.innerHTML=!S.me?loginView():r==="client"?clientView():r==="editor"?editorView():adminView();
  const sh=document.getElementById("sheet");
- sh.innerHTML=S.sheet==="req"?reqSheet():S.sheet==="chk"?checkinSheet():S.sheet==="bell"?bellSheet():S.sheet==="set"?settingsSheet():S.sheet==="user"?editUserSheet():S.sheet==="task"?taskSheet():S.sheet==="fin"?finSheet():S.sheet==="notes"?notesSheet():"";
+ sh.innerHTML=S.sheet==="req"?reqSheet():S.sheet==="chk"?checkinSheet():S.sheet==="bell"?bellSheet():S.sheet==="set"?settingsSheet():S.sheet==="user"?editUserSheet():S.sheet==="task"?taskSheet():S.sheet==="fin"?finSheet():S.sheet==="notes"?notesSheet():S.sheet==="proj"?projSheet():"";
  sh.classList.toggle("on",!!S.sheet);document.getElementById("scrim").classList.toggle("on",!!S.sheet);
  const lf=document.getElementById("lf");if(lf)lf.onsubmit=doLogin;
  const rf=document.getElementById("rf");if(rf){rf.onsubmit=doReq;rf.oninput=e=>{if(e.target.name)S.form[e.target.name]=e.target.value;};}
@@ -752,7 +774,8 @@ function render(){
  const avf=document.getElementById("avf");if(avf)avf.onchange=doAvatar;
  const uf=document.getElementById("uf");if(uf)uf.onsubmit=doEditUser;
  const pb=document.getElementById("pasteBox");if(pb){pb.oninput=()=>{S.paste=pb.value;clearTimeout(window.__pt);window.__pt=setTimeout(()=>{const st=pb.selectionStart;render();const nb=document.getElementById("pasteBox");if(nb){nb.focus();try{nb.setSelectionRange(st,st)}catch(_){}}},350);};}
- const nf=document.getElementById("nf");if(nf)nf.onsubmit=async e=>{e.preventDefault();const r={tc:F(nf,"tc").value.trim(),cue:F(nf,"cue").value.trim(),visual:F(nf,"visual").value.trim(),sfx:F(nf,"sfx").value.trim()};if(!r.cue&&!r.visual)return;await run(()=>api.addNotes(S.notesV,[r]));const n2=document.getElementById("nf");n2&&F(n2,"tc").focus();};
+ const pjf=document.getElementById("pjf");if(pjf)pjf.onsubmit=e=>{e.preventDefault();const tt=F(pjf,"title").value.trim();if(!tt)return;run(async()=>{await api.updProject(S.projP,{title:tt});toast(t("saved"));});};
+ const nf=document.getElementById("nf");if(nf)nf.onsubmit=async e=>{e.preventDefault();const r={tc:F(nf,"tc").value.trim(),cue:F(nf,"cue").value.trim(),visual:F(nf,"visual").value.trim(),sfx:F(nf,"sfx").value.trim()};if(!r.cue&&!r.visual)return;await run(async()=>{await api.addNotes(S.notesV,[r]);const v=V(S.notesV),p=P(v.project);if(role(S.me)==="client"){await api.notifyEditor(p.id,`نوتة جديدة على ${vnAr(v)} (${p.title})${r.tc?" — "+r.tc:""}`,`New note on ${vnEn(v)} (${p.title})${r.tc?" — "+r.tc:""}`);await api.notifyClients(p.id,`${nm(S.me)} ضاف نوتة على ${vnAr(v)}`,`${nm(S.me)} added a note on ${vnEn(v)}`);}else if(p.editor)await api.notify(p.editor,`نوتة جديدة على ${vnAr(v)} — ${nm(p.client)}`,`New note on ${vnEn(v)} — ${nm(p.client)}`);});const n2=document.getElementById("nf");n2&&F(n2,"tc").focus();};
  document.querySelectorAll("[data-note]").forEach(cb=>cb.onchange=()=>toggleNote(cb.dataset.note,cb.checked));
  document.querySelectorAll("[data-price]").forEach(i=>i.onchange=()=>run(async()=>{await api.updVideo(i.dataset.price,{price:i.value===""?null:Math.max(0,+i.value)});toast(t("saved"));}));
  document.querySelectorAll("[data-rate]").forEach(i=>i.onchange=()=>run(async()=>{await api.setRate(i.dataset.ed,i.dataset.rate,Math.max(0,+i.value||0));toast(t("saved"));}));
@@ -825,10 +848,10 @@ document.addEventListener("click",e=>{
   case "fo":S.form[b.dataset.k]=b.dataset.v;break;
   /* client */
   case "cNotes":run(async()=>{await api.updVideo(v.id,{rs:"notes"});
-   await api.notify(p.editor,`${nm(p.client)} كتب ملاحظاته — ${vnAr(v)}`,`${nm(p.client)} left notes — ${vnEn(v)}`);
+   await api.notifyEditor(p.id,`${nm(S.me)} كتب ملاحظاته — ${vnAr(v)} (${p.title})`,`${nm(S.me)} left notes — ${vnEn(v)} (${p.title})`);await api.notifyClients(p.id,`${nm(S.me)} بعت الملاحظات — ${vnAr(v)}`,`${nm(S.me)} sent notes — ${vnEn(v)}`);
    await api.notifyAdmins(`${nm(p.client)} راجع درافت ${v.round} — ${vnAr(v)}`,`${nm(p.client)} reviewed Draft ${v.round} — ${vnEn(v)}`);toast(t("sent"));});return;
   case "cApprove":run(async()=>{await api.updVideo(v.id,{stage:7,pub:7,rs:null});
-   await api.notify(p.editor,`${vnAr(v)} اتعمد نهائي ✓`,`${vnEn(v)} approved ✓`);await api.notifyAdmins(`${nm(p.client)} اعتمد ${vnAr(v)}`,`${nm(p.client)} approved ${vnEn(v)}`);toast("✓");});return;
+   await api.notifyEditor(p.id,`${vnAr(v)} اتعمد نهائي ✓ (${p.title})`,`${vnEn(v)} approved ✓ (${p.title})`);await api.notifyClients(p.id,`${nm(S.me)} اعتمد ${vnAr(v)} ✓`,`${nm(S.me)} approved ${vnEn(v)} ✓`);await api.notifyAdmins(`${nm(p.client)} اعتمد ${vnAr(v)}`,`${nm(p.client)} approved ${vnEn(v)}`);toast("✓");});return;
   /* editor */
   case "updMenu":{
    if(v.stage>=5){S.open=v.id;render();const i=document.getElementById("lk_"+v.id);i&&i.focus();return;}
@@ -844,7 +867,7 @@ document.addEventListener("click",e=>{
    const rn=v.stage===5?1:v.round+1;
    run(async()=>{await api.updVideo(v.id,{pending:{type:"draft",link:lk,round:rn}});
     await api.notifyAdmins(`${nm(me)} بعت درافت ${rn} — ${vnAr(v)} (${nm(p.client)})`,`${nm(me)} sent Draft ${rn} — ${vnEn(v)} (${nm(p.client)})`);toast(t("toCammio"));});return;}
-  case "eGot":run(async()=>{await api.updVideo(v.id,{rs:"revising"});await api.notify(p.client,`الإديتور بيعدّل ${vnAr(v)}`,`The editor is revising ${vnEn(v)}`);});return;
+  case "eGot":run(async()=>{await api.updVideo(v.id,{rs:"revising"});await api.notifyClients(p.id,`الإديتور بيعدّل ${vnAr(v)}`,`The editor is revising ${vnEn(v)}`);});return;
   case "ciSave":{const sels=[...document.querySelectorAll("[data-ci]")];
    run(async()=>{let ch=0;for(const s of sels){const x=V(s.dataset.ci),ns=+s.value;if(ns!==x.stage){await api.updVideo(x.id,{stage:ns,pending:{type:"stage",stage:ns}});ch++;}}
     await api.notifyAdmins(`${nm(me)} عمل تشييك (${ch} تحديث)`,`${nm(me)} checked in (${ch} updates)`);
@@ -852,21 +875,24 @@ document.addEventListener("click",e=>{
   /* admin */
   case "pub":{const pd=v.pending;
    run(async()=>{if(pd.type==="draft"){await api.updVideo(v.id,{stage:6,pub:6,round:pd.round,link:pd.link,rs:"awaiting",pending:null});
-     await api.notify(p.client,`درافت ${pd.round} من ${vnAr(v)} جاهز تشوفه`,`Draft ${pd.round} of ${vnEn(v)} is ready`);await api.notify(p.editor,`Cammio بعت درافت ${pd.round} للكلاينت`,`Cammio sent Draft ${pd.round} to the client`);}
-    else{await api.updVideo(v.id,{pub:pd.stage,pending:null});await api.notify(p.client,`${vnAr(v)}: ${STar(pd.stage)}`,`${vnEn(v)}: ${STen(pd.stage)}`);}
+     await api.notifyClients(p.id,`درافت ${pd.round} من ${vnAr(v)} جاهز تشوفه`,`Draft ${pd.round} of ${vnEn(v)} is ready`);await api.notify(p.editor,`Cammio بعت درافت ${pd.round} للكلاينت`,`Cammio sent Draft ${pd.round} to the client`);}
+    else{await api.updVideo(v.id,{pub:pd.stage,pending:null});await api.notifyClients(p.id,`${vnAr(v)}: ${STar(pd.stage)}`,`${vnEn(v)}: ${STen(pd.stage)}`);}
     S.open=null;toast("✓");});return;}
   case "hold":run(async()=>{await api.updVideo(v.id,{pending:null});await api.notify(p.editor,`Cammio وقّف التحديث — ${vnAr(v)}، كلّمه`,`Cammio held the update — ${vnEn(v)}, check with him`);S.open=null;});return;
   case "assign":{const pp=P(b.dataset.p),ed=document.getElementById("as_"+pp.id).value;
    run(async()=>{await api.updProject(pp.id,{status:"active",editor:ed});
     for(const x of videos.filter(x=>x.project===pp.id)) await api.updVideo(x.id,{isNew:true});
     await api.notify(ed,`مشروع جديد: ${pp.title} (${nm(pp.client)})`,`New project: ${pp.title} (${nm(pp.client)})`);
-    await api.notify(pp.client,`${pp.title} مع ${nm(ed)}`,`${pp.title} is with ${nm(ed)}`);S.open=null;toast("✓");});return;}
+    await api.notifyClients(pp.id,`بدأ الشغل على ${pp.title} مع الإديتور`,`Work started on ${pp.title} with the editor`);S.open=null;toast("✓");});return;}
   case "ping":run(async()=>{await api.notify(p.editor,`Cammio: إنت فين في ${vnAr(v)}؟`,`Cammio: where are you on ${vnEn(v)}?`);toast(t("pinged"));});return;
   case "setRole":run(async()=>{await api.setRole(b.dataset.u,b.dataset.r);toast("✓");});return;
+  case "askEd":run(async()=>{await api.notifyEditor(p.id,`${nm(S.me)} بيسأل: إنت فين في ${vnAr(v)}؟ (${p.title})`,`${nm(S.me)} asks: where are you on ${vnEn(v)}? (${p.title})`);await api.notifyAdmins(`${nm(S.me)} سأل الإديتور عن ${vnAr(v)} (${p.title})`,`${nm(S.me)} asked the editor about ${vnEn(v)} (${p.title})`);toast(t("askedEd"));});return;
+  case "projOpen":S.projP=b.dataset.p;S.sheet="proj";break;
+  case "memToggle":{const pid=S.projP,cid=b.dataset.u;const on=members.some(m=>m.project===pid&&m.client===cid);run(async()=>{if(on)await api.removeMember(pid,cid);else{await api.addMember(pid,cid);const pr=P(pid);await api.notify(cid,`اتضفت على مشروع: ${pr.title}`,`You were added to project: ${pr.title}`);}toast("✓");});return;}
   case "moneyEd":S.moneyEd=b.dataset.u;break;
   case "mPrev":case "mNext":{const [y,m]=curMonth().split("-").map(Number);const d=new Date(y,m-1+(a==="mNext"?1:-1),1);S.month=ym(d.getTime());break;}
   case "notesOpen":S.notesV=b.dataset.v;S.paste="";S.delArm=false;S.sheet="notes";break;
-  case "pasteAdd":{const rows=parseNotes(S.paste);const v=V(S.notesV),p=P(v.project);run(async()=>{await api.addNotes(S.notesV,rows);S.paste="";await api.notify(p.editor,`نوتس جديدة (${rows.length}) على ${vnAr(v)} — ${nm(p.client)}`,`${rows.length} new notes on ${vnEn(v)} — ${nm(p.client)}`);toast("✓");});return;}
+  case "pasteAdd":{const rows=parseNotes(S.paste);const v=V(S.notesV),p=P(v.project);run(async()=>{await api.addNotes(S.notesV,rows);S.paste="";if(role(S.me)==="client"){await api.notifyEditor(p.id,`نوتس جديدة (${rows.length}) على ${vnAr(v)} (${p.title})`,`${rows.length} new notes on ${vnEn(v)} (${p.title})`);await api.notifyClients(p.id,`${nm(S.me)} ضاف ${rows.length} نوتس`,`${nm(S.me)} added ${rows.length} notes`);toast("✓");return;}await api.notify(p.editor,`نوتس جديدة (${rows.length}) على ${vnAr(v)} — ${nm(p.client)}`,`${rows.length} new notes on ${vnEn(v)} — ${nm(p.client)}`);toast("✓");});return;}
   case "noteDel":run(()=>api.delNote(b.dataset.n));return;
   case "notesClear":if(!S.delArm){S.delArm=true;render();setTimeout(()=>{if(S.delArm){S.delArm=false;render();}},4000);return;}S.delArm=false;run(()=>api.clearNotes(S.notesV));return;
   case "newTask":S.editT=null;S.delArm=false;S.tf={editor:Object.keys(profiles).find(u=>role(u)==="editor")||"",title:"",notes:"",link:"",due:"",stages:[]};S.sheet="task";break;
