@@ -246,8 +246,9 @@ let LANG=(()=>{try{return localStorage.getItem("hub_lang")||"ar"}catch(_){return
 const t=k=>T[k]?T[k][LANG]:k; const ST=i=>t("st"+i); const STen=i=>T["st"+i].en; const STar=i=>T["st"+i].ar;
 
 const TOURS={
- client:[["new",{ar:"ابدأ من هنا: حط لينك الدرايف وملاحظاتك.",en:"Start here: drop your Drive link and notes."}],
-  ["row",{ar:"كل فيديو، مع الإديتور بتاعه والمرحلة اللي هو فيها.",en:"Every video, its editor and current stage."}],
+ client:[["pkg",{ar:"الباكدج بتاعك: طلبت كام سكريبت واتسلّملك كام.",en:"Your package: scripts requested and delivered."}],
+  ["new",{ar:"ابدأ من هنا: حط لينك الدرايف وملاحظاتك.",en:"Start here: drop your Drive link and notes."}],
+  ["row",{ar:"كل فيديو والمرحلة اللي هو فيها لايف. افتح أي فيديو تلاقي النوتس، وتقدر تضيف نوتة للإديتور بالتايم كود أو تسأله هو فين.",en:"Every video and its live stage. Open one to see notes, add a timecoded note for the editor, or ask for status."}],
   ["bell",{ar:"أول ما الدرافت يجهز هيوصلك إشعار هنا.",en:"When a draft is ready you'll be notified here."}],
   ["me",{ar:"من هنا تغيّر صورتك واسمك والباسورد.",en:"Change your photo, name and password here."}]],
  editor:[["tabs",{ar:"تاسكاتك: المتأخر، النهارده، بكره.",en:"Your tasks: late, today, tomorrow."}],
@@ -568,7 +569,7 @@ function clientView(){
  return `${topBar()}<div class="main">
   <div class="head"><h1>${t("myVideos")}</h1><button class="btn y" data-a="newReq" data-tour="new">+ ${t("newReq")}</button></div>
   ${(()=>{const pk=profiles[S.me]&&profiles[S.me].package_size;const req=vs.length,dl=vs.filter(v=>v.pub===7).length;if(!pk&&!req)return "";const n=pk||req;const pct=Math.min(100,Math.round(dl/n*100));
-   return `<div class="list" style="padding:16px;margin-bottom:16px"><div class="row"><b class="grow">${t("pkg")}</b><span class="tiny muted">${tpl("pkgReq",{q:req})}</span></div>
+   return `<div class="list" data-tour="pkg" style="padding:16px;margin-bottom:16px"><div class="row"><b class="grow">${t("pkg")}</b><span class="tiny muted">${tpl("pkgReq",{q:req})}</span></div>
     <div style="height:8px;background:var(--soft);border-radius:4px;margin:12px 0 8px;overflow:hidden"><div style="height:100%;width:${pct}%;background:var(--ink);border-radius:4px;transition:width .6s"></div></div>
     <div class="row tiny"><span class="grow">${tpl("pkgOf",{d:dl,n})}</span>${pk?`<span class="chip y">${tpl("pkgLeft",{r:Math.max(0,pk-dl)})}</span>`:""}</div></div>`;})()}
   <div class="tabs">${["active","waiting","delivered"].map(k=>`<button class="tab ${tab===k?"on":""}" data-a="tab" data-t="${k}">${t(k)}${k==="active"&&need.length?`<em>${need.length}</em>`:g[k].length&&k!=="active"?` <span class="muted">${g[k].length}</span>`:""}</button>`).join("")}</div>
@@ -788,8 +789,8 @@ async function doLogin(e){
  e.preventDefault();const u=F(e.target,"u").value.trim().toLowerCase(),pw=F(e.target,"p").value;
  if(!u||!pw)return;S.busy=true;render();
  try{await Promise.race([window.__initP,new Promise(r=>setTimeout(r,15000))]);if(LIVE&&!sb)throw new Error(t("err"));await api.login(u,pw,S.side);S.err="";S.tab=null;S.open=null;S.busy=false;render();
-  let seen=false;try{seen=localStorage.getItem("hub_tour_"+S.me)}catch(_){}
-  if(!seen){try{localStorage.setItem("hub_tour_"+S.me,"1")}catch(_){}setTimeout(startTour,450);}
+  const TOUR_V=2;const me=profiles[S.me]||{};
+  if((me.tour_version||0)<TOUR_V){me.tour_version=TOUR_V;api.updProfile({tour_version:TOUR_V}).catch(()=>{});setTimeout(startTour,450);}
  }catch(err){S.err=err.message||t("badLogin");S.busy=false;render();}
 }
 async function doReq(e){
