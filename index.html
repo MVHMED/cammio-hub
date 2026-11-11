@@ -219,7 +219,12 @@ const T={
  publish:{ar:"ابعت للكلاينت",en:"Send to client"}, hold:{ar:"استنى",en:"Hold"}, assign:{ar:"وافق وسلّم",en:"Approve & assign"},
  name:{ar:"الاسم",en:"Name"}, create:{ar:"اعمل الحساب",en:"Create"}, ping:{ar:"اسأله",en:"Ping"}, pinged:{ar:"اتسأل ✓",en:"Pinged ✓"},
  sActive:{ar:"شغال",en:"active"}, sReview:{ar:"مراجعة",en:"review"}, sLate:{ar:"متأخر",en:"late"}, sAppr:{ar:"مستني موافقتك",en:"to approve"},
- copy:{ar:"نسخ",en:"Copy"}, edit:{ar:"تعديل",en:"Edit"}, tasksTab:{ar:"مهام",en:"Tasks"}, notesL:{ar:"نوتس",en:"Notes"}, nTc:{ar:"تايم كود",en:"Timecode"}, nCue:{ar:"كلمة مميزة",en:"Cue word"}, nVisual:{ar:"المشهد",en:"Visual"}, nSfx:{ar:"صوت / حركة",en:"SFX / move"},
+ copy:{ar:"نسخ",en:"Copy"}, edit:{ar:"تعديل",en:"Edit"}, tasksTab:{ar:"مهام",en:"Tasks"}, money:{ar:"الفلوس",en:"Money"}, ledger:{ar:"سجلّي",en:"My record"}, mDone:{ar:"فيديو اتسلّم",en:"delivered"}, mEarned:{ar:"المستحق",en:"Earned"},
+ mLate:{ar:"تأخير",en:"Late"}, mEarly:{ar:"بدري",en:"Early"}, mDeduct:{ar:"الخصم",en:"Deduction"}, mNet:{ar:"الصافي",en:"Net"}, mNotYet:{ar:"لسه",en:"Not yet"},
+ mRule:{ar:"مسموح {a} تأخير في الشهر · بعدها كل تأخير بـ {p} · كل تسليم بدري بيشيل تأخير",en:"{a} lates allowed per month · then {p} each · every early delivery cancels one"},
+ sAllow:{ar:"تأخيرات مسموحة في الشهر",en:"Allowed lates / month"}, sPenalty:{ar:"خصم كل تأخير زيادة",en:"Deduction per extra late"}, sEarly:{ar:"يعتبر بدري لو قبل الديدلاين بـ (ساعات)",en:"Counts as early if this many hours before due"},
+ sCurrency:{ar:"العملة",en:"Currency"}, rates:{ar:"أسعار",en:"Rates for"}, rulesL:{ar:"القواعد",en:"Rules"}, pkg:{ar:"الباكدج",en:"Package"}, pkgSize:{ar:"حجم الباكدج (عدد الفيديوهات)",en:"Package size (videos)"},
+ pkgOf:{ar:"اتسلّم {d} من {n}",en:"{d} of {n} delivered"}, pkgLeft:{ar:"فاضل {r}",en:"{r} left"}, pkgReq:{ar:"طلبت {q} سكريبت",en:"{q} scripts requested"}, priceDefault:{ar:"السعر الافتراضي",en:"Default"}, notesL:{ar:"نوتس",en:"Notes"}, nTc:{ar:"تايم كود",en:"Timecode"}, nCue:{ar:"كلمة مميزة",en:"Cue word"}, nVisual:{ar:"المشهد",en:"Visual"}, nSfx:{ar:"صوت / حركة",en:"SFX / move"},
  nPaste:{ar:"لصق من الشيت",en:"Paste from sheet"}, nPastePh:{ar:"انسخ الصفوف من الشيت (تايم كود، كلمة، مشهد، صوت) والصقها هنا",en:"Copy rows from the sheet (timecode, cue, visual, sfx) and paste here"},
  nFound:{ar:"نوتة اتعرفت",en:"notes found"}, nAddAll:{ar:"ضيفهم",en:"Add them"}, nAddOne:{ar:"ضيف نوتة",en:"Add note"}, nAllDone:{ar:"خلّص كل النوتس",en:"finished all notes"}, nClear:{ar:"امسح كل النوتس",en:"Clear all notes"}, upload:{ar:"رفع جديد",en:"New upload"}, step1:{ar:"١. ارفع على Krock",en:"1. Upload on Krock"}, step2:{ar:"٢. الصق اللينك هنا",en:"2. Paste the link here"},
  deliver:{ar:"تسليم: ارفع وابعت اللينك",en:"Deliver: upload & send link"}, finishT:{ar:"خلّصت المهمة",en:"Finish task"}, resLink:{ar:"لينك التسليم (اختياري)",en:"Delivery link (optional)"}, delivered:{ar:"التسليم",en:"Delivery"}, sendFinish:{ar:"ابعت وخلّص",en:"Send & finish"}, newTask:{ar:"مهمة جديدة",en:"New task"}, task:{ar:"مهمة",en:"Task"},
@@ -247,18 +252,20 @@ const TOURS={
  editor:[["tabs",{ar:"تاسكاتك: المتأخر، النهارده، بكره.",en:"Your tasks: late, today, tomorrow."}],
   ["upload",{ar:"ارفع شغلك على Krock من هنا، وبعدها الصق اللينك في الفيديو.",en:"Upload your work on Krock here, then paste the link on the video."}],
   ["upd",{ar:"حدّث مرحلتك من هنا. بتروح لـCammio الأول.",en:"Update your stage here. It goes to Cammio first."}],
+  ["ledger",{ar:"كل فيديو بتسلّمه بيتسجل هنا بسعره، والأحمر تأخير والأخضر بدري.",en:"Every delivered video is logged here with its price; red = late, green = early."}],
   ["chk",{ar:"كل ٣ ساعات هنسألك إنت فين.",en:"Every 3 hours we'll ask where you are."}],
   ["bell",{ar:"مشاريع جديدة وملاحظات الكلاينت بتوصل هنا.",en:"New projects and client notes land here."}],
   ["me",{ar:"صورتك وبياناتك من هنا.",en:"Your photo and details live here."}]],
  admin:[["tab-appr",{ar:"تحديثات التيم مستنياك قبل ما توصل للكلاينت.",en:"Team updates wait for you before reaching clients."}],
   ["tab-req",{ar:"طلبات الكلاينتس الجديدة: وافق واختار الإديتور.",en:"New client requests: approve and pick an editor."}],
   ["tab-tasks",{ar:"مهام حرة لأي إديتور، وإنت اللي بتحدد مراحلها.",en:"Free tasks for any editor, with stages you define."}],
+  ["tab-money",{ar:"سجل كل إديتور وأسعاره وخصومات التأخير.",en:"Each editor's record, rates and late deductions."}],
   ["tab-acc",{ar:"اعمل يوزر وباسورد لكل حد وابعتهوله.",en:"Create a username & password for each person."}]],
 };
 
 /* ===== state ===== */
 const H=36e5,D=24*H; const sod=x=>{const d=new Date(x);d.setHours(0,0,0,0);return d.getTime()};
-let profiles={}, projects=[], videos=[], notifs=[], creds={}, tasks=[], vnotes=[];
+let profiles={}, projects=[], videos=[], notifs=[], creds={}, tasks=[], vnotes=[], rates={}, settings={late_allowance:"3",late_penalty:"0",early_hours:"24",currency:"EGP"};
 let S={me:null,side:"client",tab:null,open:null,sheet:null,form:{type:"tReels",cad:"c2",count:4},err:"",ready:false,busy:false};
 
 /* ===== helpers ===== */
@@ -275,6 +282,44 @@ const vn=v=>(isLong(v)?(LANG==="ar"?"فيديو":"Video"):(LANG==="ar"?"ريل":
 const vnAr=v=>(isLong(v)?"فيديو":"ريل")+" "+v.n, vnEn=v=>(isLong(v)?"Video":"Reel")+" "+v.n;
 const isLate=v=>v.stage<7&&v.due<Date.now();
 function steps(s){let h="";for(let i=1;i<=7;i++)h+=`<span class="${i<s?"on":i===s?(s===7?"on":"cur"):""}"></span>`;return `<div class="steps">${h}</div>`;}
+const ym=ts=>{const d=new Date(ts);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");};
+const curMonth=()=>S.month||ym(Date.now());
+const money=n=>`${Math.round(n).toLocaleString(LANG==="ar"?"ar-EG":"en-US")} ${esc(settings.currency||"")}`;
+const tpl=(k,o)=>t(k).replace(/\{(\w)\}/g,(_,x)=>o[x]);
+function priceOf(v,ed){if(v.price!=null)return v.price;const p=P(v.project);return (rates[ed]&&rates[ed][p.type])||0;}
+function ledger(ed,month){
+ const early=(+settings.early_hours||0)*H, allow=+settings.late_allowance||0, pen=+settings.late_penalty||0;
+ const items=videos.filter(v=>{const p=P(v.project);if(!p||p.status!=="active")return false;const who=v.deliveredBy||p.editor;return who===ed&&ym(v.deliveredAt||v.due)===month;})
+  .map(v=>{const at=v.deliveredAt;const late=at?at>v.due:Date.now()>v.due;const isEarly=!!at&&at<=v.due-early;return {v,at,late,early:isEarly,price:priceOf(v,ed)};})
+  .sort((a,b)=>(a.at||a.v.due)-(b.at||b.v.due));
+ const done=items.filter(i=>i.at);const earned=done.reduce((a,i)=>a+i.price,0);
+ const reds=items.filter(i=>i.late).length, greens=items.filter(i=>i.early).length;
+ const net=Math.max(0,reds-greens), excess=Math.max(0,net-allow), deduction=excess*pen;
+ return {items,done:done.length,earned,reds,greens,net,allow,excess,deduction,total:Math.max(0,earned-deduction),pen};}
+function monthNav(){const [y,m]=curMonth().split("-").map(Number);const label=new Date(y,m-1,1).toLocaleDateString(LANG==="ar"?"ar-EG":"en-GB",{month:"long",year:"numeric"});
+ return `<div class="row" style="margin-bottom:12px"><button class="btn line sm" data-a="mPrev">${LANG==="ar"?"→":"←"}</button><b style="min-width:120px;text-align:center">${label}</b><button class="btn line sm" data-a="mNext">${LANG==="ar"?"←":"→"}</button></div>`;}
+function ledgerView(ed,admin){const L=ledger(ed,curMonth());
+ const dots=(n,c)=>Array.from({length:n},()=>`<span class="dot" style="background:${c}"></span>`).join(" ");
+ return `${monthNav()}
+ <div class="stats" style="grid-template-columns:repeat(4,1fr)">
+  <div class="st"><b>${L.done}</b><span>${t("mDone")}</span></div>
+  <div class="st"><b>${money(L.earned)}</b><span>${t("mEarned")}</span></div>
+  <div class="st"><b style="${L.excess?"color:var(--red)":""}">${L.net}/${L.allow}</b><span class="row" style="flex-wrap:wrap;gap:4px">${dots(L.reds,"var(--red)")} ${dots(L.greens,"#2FBF71")}</span></div>
+  <div class="st hl"><b>${money(L.total)}</b><br><span>${t("mNet")}${L.deduction?` · −${money(L.deduction)}`:""}</span></div></div>
+ <div class="tiny muted" style="margin:-6px 0 12px">${tpl("mRule",{a:L.allow,p:money(L.pen)})}</div>
+ <div class="list">${L.items.length?L.items.map(i=>{const p=P(i.v.project);const c=i.late?"var(--red)":i.early?"#2FBF71":"var(--line)";
+  return `<div class="item"><div class="it" style="cursor:default"><div class="grow"><div class="t row"><span class="dot" style="background:${c}"></span>${vn(i.v)} <span class="muted" style="font-weight:400">· ${esc(nm(p.client))}</span></div>
+   <div class="s">${esc(p.title)} · ${t("due")} ${fd(i.v.due)} · ${i.at?fd(i.at):`<span class="muted">${t("mNotYet")}</span>`}${i.late?` · <span style="color:var(--red)">${t("mLate")}</span>`:i.early?` · <span style="color:#2FBF71">${t("mEarly")}</span>`:""}</div></div>
+   <div class="meta">${admin?`<input data-price="${i.v.id}" data-ed="${ed}" type="number" min="0" value="${i.v.price!=null?i.v.price:""}" placeholder="${(rates[ed]&&rates[ed][p.type])||0}" style="width:96px;padding:6px 8px;font-size:13px" title="${t("priceDefault")}: ${(rates[ed]&&rates[ed][p.type])||0}">`:`<span class="chip ${i.at?"k":""}">${money(i.price)}</span>`}</div></div></div>`;}).join(""):`<div class="empty">${t("noTasks")}</div>`}</div>`;}
+function moneyAdmin(){const eds=Object.keys(profiles).filter(u=>role(u)==="editor");const ed=S.moneyEd&&eds.includes(S.moneyEd)?S.moneyEd:eds[0];
+ if(!ed)return `<div class="empty">${t("noTasks")}</div>`;const r=rates[ed]||{};
+ return `<div class="opt" style="margin-bottom:12px">${eds.map(e=>`<button class="${e===ed?"on":""}" data-a="moneyEd" data-u="${e}">${esc(nm(e))}</button>`).join("")}</div>
+ ${ledgerView(ed,true)}
+ <div class="grid g2" style="margin-top:16px">
+  <div class="list" style="padding:16px"><b>${t("rates")} ${esc(nm(ed))}</b><div style="display:grid;gap:10px;margin-top:12px">${["tReels","tLong","tMotion"].map(tp=>`<div class="row"><span class="grow">${t(tp)}</span><input type="number" min="0" data-rate="${tp}" data-ed="${ed}" value="${r[tp]!=null?r[tp]:""}" placeholder="0" style="width:110px"></div>`).join("")}</div></div>
+  <div class="list" style="padding:16px"><b>${t("rulesL")}</b><div style="display:grid;gap:10px;margin-top:12px">
+   ${[["late_allowance","sAllow"],["late_penalty","sPenalty"],["early_hours","sEarly"]].map(([k,l])=>`<div class="row"><span class="grow tiny">${t(l)}</span><input type="number" min="0" data-setting="${k}" value="${esc(settings[k]||"")}" style="width:90px"></div>`).join("")}
+   <div class="row"><span class="grow tiny">${t("sCurrency")}</span><input data-setting="currency" value="${esc(settings.currency||"")}" style="width:90px"></div></div></div></div>`;}
 function notesChip(vid){const ns=notesOf(vid);if(!ns.length)return "";const d=ns.filter(n=>n.done).length;return `<span class="chip ${d===ns.length?"k":"y"}">${t("notesL")} ${d}/${ns.length}</span>`;}
 function notesList(vid,canTick){const ns=notesOf(vid);if(!ns.length)return "";
  return `<div class="box" style="margin-bottom:12px;padding:6px 10px"><div class="row tiny muted" style="padding:6px 0">${t("notesL")} · ${ns.filter(n=>n.done).length}/${ns.length}</div>${ns.map(n=>`<label class="row" style="align-items:flex-start;gap:10px;padding:8px 0;border-top:1px solid var(--line);margin:0;color:var(--ink);cursor:${canTick?"pointer":"default"}">
@@ -297,7 +342,7 @@ const ico={
 };
 
 /* ================= DATA LAYER ================= */
-const vFromDb=r=>({id:r.id,project:r.project,n:r.n,due:Date.parse(r.due),stage:r.stage,pub:r.pub,round:r.round,rs:r.rs,link:r.link||"",pending:r.pending,isNew:r.is_new,upd:Date.parse(r.updated_at)});
+const vFromDb=r=>({deliveredAt:r.delivered_at?Date.parse(r.delivered_at):null,deliveredBy:r.delivered_by,price:r.price==null?null:+r.price,id:r.id,project:r.project,n:r.n,due:Date.parse(r.due),stage:r.stage,pub:r.pub,round:r.round,rs:r.rs,link:r.link||"",pending:r.pending,isNew:r.is_new,upd:Date.parse(r.updated_at)});
 const pFromDb=r=>({id:r.id,client:r.client,title:r.title,type:r.type,drive:r.drive,ref:r.ref||"",notes:r.notes||"",count:r.count,cad:r.cad,first:Date.parse(r.first),status:r.status,editor:r.editor,created:Date.parse(r.created_at)});
 const tFromDb=r=>({resLink:r.result_link||"",id:r.id,kind:"task",editor:r.editor,title:r.title,notes:r.notes||"",link:r.link||"",due:Date.parse(r.due),stages:r.stages||[],stage:r.stage,isNew:r.is_new,upd:Date.parse(r.updated_at)});
 const nFromDb=r=>({id:r.id,video:r.video,tc:r.tc||"",cue:r.cue||"",visual:r.visual||"",sfx:r.sfx||"",done:!!r.done,sort:r.sort||0});
@@ -312,7 +357,7 @@ function parseNotes(text){const out=[];const isTc=c=>/^\d{1,2}:\d{2}(:\d{2})?([.
   out.push({tc,cue:cells[0]||"",visual:cells[1]||"",sfx:cells.slice(2).join(" · ")});});
  return out;}
 const tTotal=x=>Math.max(1,x.stages.length), tDone=x=>x.stage>=tTotal(x);
-const vToDb=p=>{const o={};for(const k in p){if(k==="isNew")o.is_new=p[k];else if(k==="due")o.due=new Date(p[k]).toISOString();else o[k]=p[k];}return o;};
+const vToDb=p=>{const o={};for(const k in p){if(k==="deliveredAt"||k==="deliveredBy")continue;if(k==="isNew")o.is_new=p[k];else if(k==="due")o.due=new Date(p[k]).toISOString();else o[k]=p[k];}return o;};
 const email=u=>`${u}@${CFG.EMAIL_DOMAIN||"users.cammio.app"}`;
 
 let sb=null, chan=null, reloadT=null;
@@ -337,13 +382,17 @@ const api = LIVE ? {
  },
  async logout(){if(chan){sb.removeChannel(chan);chan=null;}await sb.auth.signOut();profiles={};projects=[];videos=[];notifs=[];},
  async loadAll(){
-  const [a,b,c,d,e,f]=await Promise.all([
+  const [a,b,c,d,e,f,g,h]=await Promise.all([
    sb.from("profiles").select("*"),
    sb.from("projects").select("*").order("created_at",{ascending:false}),
    sb.from("videos").select("*").order("n"),
    sb.from("notifs").select("*").eq("user_id",S.me).order("created_at",{ascending:false}).limit(60),
    sb.from("tasks").select("*").order("due"),
-   sb.from("video_notes").select("*").order("sort")]);
+   sb.from("video_notes").select("*").order("sort"),
+   sb.from("editor_rates").select("*"),
+   sb.from("settings").select("*")]);
+  rates={};(g.data||[]).forEach(r=>{(rates[r.editor]=rates[r.editor]||{})[r.type]=+r.price;});
+  (h.data||[]).forEach(r=>settings[r.key]=r.value);
   vnotes=(f.data||[]).map(nFromDb);
   tasks=(e.data||[]).map(tFromDb);
   profiles={};(a.data||[]).forEach(p=>profiles[p.id]=p);
@@ -361,11 +410,13 @@ const api = LIVE ? {
    .on("postgres_changes",{event:"*",schema:"public",table:"profiles"},kick)
    .on("postgres_changes",{event:"*",schema:"public",table:"tasks"},kick)
    .on("postgres_changes",{event:"*",schema:"public",table:"video_notes"},kick)
+   .on("postgres_changes",{event:"*",schema:"public",table:"editor_rates"},kick)
+   .on("postgres_changes",{event:"*",schema:"public",table:"settings"},kick)
    .on("postgres_changes",{event:"INSERT",schema:"public",table:"notifs",filter:`user_id=eq.${S.me}`},pl=>{const n=pl.new;const txt=LANG==="ar"?n.ar:n.en;toast(txt);sysNotify(txt);kick();})
    .subscribe();
  },
  async createProject(f){const {error}=await sb.from("projects").insert({client:S.me,title:f.title,type:f.type,drive:f.drive,ref:f.ref,notes:f.notes,count:f.count,cad:f.cad,first:new Date(f.first).toISOString()});if(error)throw error;await this.loadAll();},
- async updVideo(id,patch){const {error}=await sb.from("videos").update(vToDb(patch)).eq("id",id);if(error)throw error;Object.assign(V(id),patch,{upd:Date.now()});},
+ async updVideo(id,patch){const {error}=await sb.from("videos").update(vToDb(patch)).eq("id",id);if(error)throw error;Object.assign(V(id),patch,{upd:Date.now()});if(patch.pending&&patch.pending.type==="draft"&&!V(id).deliveredAt)V(id).deliveredAt=Date.now();},
  async updProject(id,patch){const {error}=await sb.from("projects").update(patch).eq("id",id);if(error)throw error;await this.loadAll();},
  async notify(uid,ar,en){if(!uid)return;await sb.from("notifs").insert({user_id:uid,ar,en});},
  async notifyAdmins(ar,en){await sb.rpc("notify_admins",{p_ar:ar,p_en:en});},
@@ -377,6 +428,9 @@ const api = LIVE ? {
  },
  async setRole(id,role){const r=await sb.from("profiles").update({role}).eq("id",id);if(r.error)throw r.error;await this.loadAll();},
  async updateUser(id,{name,username,role,password}){const {error}=await sb.rpc("admin_update_user",{p_id:id,p_name:name||null,p_username:username||null,p_role:role||null,p_password:password||null});if(error)throw new Error(t("accErr"));await this.loadAll();},
+ async setRate(editor,type,price){(rates[editor]=rates[editor]||{})[type]=price;const {error}=await sb.from("editor_rates").upsert({editor,type,price});if(error)throw error;},
+ async setSetting(key,value){settings[key]=value;const {error}=await sb.from("settings").upsert({key,value});if(error)throw error;},
+ async setPackage(id,n){profiles[id].package_size=n;const {error}=await sb.from("profiles").update({package_size:n}).eq("id",id);if(error)throw error;},
  async addNotes(vid,rows){const base=notesOf(vid).length;const {error}=await sb.from("video_notes").insert(rows.map((r,i)=>({video:vid,tc:r.tc,cue:r.cue,visual:r.visual,sfx:r.sfx,sort:base+i})));if(error)throw error;await this.loadAll();},
  async setNote(id,done){const n=vnotes.find(x=>x.id===id);if(n)n.done=done;const {error}=await sb.from("video_notes").update({done}).eq("id",id);if(error)throw error;},
  async delNote(id){const {error}=await sb.from("video_notes").delete().eq("id",id);if(error)throw error;vnotes=vnotes.filter(x=>x.id!==id);},
@@ -408,6 +462,9 @@ const api = LIVE ? {
   Object.assign(V("p1v4"),{stage:1,pub:1,upd:Date.now()-5*H});
   Object.assign(V("p3v1"),{stage:6,pub:6,round:1,rs:"notes",link:"https://platform.krock.io/review/demo2",upd:Date.now()-40*6e4});
   Object.assign(V("p3v2"),{stage:5,pub:4,pending:{type:"draft",link:"https://platform.krock.io/review/demo3",round:1},upd:Date.now()-20*6e4});
+  rates={ahmed:{tReels:150,tLong:600,tMotion:800},peter:{tReels:200,tLong:800,tMotion:1200}};settings={late_allowance:"2",late_penalty:"50",early_hours:"24",currency:"EGP"};profiles.ali.package_size=30;
+  Object.assign(V("p1v1"),{deliveredAt:V("p1v1").due-30*H,deliveredBy:"ahmed"});Object.assign(V("p1v2"),{deliveredAt:V("p1v2").due+5*H,deliveredBy:"ahmed"});
+  Object.assign(V("p3v1"),{deliveredAt:V("p3v1").due-2*H,deliveredBy:"peter"});
   vnotes=[["00:04","محامي شاطر","أكوام ورق تتراكم حوالين علي","زوم بطيء"],["00:11","راحت عليها","ختم أحمر باطل/EXPIRED","قطع حاد + صوت ختم"],["00:19","الكتابة","صفحة آلة كاتبة تتكتب","مسح أفقي"]].map((r,i)=>({id:"n"+i,video:"p1v3",tc:r[0],cue:r[1],visual:r[2],sfx:r[3],done:i===0,sort:i}));
   tasks=[{id:"t1",kind:"task",editor:"ahmed",title:"ثمبنيل لقناة علي",notes:"٣ أفكار مختلفة",link:"",due:T0+20*H,stages:["أفكار","سكتش","نهائي"],stage:1,isNew:true,upd:Date.now()-H}];
   const sn=(u,ar,en,a)=>nbox[u].push({ar,en,time:Date.now()-a,read:a>3*H});
@@ -426,7 +483,7 @@ const api = LIVE ? {
   sync(){notifs=nbox[S.me]||[];},
   async logout(){},
   async createProject(f){const p={id:"p"+Date.now().toString(36),client:S.me,title:f.title,type:f.type,drive:f.drive,ref:f.ref,notes:f.notes,count:f.count,cad:f.cad,first:new Date(f.first).getTime(),status:"pending",editor:null,created:Date.now()};projects.unshift(p);gen(p);},
-  async updVideo(id,patch){Object.assign(V(id),patch,{upd:Date.now()});},
+  async updVideo(id,patch){const v=V(id);if(patch.pending&&patch.pending.type==="draft"&&!v.deliveredAt){v.deliveredAt=Date.now();v.deliveredBy=P(v.project).editor;}Object.assign(v,patch,{upd:Date.now()});},
   async updProject(id,patch){Object.assign(P(id),patch);},
   async notify(uid,ar,en){if(uid)push(uid,ar,en);},
   async notifyAdmins(ar,en){Object.keys(profiles).filter(u=>profiles[u].role==="admin").forEach(u=>push(u,ar,en));},
@@ -434,6 +491,9 @@ const api = LIVE ? {
   async createAccount({name,username,password,role}){if(profiles[username]||password.length<6)throw new Error(t("accErr"));profiles[username]={id:username,username,name,role,avatar_url:"",title:"",lang:"ar"};passwords[username]=password;creds[username]=password;nbox[username]=[];},
   async setRole(id,r){profiles[id].role=r;},
   async updateUser(id,{name,username,role,password}){const p=profiles[id];if(name)p.name=name;if(role)p.role=role;if(username&&username!==p.username){if(Object.values(profiles).some(x=>x.username===username))throw new Error(t("accErr"));p.username=username;}if(password){if(password.length<6)throw new Error(t("accErr"));passwords[id]=password;creds[id]=password;}},
+  async setRate(editor,type,price){(rates[editor]=rates[editor]||{})[type]=price;},
+  async setSetting(key,value){settings[key]=value;},
+  async setPackage(id,n){profiles[id].package_size=n;},
   async addNotes(vid,rows){const base=notesOf(vid).length;rows.forEach((r,i)=>vnotes.push({id:"n"+Math.random().toString(36).slice(2),video:vid,...r,done:false,sort:base+i}));},
   async setNote(id,done){vnotes.find(x=>x.id===id).done=done;},
   async delNote(id){vnotes=vnotes.filter(x=>x.id!==id);},
@@ -492,6 +552,10 @@ function clientView(){
   waiting:vs.filter(v=>P(v.project).status==="pending"),delivered:vs.filter(v=>v.pub===7)};
  return `${topBar()}<div class="main">
   <div class="head"><h1>${t("myVideos")}</h1><button class="btn y" data-a="newReq" data-tour="new">+ ${t("newReq")}</button></div>
+  ${(()=>{const pk=profiles[S.me]&&profiles[S.me].package_size;const req=vs.length,dl=vs.filter(v=>v.pub===7).length;if(!pk&&!req)return "";const n=pk||req;const pct=Math.min(100,Math.round(dl/n*100));
+   return `<div class="list" style="padding:16px;margin-bottom:16px"><div class="row"><b class="grow">${t("pkg")}</b><span class="tiny muted">${tpl("pkgReq",{q:req})}</span></div>
+    <div style="height:8px;background:var(--soft);border-radius:4px;margin:12px 0 8px;overflow:hidden"><div style="height:100%;width:${pct}%;background:var(--ink);border-radius:4px;transition:width .6s"></div></div>
+    <div class="row tiny"><span class="grow">${tpl("pkgOf",{d:dl,n})}</span>${pk?`<span class="chip y">${tpl("pkgLeft",{r:Math.max(0,pk-dl)})}</span>`:""}</div></div>`;})()}
   <div class="tabs">${["active","waiting","delivered"].map(k=>`<button class="tab ${tab===k?"on":""}" data-a="tab" data-t="${k}">${t(k)}${k==="active"&&need.length?`<em>${need.length}</em>`:g[k].length&&k!=="active"?` <span class="muted">${g[k].length}</span>`:""}</button>`).join("")}</div>
   <div class="list" data-tour="row">${g[tab].length?g[tab].map(clientItem).join(""):`<div class="empty">${t("noTasks")}</div>`}</div></div>`;
 }
@@ -527,13 +591,13 @@ function bucket(v){if(v.kind==="task"?tDone(v):v.stage===7)return"done";const T0
 function nextChk(){let last=0;try{last=+localStorage.getItem("hub_chk_"+S.me)||0}catch(_){}if(!last){last=Date.now();try{localStorage.setItem("hub_chk_"+S.me,last)}catch(_){}}return Math.max(0,last+3*H-Date.now());}
 function editorView(){
  const mine=videos.filter(v=>{const p=P(v.project);return p&&p.editor===S.me&&p.status==="active"}).concat(tasks.filter(x=>x.editor===S.me));
- const keys=["late","today","tomorrow","later","done"];const g={};keys.forEach(k=>g[k]=mine.filter(v=>bucket(v)===k).sort((a,b)=>a.due-b.due));
+ const keys=["late","today","tomorrow","later","done"];const g={};keys.forEach(k=>g[k]=mine.filter(v=>bucket(v)===k).sort((a,b)=>a.due-b.due));g.ledger=[];
  const tab=S.tab||(g.late.length?"late":g.today.length?"today":"later");
  const firstId=(g[tab].find(v=>v.kind==="task"?!tDone(v):!updDisabled(v))||{}).id;
  return `${topBar()}<div class="main">
   <div class="head"><h1>${t("tasks")}</h1><div class="row"><a class="btn y sm" href="${esc(CFG.UPLOAD_URL)}" target="_blank" rel="noopener" style="text-decoration:none" data-tour="upload">+ ${t("upload")} ${ico.ext}</a><button class="btn line sm row" data-a="checkin" data-tour="chk"><span class="dot pulse"></span>${t("nextIn")} · ${(Math.round(nextChk()/H*10)/10)}${t("h")}</button></div></div>
-  <div class="tabs" data-tour="tabs">${keys.map(k=>`<button class="tab ${tab===k?"on":""}" data-a="tab" data-t="${k}">${t(k)}${g[k].length?(k==="late"||k==="today"?`<em>${g[k].length}</em>`:` <span class="muted">${g[k].length}</span>`):""}</button>`).join("")}</div>
-  <div class="list">${g[tab].length?g[tab].map(v=>v.kind==="task"?taskItem(v,v.id===firstId):editorItem(v,v.id===firstId)).join(""):`<div class="empty">${t("noTasks")}</div>`}</div></div>`;
+  <div class="tabs" data-tour="tabs">${keys.map(k=>`<button class="tab ${tab===k?"on":""}" data-a="tab" data-t="${k}">${t(k)}${g[k].length?(k==="late"||k==="today"?`<em>${g[k].length}</em>`:` <span class="muted">${g[k].length}</span>`):""}</button>`).join("")}<button class="tab ${tab==="ledger"?"on":""}" data-a="tab" data-t="ledger" data-tour="ledger">${t("ledger")}</button></div>
+  ${tab==="ledger"?ledgerView(S.me,false):`<div class="list">${g[tab].length?g[tab].map(v=>v.kind==="task"?taskItem(v,v.id===firstId):editorItem(v,v.id===firstId)).join(""):`<div class="empty">${t("noTasks")}</div>`}</div>`}</div>`;
 }
 const updDisabled=v=>!!v.pending||v.stage===7||(v.stage===6&&v.rs==="awaiting");
 function editorItem(v,first){
@@ -568,7 +632,7 @@ function adminView(){
  const act=videos.filter(v=>P(v.project)?.status==="active");
  const appr=act.filter(v=>v.pending), reqs=projects.filter(p=>p.status==="pending");
  const tab=S.tab||"appr"; const eds=Object.keys(profiles).filter(u=>role(u)==="editor");
- const tabs=[["appr",t("approvals"),appr.length],["req",t("requests"),reqs.length],["all",t("all"),0],["tasks",t("tasksTab"),0],["acc",t("accounts"),Object.values(profiles).filter(p=>p.role==="pending").length]];
+ const tabs=[["appr",t("approvals"),appr.length],["req",t("requests"),reqs.length],["all",t("all"),0],["tasks",t("tasksTab"),0],["money",t("money"),0],["acc",t("accounts"),Object.values(profiles).filter(p=>p.role==="pending").length]];
  let body="";
  if(tab==="appr") body=appr.length?appr.map(v=>{const p=P(v.project);const what=v.pending.type==="draft"?`${t("draft")} ${v.pending.round}`:`${ST(v.pub)} → ${ST(v.pending.stage)}`;
   return item(v.id,`<div class="t">${vn(v)} <span class="muted" style="font-weight:400">· ${esc(nm(p.client))}</span></div><div class="s">${esc(nm(p.editor))} · ${ago(v.upd)}</div>`,
@@ -580,6 +644,7 @@ function adminView(){
   return item(v.id,`<div class="t">${vn(v)} <span class="muted" style="font-weight:400">· ${esc(nm(p.client))}</span></div><div class="s">${esc(nm(p.editor))} · ${ago(v.upd)}</div>`,
   `${notesChip(v.id)}${isLate(v)?`<span class="chip r">${t("late")}</span>`:""}<span class="chip ${v.stage===7?"k":""}">${ST(v.stage)}</span><span class="chip hide-m">${fd(v.due)}</span>`,
   `${steps(v.stage)}<dl class="kv"><dt>${t("client")}</dt><dd>${ST(v.pub)}</dd><dt>${t("editor")}</dt><dd>${ST(v.stage)}</dd></dl>${notesList(v.id,false)}${links(p)}<div class="acts"><button class="btn sm" data-a="notesOpen" data-v="${v.id}">${t("notesL")} (${notesOf(v.id).length})</button>${v.stage<7?`<button class="btn line sm" data-a="ping" data-v="${v.id}">${t("ping")} ${esc(nm(p.editor))}</button>`:""}</div>`)}).join(""):`<div class="empty">${t("noTasks")}</div>`;
+ if(tab==="money") return `${topBar()}<div class="main"><div class="tabs">${tabs.map(([k,l,n])=>`<button class="tab ${tab===k?"on":""}" data-a="tab" data-t="${k}" data-tour="tab-${k}">${l}${n?`<em>${n}</em>`:""}</button>`).join("")}</div>${moneyAdmin()}</div>`;
  if(tab==="tasks") body=`<div class="item" style="padding:12px 16px"><button class="btn y sm" data-a="newTask">+ ${t("newTask")}</button></div>`+(tasks.length?tasks.slice().sort((a,b)=>tDone(a)-tDone(b)||a.due-b.due).map(x=>item(x.id,
   `<div class="t">${esc(x.title)} <span class="muted" style="font-weight:400">· ${esc(nm(x.editor))}</span></div><div class="s">${fd(x.due)} · ${ago(x.upd)}</div>`,
   `${!tDone(x)&&x.due<Date.now()?`<span class="chip r">${t("late")}</span>`:""}<span class="chip ${tDone(x)?"k":""}">${esc(tStageName(x))}</span>`,
@@ -644,6 +709,7 @@ function editUserSheet(){
   <div><label>${t("name")}</label><input name="name" value="${esc(p.name)}"></div>
   <div><label>${t("user")}</label><input name="username" value="${esc(p.username)}" autocapitalize="off" spellcheck="false"></div>
   <div><label>${t("role")}</label><div class="opt">${["client","editor"].map(r=>`<button type="button" class="${(S.editRole||p.role)===r?"on":""}" data-a="editRole" data-r="${r}">${t(r)}</button>`).join("")}</div></div>
+  ${(S.editRole||p.role)==="client"?`<div><label>${t("pkgSize")}</label><input name="pkg" type="number" min="0" value="${p.package_size||""}"></div>`:""}
   <div class="box"><label>${t("curPass")}</label>${pw?`<div class="row"><code class="grow" style="font-size:14px;letter-spacing:.04em">${S.showPw?esc(pw):"••••••••"}</code><button type="button" class="btn line sm" data-a="togglePw">${S.showPw?t("hide"):t("show")}</button><button type="button" class="btn line sm" data-a="copyLogin" data-u="${u}">${t("copyLogin")}</button></div>`:`<div class="tiny muted">${t("passUnknown")}</div>`}</div>
   <div><label>${t("setPass")}</label><input name="password" placeholder="${t("passShort")}" autocomplete="off"></div>
   <button class="btn" type="submit">${t("saveS")}</button>
@@ -688,6 +754,9 @@ function render(){
  const pb=document.getElementById("pasteBox");if(pb){pb.oninput=()=>{S.paste=pb.value;clearTimeout(window.__pt);window.__pt=setTimeout(()=>{const st=pb.selectionStart;render();const nb=document.getElementById("pasteBox");if(nb){nb.focus();try{nb.setSelectionRange(st,st)}catch(_){}}},350);};}
  const nf=document.getElementById("nf");if(nf)nf.onsubmit=async e=>{e.preventDefault();const r={tc:F(nf,"tc").value.trim(),cue:F(nf,"cue").value.trim(),visual:F(nf,"visual").value.trim(),sfx:F(nf,"sfx").value.trim()};if(!r.cue&&!r.visual)return;await run(()=>api.addNotes(S.notesV,[r]));const n2=document.getElementById("nf");n2&&F(n2,"tc").focus();};
  document.querySelectorAll("[data-note]").forEach(cb=>cb.onchange=()=>toggleNote(cb.dataset.note,cb.checked));
+ document.querySelectorAll("[data-price]").forEach(i=>i.onchange=()=>run(async()=>{await api.updVideo(i.dataset.price,{price:i.value===""?null:Math.max(0,+i.value)});toast(t("saved"));}));
+ document.querySelectorAll("[data-rate]").forEach(i=>i.onchange=()=>run(async()=>{await api.setRate(i.dataset.ed,i.dataset.rate,Math.max(0,+i.value||0));toast(t("saved"));}));
+ document.querySelectorAll("[data-setting]").forEach(i=>i.onchange=()=>run(async()=>{await api.setSetting(i.dataset.setting,String(i.value).trim());toast(t("saved"));}));
  const tf=document.getElementById("tf");if(tf){tf.onsubmit=doTask;tf.oninput=e=>{if(e.target.name)S.tf[e.target.name]=e.target.value;};const si=document.getElementById("tfStage");if(si)si.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();addStage();}};}
 }
 async function run(fn){try{await fn();}catch(e){console.error(e);toast(e&&e.message&&!/^[a-z_ ]+$/i.test(e.message)?e.message:t("err"));}render();}
@@ -726,6 +795,7 @@ async function doTask(e){e.preventDefault();const f=S.tf;if(!f.editor||!f.title|
 async function doEditUser(e){e.preventDefault();const f=e.target,u=S.editU,p=profiles[u];
  const name=F(f,"name").value.trim(),username=F(f,"username").value.trim().toLowerCase().replace(/[^a-z0-9._-]/g,""),password=F(f,"password").value,r=S.editRole||p.role;
  if(password&&password.length<6){toast(t("passShort"));return;}
+ const pkI=F(f,"pkg");if(pkI){const nv=pkI.value===""?null:Math.max(0,+pkI.value);if(nv!==(p.package_size||null))await api.setPackage(u,nv).catch(()=>{});}
  await run(async()=>{await api.updateUser(u,{name:name!==p.name?name:null,username:username&&username!==p.username?username:null,role:r!==p.role?r:null,password:password||null});S.showPw=!!password;toast(t("saved"));});}
 async function doPass(e){e.preventDefault();const np=F(e.target,"np").value;if(np.length<6){toast(t("passShort"));return;}await run(async()=>{await api.changePassword(np);toast(t("saved"));});}
 async function doAvatar(e){const file=e.target.files[0];if(!file)return;if(file.size>3e6){toast("≤ 3MB");return;}await run(async()=>{const url=await api.uploadAvatar(file);await api.updProfile({avatar_url:url});toast(t("saved"));});}
@@ -793,6 +863,8 @@ document.addEventListener("click",e=>{
     await api.notify(pp.client,`${pp.title} مع ${nm(ed)}`,`${pp.title} is with ${nm(ed)}`);S.open=null;toast("✓");});return;}
   case "ping":run(async()=>{await api.notify(p.editor,`Cammio: إنت فين في ${vnAr(v)}؟`,`Cammio: where are you on ${vnEn(v)}?`);toast(t("pinged"));});return;
   case "setRole":run(async()=>{await api.setRole(b.dataset.u,b.dataset.r);toast("✓");});return;
+  case "moneyEd":S.moneyEd=b.dataset.u;break;
+  case "mPrev":case "mNext":{const [y,m]=curMonth().split("-").map(Number);const d=new Date(y,m-1+(a==="mNext"?1:-1),1);S.month=ym(d.getTime());break;}
   case "notesOpen":S.notesV=b.dataset.v;S.paste="";S.delArm=false;S.sheet="notes";break;
   case "pasteAdd":{const rows=parseNotes(S.paste);const v=V(S.notesV),p=P(v.project);run(async()=>{await api.addNotes(S.notesV,rows);S.paste="";await api.notify(p.editor,`نوتس جديدة (${rows.length}) على ${vnAr(v)} — ${nm(p.client)}`,`${rows.length} new notes on ${vnEn(v)} — ${nm(p.client)}`);toast("✓");});return;}
   case "noteDel":run(()=>api.delNote(b.dataset.n));return;
