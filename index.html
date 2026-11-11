@@ -225,7 +225,8 @@ const T={
  mRule:{ar:"مسموح {a} تأخير في الشهر · بعدها كل تأخير بـ {p} · كل تسليم بدري بيشيل تأخير",en:"{a} lates allowed per month · then {p} each · every early delivery cancels one"},
  sAllow:{ar:"تأخيرات مسموحة في الشهر",en:"Allowed lates / month"}, sPenalty:{ar:"خصم كل تأخير زيادة",en:"Deduction per extra late"}, sEarly:{ar:"يعتبر بدري لو قبل الديدلاين بـ (ساعات)",en:"Counts as early if this many hours before due"},
  sCurrency:{ar:"العملة",en:"Currency"}, rates:{ar:"أسعار",en:"Rates for"}, rulesL:{ar:"القواعد",en:"Rules"}, pkg:{ar:"الباكدج",en:"Package"}, pkgSize:{ar:"حجم الباكدج (عدد الفيديوهات)",en:"Package size (videos)"},
- pkgOf:{ar:"اتسلّم {d} من {n}",en:"{d} of {n} delivered"}, pkgLeft:{ar:"فاضل {r}",en:"{r} left"}, pkgReq:{ar:"طلبت {q} سكريبت",en:"{q} scripts requested"}, priceDefault:{ar:"السعر الافتراضي",en:"Default"}, notesL:{ar:"نوتس",en:"Notes"}, nTc:{ar:"تايم كود",en:"Timecode"}, nCue:{ar:"كلمة مميزة",en:"Cue word"}, nVisual:{ar:"المشهد",en:"Visual"}, nSfx:{ar:"صوت / حركة",en:"SFX / move"},
+ pkgOf:{ar:"اتسلّم {d} من {n}",en:"{d} of {n} delivered"}, pkgLeft:{ar:"فاضل {r}",en:"{r} left"}, pkgReq:{ar:"طلبت {q} سكريبت",en:"{q} scripts requested"}, priceDefault:{ar:"السعر الافتراضي",en:"Default"}, notesL:{ar:"نوتس",en:"Notes"}, sheetLink:{ar:"لينك شيت جوجل",en:"Google Sheet link"}, readSheet:{ar:"اقرا الشيت",en:"Read sheet"}, orPaste:{ar:"أو الصق الصفوف بنفسك",en:"or paste rows yourself"},
+ notPublic:{ar:"الشيت مش مفتوح. خلّي المشاركة Anyone with the link وجرّب تاني",en:"Sheet isn't open. Set sharing to Anyone with the link and retry"}, badSheet:{ar:"اللينك ده مش شيت جوجل",en:"That isn't a Google Sheet link"}, noRows:{ar:"ملقتش صفوف مشاهد في الشيت",en:"No scene rows found in the sheet"}, nTc:{ar:"تايم كود",en:"Timecode"}, nCue:{ar:"كلمة مميزة",en:"Cue word"}, nVisual:{ar:"المشهد",en:"Visual"}, nSfx:{ar:"صوت / حركة",en:"SFX / move"},
  nPaste:{ar:"لصق من الشيت",en:"Paste from sheet"}, nPastePh:{ar:"انسخ الصفوف من الشيت (تايم كود، كلمة، مشهد، صوت) والصقها هنا",en:"Copy rows from the sheet (timecode, cue, visual, sfx) and paste here"},
  nFound:{ar:"نوتة اتعرفت",en:"notes found"}, nAddAll:{ar:"ضيفهم",en:"Add them"}, nAddOne:{ar:"ضيف نوتة",en:"Add note"}, nAllDone:{ar:"خلّص كل النوتس",en:"finished all notes"}, nClear:{ar:"امسح كل النوتس",en:"Clear all notes"}, upload:{ar:"رفع جديد",en:"New upload"}, step1:{ar:"١. ارفع على Krock",en:"1. Upload on Krock"}, step2:{ar:"٢. الصق اللينك هنا",en:"2. Paste the link here"},
  deliver:{ar:"تسليم: ارفع وابعت اللينك",en:"Deliver: upload & send link"}, finishT:{ar:"خلّصت المهمة",en:"Finish task"}, resLink:{ar:"لينك التسليم (اختياري)",en:"Delivery link (optional)"}, delivered:{ar:"التسليم",en:"Delivery"}, sendFinish:{ar:"ابعت وخلّص",en:"Send & finish"}, newTask:{ar:"مهمة جديدة",en:"New task"}, task:{ar:"مهمة",en:"Task"},
@@ -352,6 +353,22 @@ const tFromDb=r=>({resLink:r.result_link||"",id:r.id,kind:"task",editor:r.editor
 const nFromDb=r=>({author:r.author,id:r.id,video:r.video,tc:r.tc||"",cue:r.cue||"",visual:r.visual||"",sfx:r.sfx||"",done:!!r.done,sort:r.sort||0});
 const tcSec=tc=>{const p=String(tc||"").split(":").map(Number);if(p.some(isNaN)||!tc)return 1e9;return p.reduce((a,b)=>a*60+b,0);};
 const notesOf=vid=>vnotes.filter(n=>n.video===vid).sort((a,b)=>tcSec(a.tc)-tcSec(b.tc)||a.sort-b.sort);
+function parseCSV(t){const rows=[];let row=[],cell="",q=false;for(let i=0;i<t.length;i++){const c=t[i];
+ if(q){if(c==='"'){if(t[i+1]==='"'){cell+='"';i++;}else q=false;}else cell+=c;}
+ else if(c==='"')q=true;else if(c===","){row.push(cell);cell="";}else if(c==="\n"||c==="\r"){if(c==="\r"&&t[i+1]==="\n")i++;row.push(cell);rows.push(row);row=[];cell="";}else cell+=c;}
+ if(cell!==""||row.length){row.push(cell);rows.push(row);}return rows;}
+function shortCue(x){const w=String(x||"").replace(/\.{2,}|…/g," ").replace(/\s+/g," ").trim().split(" ");return w.length>7?w.slice(0,7).join(" ")+"…":w.join(" ");}
+function sheetToNotes(csv){const rows=parseCSV(csv).map(r=>r.map(c=>String(c||"").trim()));
+ const H=[["tc",/time ?code|تايم|التوقيت|الوقت/i],["cue",/المنطوق|النص|الكلام|الكلمة|كلمة|الجملة|script|cue|voice|word/i],["visual",/المشهود|المشهد|الكادر|visual|scene|shot/i],["asset",/العنصر|asset|cutout/i],["sfx",/sfx|صوت|الصوتي|ملاحظ|notes|edit/i]];
+ let hi=-1,map={};
+ for(let i=0;i<rows.length&&hi<0;i++){const m={};rows[i].forEach((c,j)=>{if(!c||c.length>60)return;for(const [k,re] of H){if(m[k]==null&&re.test(c)){m[k]=j;break;}}});if(Object.keys(m).length>=2){hi=i;map=m;}}
+ if(hi<0)return parseNotes(rows.map(r=>r.filter(Boolean).join("\t")).join("\n"));
+ const out=[];const isTc=c=>/^\d{1,2}:\d{2}(:\d{2})?([.,]\d+)?$/.test(c);
+ rows.slice(hi+1).forEach(r=>{const g=k=>map[k]!=null?(r[map[k]]||""):"";const filled=r.filter(Boolean);if(filled.length<2)return;
+  let tc=g("tc");if(!isTc(tc)){const f=r.find(isTc);tc=f||"";}
+  const cue=shortCue(g("cue")),vis=g("visual"),asset=g("asset"),sfx=g("sfx");if(!cue&&!vis)return;
+  out.push({tc,cue,visual:vis+(asset&&!vis.includes(asset)?` (${asset})`:""),sfx});});
+ return out;}
 function parseNotes(text){const out=[];const isTc=c=>/^\d{1,2}:\d{2}(:\d{2})?([.,]\d+)?$/.test(c);
  String(text||"").split(/\r?\n/).forEach(line=>{const cells=line.split("\t").map(c=>c.trim()).filter(Boolean);if(!cells.length)return;
   if(cells.some(c=>/time ?code|تايم|المنطوق|المشهود/i.test(c)))return;
@@ -435,6 +452,7 @@ const api = LIVE ? {
  },
  async setRole(id,role){const r=await sb.from("profiles").update({role}).eq("id",id);if(r.error)throw r.error;await this.loadAll();},
  async updateUser(id,{name,username,role,password}){const {error}=await sb.rpc("admin_update_user",{p_id:id,p_name:name||null,p_username:username||null,p_role:role||null,p_password:password||null});if(error)throw new Error(t("accErr"));await this.loadAll();},
+ async fetchSheet(url){const {data,error}=await sb.functions.invoke("sheet",{body:{url}});if(error){let code="";try{code=(await error.context.json()).error}catch(_){}throw new Error(code==="not_public"?t("notPublic"):code==="bad_url"?t("badSheet"):t("err"));}if(data&&data.error)throw new Error(data.error==="not_public"?t("notPublic"):t("err"));return data.csv;},
  async notifyEditor(pid,ar,en){const {error}=await sb.rpc("notify_project_editor",{p_project:pid,p_ar:ar,p_en:en});if(error)throw error;},
  async notifyClients(pid,ar,en){const {error}=await sb.rpc("notify_project_clients",{p_project:pid,p_ar:ar,p_en:en});if(error)throw error;},
  async addMember(pid,cid){const {error}=await sb.from("project_members").insert({project:pid,client:cid});if(error)throw error;await this.loadAll();},
@@ -504,6 +522,7 @@ const api = LIVE ? {
   async setRole(id,r){profiles[id].role=r;},
   async updateUser(id,{name,username,role,password}){const p=profiles[id];if(name)p.name=name;if(role)p.role=role;if(username&&username!==p.username){if(Object.values(profiles).some(x=>x.username===username))throw new Error(t("accErr"));p.username=username;}if(password){if(password.length<6)throw new Error(t("accErr"));passwords[id]=password;creds[id]=password;}},
   async setRate(editor,type,price){(rates[editor]=rates[editor]||{})[type]=price;},
+  async fetchSheet(url){throw new Error(t("err"));},
   async notifyEditor(pid,ar,en){const p=P(pid);if(p.editor)push(p.editor,ar,en);},
   async notifyClients(pid,ar,en){clientsOf(P(pid)).filter(c=>c!==S.me).forEach(c=>push(c,ar,en));},
   async addMember(pid,cid){members.push({project:pid,client:cid});},
@@ -691,7 +710,8 @@ function projSheet(){const p=P(S.projP);if(!p)return "";const cls=Object.keys(pr
 function notesSheet(){const v=V(S.notesV);if(!v)return "";const p=P(v.project);const ns=notesOf(v.id);const pv=parseNotes(S.paste||"");const isAdm=role(S.me)==="admin";
  return `<header>${t("notesL")} · ${vn(v)} <span class="muted tiny">${esc(p.title)}</span><button class="ico" data-a="closeAll">${ico.x}</button></header>
  <div class="body">
-  <div><label>${t("nPaste")}</label><textarea id="pasteBox" placeholder="${t("nPastePh")}" style="min-height:110px;font-size:12px">${esc(S.paste||"")}</textarea>
+  <div><label>${t("sheetLink")}</label><div class="row"><input id="sheetUrl" placeholder="https://docs.google.com/spreadsheets/d/…" style="direction:ltr" value="${esc(S.sheetUrl||"")}"><button class="btn sm ${S.sheetBusy?"busy":""}" data-a="readSheet">${t("readSheet")}</button></div></div>
+  <div><label>${t("orPaste")}</label><textarea id="pasteBox" placeholder="${t("nPastePh")}" style="min-height:110px;font-size:12px">${esc(S.paste||"")}</textarea>
    ${pv.length?`<div class="row" style="margin-top:8px"><span class="chip y">${pv.length} ${t("nFound")}</span><span class="grow"></span><button class="btn sm" data-a="pasteAdd">${t("nAddAll")}</button></div>
    <div class="tiny muted" style="margin-top:6px">${pv.slice(0,3).map(r=>`${esc(r.tc||"—")} · ${esc(r.cue)}`).join("<br>")}${pv.length>3?"<br>…":""}</div>`:""}</div>
   <div class="sep"></div>
@@ -893,6 +913,9 @@ document.addEventListener("click",e=>{
   case "moneyEd":S.moneyEd=b.dataset.u;break;
   case "mPrev":case "mNext":{const [y,m]=curMonth().split("-").map(Number);const d=new Date(y,m-1+(a==="mNext"?1:-1),1);S.month=ym(d.getTime());break;}
   case "notesOpen":S.notesV=b.dataset.v;S.paste="";S.delArm=false;S.sheet="notes";break;
+  case "readSheet":{const url=(document.getElementById("sheetUrl").value||"").trim();S.sheetUrl=url;if(!/docs\.google\.com\/spreadsheets\/d\//.test(url)){toast(t("badSheet"));return;}
+   S.sheetBusy=true;render();run(async()=>{try{const csv=await api.fetchSheet(url);const rows=sheetToNotes(csv);if(!rows.length){toast(t("noRows"));return;}
+     S.paste=rows.map(r=>[r.tc,r.cue,r.visual,r.sfx].map(x=>String(x||"").replace(/[\t\n]/g," ")).join("\t")).join("\n");}finally{S.sheetBusy=false;}});return;}
   case "pasteAdd":{const rows=parseNotes(S.paste);const v=V(S.notesV),p=P(v.project);run(async()=>{await api.addNotes(S.notesV,rows);S.paste="";if(role(S.me)==="client"){await api.notifyEditor(p.id,`نوتس جديدة (${rows.length}) على ${vnAr(v)} (${p.title})`,`${rows.length} new notes on ${vnEn(v)} (${p.title})`);await api.notifyClients(p.id,`${nm(S.me)} ضاف ${rows.length} نوتس`,`${nm(S.me)} added ${rows.length} notes`);toast("✓");return;}await api.notify(p.editor,`نوتس جديدة (${rows.length}) على ${vnAr(v)} — ${nm(p.client)}`,`${rows.length} new notes on ${vnEn(v)} — ${nm(p.client)}`);toast("✓");});return;}
   case "noteDel":run(()=>api.delNote(b.dataset.n));return;
   case "notesClear":if(!S.delArm){S.delArm=true;render();setTimeout(()=>{if(S.delArm){S.delArm=false;render();}},4000);return;}S.delArm=false;run(()=>api.clearNotes(S.notesV));return;
