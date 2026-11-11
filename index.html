@@ -219,7 +219,9 @@ const T={
  publish:{ar:"ابعت للكلاينت",en:"Send to client"}, hold:{ar:"استنى",en:"Hold"}, assign:{ar:"وافق وسلّم",en:"Approve & assign"},
  name:{ar:"الاسم",en:"Name"}, create:{ar:"اعمل الحساب",en:"Create"}, ping:{ar:"اسأله",en:"Ping"}, pinged:{ar:"اتسأل ✓",en:"Pinged ✓"},
  sActive:{ar:"شغال",en:"active"}, sReview:{ar:"مراجعة",en:"review"}, sLate:{ar:"متأخر",en:"late"}, sAppr:{ar:"مستني موافقتك",en:"to approve"},
- copy:{ar:"نسخ",en:"Copy"}, edit:{ar:"تعديل",en:"Edit"}, tasksTab:{ar:"مهام",en:"Tasks"}, upload:{ar:"رفع جديد",en:"New upload"}, step1:{ar:"١. ارفع على Krock",en:"1. Upload on Krock"}, step2:{ar:"٢. الصق اللينك هنا",en:"2. Paste the link here"},
+ copy:{ar:"نسخ",en:"Copy"}, edit:{ar:"تعديل",en:"Edit"}, tasksTab:{ar:"مهام",en:"Tasks"}, notesL:{ar:"نوتس",en:"Notes"}, nTc:{ar:"تايم كود",en:"Timecode"}, nCue:{ar:"كلمة مميزة",en:"Cue word"}, nVisual:{ar:"المشهد",en:"Visual"}, nSfx:{ar:"صوت / حركة",en:"SFX / move"},
+ nPaste:{ar:"لصق من الشيت",en:"Paste from sheet"}, nPastePh:{ar:"انسخ الصفوف من الشيت (تايم كود، كلمة، مشهد، صوت) والصقها هنا",en:"Copy rows from the sheet (timecode, cue, visual, sfx) and paste here"},
+ nFound:{ar:"نوتة اتعرفت",en:"notes found"}, nAddAll:{ar:"ضيفهم",en:"Add them"}, nAddOne:{ar:"ضيف نوتة",en:"Add note"}, nAllDone:{ar:"خلّص كل النوتس",en:"finished all notes"}, nClear:{ar:"امسح كل النوتس",en:"Clear all notes"}, upload:{ar:"رفع جديد",en:"New upload"}, step1:{ar:"١. ارفع على Krock",en:"1. Upload on Krock"}, step2:{ar:"٢. الصق اللينك هنا",en:"2. Paste the link here"},
  deliver:{ar:"تسليم: ارفع وابعت اللينك",en:"Deliver: upload & send link"}, finishT:{ar:"خلّصت المهمة",en:"Finish task"}, resLink:{ar:"لينك التسليم (اختياري)",en:"Delivery link (optional)"}, delivered:{ar:"التسليم",en:"Delivery"}, sendFinish:{ar:"ابعت وخلّص",en:"Send & finish"}, newTask:{ar:"مهمة جديدة",en:"New task"}, task:{ar:"مهمة",en:"Task"},
  tTitle:{ar:"المهمة",en:"Task"}, tNotes:{ar:"تفاصيل (اختياري)",en:"Details (optional)"}, tLink:{ar:"لينك (اختياري)",en:"Link (optional)"}, tDue:{ar:"الديدلاين",en:"Due"},
  tStages:{ar:"المراحل",en:"Stages"}, tStagePh:{ar:"اكتب مرحلة ودوس Enter",en:"Type a stage, press Enter"}, add:{ar:"ضيف",en:"Add"}, tFor:{ar:"لمين",en:"For"},
@@ -256,7 +258,7 @@ const TOURS={
 
 /* ===== state ===== */
 const H=36e5,D=24*H; const sod=x=>{const d=new Date(x);d.setHours(0,0,0,0);return d.getTime()};
-let profiles={}, projects=[], videos=[], notifs=[], creds={}, tasks=[];
+let profiles={}, projects=[], videos=[], notifs=[], creds={}, tasks=[], vnotes=[];
 let S={me:null,side:"client",tab:null,open:null,sheet:null,form:{type:"tReels",cad:"c2",count:4},err:"",ready:false,busy:false};
 
 /* ===== helpers ===== */
@@ -273,6 +275,12 @@ const vn=v=>(isLong(v)?(LANG==="ar"?"فيديو":"Video"):(LANG==="ar"?"ريل":
 const vnAr=v=>(isLong(v)?"فيديو":"ريل")+" "+v.n, vnEn=v=>(isLong(v)?"Video":"Reel")+" "+v.n;
 const isLate=v=>v.stage<7&&v.due<Date.now();
 function steps(s){let h="";for(let i=1;i<=7;i++)h+=`<span class="${i<s?"on":i===s?(s===7?"on":"cur"):""}"></span>`;return `<div class="steps">${h}</div>`;}
+function notesChip(vid){const ns=notesOf(vid);if(!ns.length)return "";const d=ns.filter(n=>n.done).length;return `<span class="chip ${d===ns.length?"k":"y"}">${t("notesL")} ${d}/${ns.length}</span>`;}
+function notesList(vid,canTick){const ns=notesOf(vid);if(!ns.length)return "";
+ return `<div class="box" style="margin-bottom:12px;padding:6px 10px"><div class="row tiny muted" style="padding:6px 0">${t("notesL")} · ${ns.filter(n=>n.done).length}/${ns.length}</div>${ns.map(n=>`<label class="row" style="align-items:flex-start;gap:10px;padding:8px 0;border-top:1px solid var(--line);margin:0;color:var(--ink);cursor:${canTick?"pointer":"default"}">
+  <input type="checkbox" style="width:16px;height:16px;margin-top:3px;flex:none;accent-color:#0B0B0B" data-note="${n.id}" ${n.done?"checked":""} ${canTick?"":"disabled"}>
+  <span style="font-family:ui-monospace,monospace;font-size:12px;background:var(--y);border-radius:5px;padding:1px 6px;flex:none;direction:ltr">${esc(n.tc||"—")}</span>
+  <span class="grow" style="${n.done?"opacity:.45;text-decoration:line-through":""}"><b>${esc(n.cue)}</b>${n.visual?` — ${esc(n.visual)}`:""}${n.sfx?`<span class="tiny muted" style="display:block">${esc(n.sfx)}</span>`:""}</span></label>`).join("")}</div>`;}
 function tSteps(x){const n=tTotal(x);let h="";for(let i=1;i<=n;i++)h+=`<span class="${i<=x.stage?"on":i===x.stage+1?"cur":""}"></span>`;return `<div class="steps">${h}</div>`;}
 const tStageName=x=>x.stages.length?(tDone(x)?t("done"):x.stages[x.stage]||""):(tDone(x)?t("done"):t("task"));
 const T_=id=>tasks.find(x=>x.id===id);
@@ -292,6 +300,17 @@ const ico={
 const vFromDb=r=>({id:r.id,project:r.project,n:r.n,due:Date.parse(r.due),stage:r.stage,pub:r.pub,round:r.round,rs:r.rs,link:r.link||"",pending:r.pending,isNew:r.is_new,upd:Date.parse(r.updated_at)});
 const pFromDb=r=>({id:r.id,client:r.client,title:r.title,type:r.type,drive:r.drive,ref:r.ref||"",notes:r.notes||"",count:r.count,cad:r.cad,first:Date.parse(r.first),status:r.status,editor:r.editor,created:Date.parse(r.created_at)});
 const tFromDb=r=>({resLink:r.result_link||"",id:r.id,kind:"task",editor:r.editor,title:r.title,notes:r.notes||"",link:r.link||"",due:Date.parse(r.due),stages:r.stages||[],stage:r.stage,isNew:r.is_new,upd:Date.parse(r.updated_at)});
+const nFromDb=r=>({id:r.id,video:r.video,tc:r.tc||"",cue:r.cue||"",visual:r.visual||"",sfx:r.sfx||"",done:!!r.done,sort:r.sort||0});
+const tcSec=tc=>{const p=String(tc||"").split(":").map(Number);if(p.some(isNaN)||!tc)return 1e9;return p.reduce((a,b)=>a*60+b,0);};
+const notesOf=vid=>vnotes.filter(n=>n.video===vid).sort((a,b)=>tcSec(a.tc)-tcSec(b.tc)||a.sort-b.sort);
+function parseNotes(text){const out=[];const isTc=c=>/^\d{1,2}:\d{2}(:\d{2})?([.,]\d+)?$/.test(c);
+ String(text||"").split(/\r?\n/).forEach(line=>{const cells=line.split("\t").map(c=>c.trim()).filter(Boolean);if(!cells.length)return;
+  if(cells.some(c=>/time ?code|تايم|المنطوق|المشهود/i.test(c)))return;
+  let tc="";const i=cells.findIndex(isTc);if(i>=0){tc=cells[i];cells.splice(i,1);}
+  if(cells.length&&/^\d{1,3}$/.test(cells[0])&&cells.length>1)cells.shift();
+  if(!tc&&cells.length<2)return;
+  out.push({tc,cue:cells[0]||"",visual:cells[1]||"",sfx:cells.slice(2).join(" · ")});});
+ return out;}
 const tTotal=x=>Math.max(1,x.stages.length), tDone=x=>x.stage>=tTotal(x);
 const vToDb=p=>{const o={};for(const k in p){if(k==="isNew")o.is_new=p[k];else if(k==="due")o.due=new Date(p[k]).toISOString();else o[k]=p[k];}return o;};
 const email=u=>`${u}@${CFG.EMAIL_DOMAIN||"users.cammio.app"}`;
@@ -318,12 +337,14 @@ const api = LIVE ? {
  },
  async logout(){if(chan){sb.removeChannel(chan);chan=null;}await sb.auth.signOut();profiles={};projects=[];videos=[];notifs=[];},
  async loadAll(){
-  const [a,b,c,d,e]=await Promise.all([
+  const [a,b,c,d,e,f]=await Promise.all([
    sb.from("profiles").select("*"),
    sb.from("projects").select("*").order("created_at",{ascending:false}),
    sb.from("videos").select("*").order("n"),
    sb.from("notifs").select("*").eq("user_id",S.me).order("created_at",{ascending:false}).limit(60),
-   sb.from("tasks").select("*").order("due")]);
+   sb.from("tasks").select("*").order("due"),
+   sb.from("video_notes").select("*").order("sort")]);
+  vnotes=(f.data||[]).map(nFromDb);
   tasks=(e.data||[]).map(tFromDb);
   profiles={};(a.data||[]).forEach(p=>profiles[p.id]=p);
   projects=(b.data||[]).map(pFromDb); videos=(c.data||[]).map(vFromDb);
@@ -339,6 +360,7 @@ const api = LIVE ? {
    .on("postgres_changes",{event:"*",schema:"public",table:"projects"},kick)
    .on("postgres_changes",{event:"*",schema:"public",table:"profiles"},kick)
    .on("postgres_changes",{event:"*",schema:"public",table:"tasks"},kick)
+   .on("postgres_changes",{event:"*",schema:"public",table:"video_notes"},kick)
    .on("postgres_changes",{event:"INSERT",schema:"public",table:"notifs",filter:`user_id=eq.${S.me}`},pl=>{const n=pl.new;const txt=LANG==="ar"?n.ar:n.en;toast(txt);sysNotify(txt);kick();})
    .subscribe();
  },
@@ -355,6 +377,10 @@ const api = LIVE ? {
  },
  async setRole(id,role){const r=await sb.from("profiles").update({role}).eq("id",id);if(r.error)throw r.error;await this.loadAll();},
  async updateUser(id,{name,username,role,password}){const {error}=await sb.rpc("admin_update_user",{p_id:id,p_name:name||null,p_username:username||null,p_role:role||null,p_password:password||null});if(error)throw new Error(t("accErr"));await this.loadAll();},
+ async addNotes(vid,rows){const base=notesOf(vid).length;const {error}=await sb.from("video_notes").insert(rows.map((r,i)=>({video:vid,tc:r.tc,cue:r.cue,visual:r.visual,sfx:r.sfx,sort:base+i})));if(error)throw error;await this.loadAll();},
+ async setNote(id,done){const n=vnotes.find(x=>x.id===id);if(n)n.done=done;const {error}=await sb.from("video_notes").update({done}).eq("id",id);if(error)throw error;},
+ async delNote(id){const {error}=await sb.from("video_notes").delete().eq("id",id);if(error)throw error;vnotes=vnotes.filter(x=>x.id!==id);},
+ async clearNotes(vid){const {error}=await sb.from("video_notes").delete().eq("video",vid);if(error)throw error;vnotes=vnotes.filter(x=>x.video!==vid);},
  async createTask(f){const {error}=await sb.from("tasks").insert({editor:f.editor,title:f.title,notes:f.notes,link:f.link,due:new Date(f.due).toISOString(),stages:f.stages});if(error)throw error;await this.loadAll();},
  async updTask(id,p){const o={...p};if("isNew" in o){o.is_new=o.isNew;delete o.isNew;}if("resLink" in o){o.result_link=o.resLink;delete o.resLink;}if("due" in o)o.due=new Date(o.due).toISOString();const {error}=await sb.from("tasks").update(o).eq("id",id);if(error)throw error;await this.loadAll();},
  async delTask(id){const {error}=await sb.from("tasks").delete().eq("id",id);if(error)throw error;await this.loadAll();},
@@ -382,6 +408,7 @@ const api = LIVE ? {
   Object.assign(V("p1v4"),{stage:1,pub:1,upd:Date.now()-5*H});
   Object.assign(V("p3v1"),{stage:6,pub:6,round:1,rs:"notes",link:"https://platform.krock.io/review/demo2",upd:Date.now()-40*6e4});
   Object.assign(V("p3v2"),{stage:5,pub:4,pending:{type:"draft",link:"https://platform.krock.io/review/demo3",round:1},upd:Date.now()-20*6e4});
+  vnotes=[["00:04","محامي شاطر","أكوام ورق تتراكم حوالين علي","زوم بطيء"],["00:11","راحت عليها","ختم أحمر باطل/EXPIRED","قطع حاد + صوت ختم"],["00:19","الكتابة","صفحة آلة كاتبة تتكتب","مسح أفقي"]].map((r,i)=>({id:"n"+i,video:"p1v3",tc:r[0],cue:r[1],visual:r[2],sfx:r[3],done:i===0,sort:i}));
   tasks=[{id:"t1",kind:"task",editor:"ahmed",title:"ثمبنيل لقناة علي",notes:"٣ أفكار مختلفة",link:"",due:T0+20*H,stages:["أفكار","سكتش","نهائي"],stage:1,isNew:true,upd:Date.now()-H}];
   const sn=(u,ar,en,a)=>nbox[u].push({ar,en,time:Date.now()-a,read:a>3*H});
   sn("ali","درافت ١ من ريل ٢ جاهز","Draft 1 of Reel 2 is ready",2*H);
@@ -407,6 +434,10 @@ const api = LIVE ? {
   async createAccount({name,username,password,role}){if(profiles[username]||password.length<6)throw new Error(t("accErr"));profiles[username]={id:username,username,name,role,avatar_url:"",title:"",lang:"ar"};passwords[username]=password;creds[username]=password;nbox[username]=[];},
   async setRole(id,r){profiles[id].role=r;},
   async updateUser(id,{name,username,role,password}){const p=profiles[id];if(name)p.name=name;if(role)p.role=role;if(username&&username!==p.username){if(Object.values(profiles).some(x=>x.username===username))throw new Error(t("accErr"));p.username=username;}if(password){if(password.length<6)throw new Error(t("accErr"));passwords[id]=password;creds[id]=password;}},
+  async addNotes(vid,rows){const base=notesOf(vid).length;rows.forEach((r,i)=>vnotes.push({id:"n"+Math.random().toString(36).slice(2),video:vid,...r,done:false,sort:base+i}));},
+  async setNote(id,done){vnotes.find(x=>x.id===id).done=done;},
+  async delNote(id){vnotes=vnotes.filter(x=>x.id!==id);},
+  async clearNotes(vid){vnotes=vnotes.filter(x=>x.video!==vid);},
   async createTask(f){tasks.push({id:"t"+Date.now().toString(36),kind:"task",editor:f.editor,title:f.title,notes:f.notes,link:f.link,due:f.due,stages:f.stages,stage:0,isNew:true,upd:Date.now()});},
   async updTask(id,p){Object.assign(tasks.find(x=>x.id===id),p,{upd:Date.now()});},
   async delTask(id){tasks=tasks.filter(x=>x.id!==id);},
@@ -509,8 +540,8 @@ function editorItem(v,first){
  const p=P(v.project);
  const status=v.pending?`<span class="chip y">${t("toCammio")}</span>`:v.stage===6&&v.rs==="notes"?`<span class="chip k">${t("clientNotes")}</span>`:v.stage===6&&v.rs==="awaiting"?`<span class="chip">${t("waitClient")}</span>`:`<span class="chip ${v.stage===7?"k":""}">${ST(v.stage)}</span>`;
  const L=`<div class="t row">${v.isNew?`<span class="chip y">${t("newTag")}</span>`:""}${vn(v)} <span class="muted" style="font-weight:400">· ${esc(nm(p.client))}</span></div><div class="s">${esc(p.title)} · ${fd(v.due)}${isLate(v)?` · <span style="color:var(--red)">${t("late")}</span>`:""}</div>`;
- const R=`${status}${v.stage<7?`<button class="btn sm ${v.stage<5&&!v.pending?"":"line"}" data-a="updMenu" data-v="${v.id}" ${first?'data-tour="upd"':""} ${updDisabled(v)?"disabled":""}>${t("update")}</button>`:""}`;
- let det=`${steps(v.stage)}${links(p)}`;
+ const R=`${notesChip(v.id)}${status}${v.stage<7?`<button class="btn sm ${v.stage<5&&!v.pending?"":"line"}" data-a="updMenu" data-v="${v.id}" ${first?'data-tour="upd"':""} ${updDisabled(v)?"disabled":""}>${t("update")}</button>`:""}`;
+ let det=`${steps(v.stage)}${notesList(v.id,true)}${links(p)}`;
  if(v.pending) det+=`<div class="box tiny">${v.pending.type==="draft"?`${t("draft")} ${v.pending.round}`:ST(v.pending.stage)} → ${t("toCammio")}</div>`;
  else if(v.stage===5||(v.stage===6&&v.rs==="revising")||(S.draftOpen===v.id&&v.stage<6)) det+=`<div class="box y"><b>${t("draft")} ${v.stage===6?v.round+1:1}</b>
   <div class="row" style="margin:10px 0"><a class="btn line sm" href="${esc(CFG.UPLOAD_URL)}" target="_blank" rel="noopener" style="text-decoration:none">${t("step1")} ${ico.ext}</a></div>
@@ -547,8 +578,8 @@ function adminView(){
   `${links(p)}<div class="row"><select id="as_${p.id}" style="width:auto">${eds.map(e=>`<option value="${e}">${esc(nm(e))}</option>`).join("")}</select><button class="btn sm" data-a="assign" data-p="${p.id}" ${eds.length?"":"disabled"}>${t("assign")}</button></div>`)).join(""):`<div class="empty">${t("noTasks")}</div>`;
  if(tab==="all") body=act.length?act.slice().sort((a,b)=>(a.stage===7)-(b.stage===7)||a.due-b.due).map(v=>{const p=P(v.project);
   return item(v.id,`<div class="t">${vn(v)} <span class="muted" style="font-weight:400">· ${esc(nm(p.client))}</span></div><div class="s">${esc(nm(p.editor))} · ${ago(v.upd)}</div>`,
-  `${isLate(v)?`<span class="chip r">${t("late")}</span>`:""}<span class="chip ${v.stage===7?"k":""}">${ST(v.stage)}</span><span class="chip hide-m">${fd(v.due)}</span>`,
-  `${steps(v.stage)}<dl class="kv"><dt>${t("client")}</dt><dd>${ST(v.pub)}</dd><dt>${t("editor")}</dt><dd>${ST(v.stage)}</dd></dl>${links(p)}${v.stage<7?`<button class="btn line sm" data-a="ping" data-v="${v.id}">${t("ping")} ${esc(nm(p.editor))}</button>`:""}`)}).join(""):`<div class="empty">${t("noTasks")}</div>`;
+  `${notesChip(v.id)}${isLate(v)?`<span class="chip r">${t("late")}</span>`:""}<span class="chip ${v.stage===7?"k":""}">${ST(v.stage)}</span><span class="chip hide-m">${fd(v.due)}</span>`,
+  `${steps(v.stage)}<dl class="kv"><dt>${t("client")}</dt><dd>${ST(v.pub)}</dd><dt>${t("editor")}</dt><dd>${ST(v.stage)}</dd></dl>${notesList(v.id,false)}${links(p)}<div class="acts"><button class="btn sm" data-a="notesOpen" data-v="${v.id}">${t("notesL")} (${notesOf(v.id).length})</button>${v.stage<7?`<button class="btn line sm" data-a="ping" data-v="${v.id}">${t("ping")} ${esc(nm(p.editor))}</button>`:""}</div>`)}).join(""):`<div class="empty">${t("noTasks")}</div>`;
  if(tab==="tasks") body=`<div class="item" style="padding:12px 16px"><button class="btn y sm" data-a="newTask">+ ${t("newTask")}</button></div>`+(tasks.length?tasks.slice().sort((a,b)=>tDone(a)-tDone(b)||a.due-b.due).map(x=>item(x.id,
   `<div class="t">${esc(x.title)} <span class="muted" style="font-weight:400">· ${esc(nm(x.editor))}</span></div><div class="s">${fd(x.due)} · ${ago(x.upd)}</div>`,
   `${!tDone(x)&&x.due<Date.now()?`<span class="chip r">${t("late")}</span>`:""}<span class="chip ${tDone(x)?"k":""}">${esc(tStageName(x))}</span>`,
@@ -569,6 +600,21 @@ function adminView(){
 }
 
 /* sheets */
+function notesSheet(){const v=V(S.notesV);if(!v)return "";const p=P(v.project);const ns=notesOf(v.id);const pv=parseNotes(S.paste||"");
+ return `<header>${t("notesL")} · ${vn(v)} <span class="muted tiny">${esc(nm(p.client))}</span><button class="ico" data-a="closeAll">${ico.x}</button></header>
+ <div class="body">
+  <div><label>${t("nPaste")}</label><textarea id="pasteBox" placeholder="${t("nPastePh")}" style="min-height:110px;font-size:12px">${esc(S.paste||"")}</textarea>
+   ${pv.length?`<div class="row" style="margin-top:8px"><span class="chip y">${pv.length} ${t("nFound")}</span><span class="grow"></span><button class="btn sm" data-a="pasteAdd">${t("nAddAll")}</button></div>
+   <div class="tiny muted" style="margin-top:6px">${pv.slice(0,3).map(r=>`${esc(r.tc||"—")} · ${esc(r.cue)}`).join("<br>")}${pv.length>3?"<br>…":""}</div>`:""}</div>
+  <div class="sep"></div>
+  <form id="nf" style="display:grid;gap:8px"><label style="margin:0">${t("nAddOne")}</label>
+   <div class="two"><input name="tc" placeholder="${t("nTc")} 01:23" style="direction:ltr"><input name="cue" placeholder="${t("nCue")}"></div>
+   <input name="visual" placeholder="${t("nVisual")}"><input name="sfx" placeholder="${t("nSfx")}">
+   <button class="btn line sm" type="submit">${t("add")}</button></form>
+  <div class="sep"></div>
+  ${ns.length?`<div>${ns.map(n=>`<div class="row" style="padding:7px 0;border-bottom:1px solid var(--line);align-items:flex-start"><span style="font-family:ui-monospace,monospace;font-size:12px;background:${n.done?"var(--soft)":"var(--y)"};border-radius:5px;padding:1px 6px;direction:ltr">${esc(n.tc||"—")}</span><span class="grow tiny"><b>${esc(n.cue)}</b> ${esc(n.visual)}${n.sfx?` · <span class="muted">${esc(n.sfx)}</span>`:""}</span><button class="tiny muted" data-a="noteDel" data-n="${n.id}">✕</button></div>`).join("")}</div>
+   <button class="btn line sm" style="color:var(--red)" data-a="notesClear">${S.delArm?t("delSure"):t("nClear")}</button>`:""}
+ </div>`;}
 function finSheet(){const x=T_(S.finT);if(!x)return "";
  return `<header>${t("finishT")}<button class="ico" data-a="closeAll">${ico.x}</button></header>
  <div class="body"><b>${esc(x.title)}</b>
@@ -630,7 +676,7 @@ function render(){
  const r=S.me?role(S.me):null;
  root.innerHTML=!S.me?loginView():r==="client"?clientView():r==="editor"?editorView():adminView();
  const sh=document.getElementById("sheet");
- sh.innerHTML=S.sheet==="req"?reqSheet():S.sheet==="chk"?checkinSheet():S.sheet==="bell"?bellSheet():S.sheet==="set"?settingsSheet():S.sheet==="user"?editUserSheet():S.sheet==="task"?taskSheet():S.sheet==="fin"?finSheet():"";
+ sh.innerHTML=S.sheet==="req"?reqSheet():S.sheet==="chk"?checkinSheet():S.sheet==="bell"?bellSheet():S.sheet==="set"?settingsSheet():S.sheet==="user"?editUserSheet():S.sheet==="task"?taskSheet():S.sheet==="fin"?finSheet():S.sheet==="notes"?notesSheet():"";
  sh.classList.toggle("on",!!S.sheet);document.getElementById("scrim").classList.toggle("on",!!S.sheet);
  const lf=document.getElementById("lf");if(lf)lf.onsubmit=doLogin;
  const rf=document.getElementById("rf");if(rf){rf.onsubmit=doReq;rf.oninput=e=>{if(e.target.name)S.form[e.target.name]=e.target.value;};}
@@ -639,6 +685,9 @@ function render(){
  const pf=document.getElementById("pf");if(pf)pf.onsubmit=doPass;
  const avf=document.getElementById("avf");if(avf)avf.onchange=doAvatar;
  const uf=document.getElementById("uf");if(uf)uf.onsubmit=doEditUser;
+ const pb=document.getElementById("pasteBox");if(pb){pb.oninput=()=>{S.paste=pb.value;clearTimeout(window.__pt);window.__pt=setTimeout(()=>{const st=pb.selectionStart;render();const nb=document.getElementById("pasteBox");if(nb){nb.focus();try{nb.setSelectionRange(st,st)}catch(_){}}},350);};}
+ const nf=document.getElementById("nf");if(nf)nf.onsubmit=async e=>{e.preventDefault();const r={tc:F(nf,"tc").value.trim(),cue:F(nf,"cue").value.trim(),visual:F(nf,"visual").value.trim(),sfx:F(nf,"sfx").value.trim()};if(!r.cue&&!r.visual)return;await run(()=>api.addNotes(S.notesV,[r]));const n2=document.getElementById("nf");n2&&F(n2,"tc").focus();};
+ document.querySelectorAll("[data-note]").forEach(cb=>cb.onchange=()=>toggleNote(cb.dataset.note,cb.checked));
  const tf=document.getElementById("tf");if(tf){tf.onsubmit=doTask;tf.oninput=e=>{if(e.target.name)S.tf[e.target.name]=e.target.value;};const si=document.getElementById("tfStage");if(si)si.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();addStage();}};}
 }
 async function run(fn){try{await fn();}catch(e){console.error(e);toast(e&&e.message&&!/^[a-z_ ]+$/i.test(e.message)?e.message:t("err"));}render();}
@@ -665,6 +714,8 @@ async function doAcc(e){
  await run(async()=>{await api.createAccount({name,username,password,role:r});toast("@"+username+" ✓");});
 }
 async function doSettings(e){e.preventDefault();const f=e.target;await run(async()=>{await api.updProfile({name:F(f,"name").value.trim()||profiles[S.me].name,title:F(f,"title").value.trim(),lang:LANG});toast(t("saved"));});}
+async function toggleNote(id,done){const n=vnotes.find(x=>x.id===id);if(!n)return;const v=V(n.video),p=P(v.project);
+ await run(async()=>{await api.setNote(id,done);const ns=notesOf(v.id);if(done&&ns.every(x=>x.done))await api.notifyAdmins(`${nm(S.me)} ${t("nAllDone")} — ${vnAr(v)} (${nm(p.client)})`,`${nm(S.me)} finished all notes — ${vnEn(v)} (${nm(p.client)})`);});}
 function addStage(){const si=document.getElementById("tfStage");const v=(si&&si.value||"").trim();if(!v)return;S.tf.stages.push(v);render();const n=document.getElementById("tfStage");n&&n.focus();}
 async function doTask(e){e.preventDefault();const f=S.tf;if(!f.editor||!f.title||!f.title.trim()){toast(t("tNeed"));return;}
  const due=f.due?new Date(f.due+"T20:00:00").getTime():sod(Date.now())+20*H;
@@ -742,6 +793,10 @@ document.addEventListener("click",e=>{
     await api.notify(pp.client,`${pp.title} مع ${nm(ed)}`,`${pp.title} is with ${nm(ed)}`);S.open=null;toast("✓");});return;}
   case "ping":run(async()=>{await api.notify(p.editor,`Cammio: إنت فين في ${vnAr(v)}؟`,`Cammio: where are you on ${vnEn(v)}?`);toast(t("pinged"));});return;
   case "setRole":run(async()=>{await api.setRole(b.dataset.u,b.dataset.r);toast("✓");});return;
+  case "notesOpen":S.notesV=b.dataset.v;S.paste="";S.delArm=false;S.sheet="notes";break;
+  case "pasteAdd":{const rows=parseNotes(S.paste);const v=V(S.notesV),p=P(v.project);run(async()=>{await api.addNotes(S.notesV,rows);S.paste="";await api.notify(p.editor,`نوتس جديدة (${rows.length}) على ${vnAr(v)} — ${nm(p.client)}`,`${rows.length} new notes on ${vnEn(v)} — ${nm(p.client)}`);toast("✓");});return;}
+  case "noteDel":run(()=>api.delNote(b.dataset.n));return;
+  case "notesClear":if(!S.delArm){S.delArm=true;render();setTimeout(()=>{if(S.delArm){S.delArm=false;render();}},4000);return;}S.delArm=false;run(()=>api.clearNotes(S.notesV));return;
   case "newTask":S.editT=null;S.delArm=false;S.tf={editor:Object.keys(profiles).find(u=>role(u)==="editor")||"",title:"",notes:"",link:"",due:"",stages:[]};S.sheet="task";break;
   case "editTask":{const x=T_(b.dataset.t);const d=new Date(x.due);const pad=n=>String(n).padStart(2,"0");S.editT=x.id;S.delArm=false;S.tf={editor:x.editor,title:x.title,notes:x.notes,link:x.link,due:`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`,stages:x.stages.slice()};S.sheet="task";break;}
   case "tfo":S.tf[b.dataset.k]=b.dataset.v;break;
