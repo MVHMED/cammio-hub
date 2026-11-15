@@ -1,5 +1,5 @@
 import { html, render, useState, useEffect, useRef, useErrorBoundary } from "../vendor/preact-htm.js";
-import { T, EV, TOURS } from "./i18n.js";
+import { T, EV, TOURS } from "./i18n.js?v=7";
 import { db, api, LIVE, onChange, UPLOAD_URL, H, D } from "./data.js";
 
 /* ================= state ================= */
@@ -25,6 +25,9 @@ const sod = x => { const d = new Date(x); d.setHours(0, 0, 0, 0); return d.getTi
 const fd = x => (x ? new Date(x).toLocaleDateString(ui.lang === "ar" ? "ar-EG" : "en-GB", { day: "numeric", month: "short" }) : "—");
 const fdt = x => (x ? new Date(x).toLocaleString(ui.lang === "ar" ? "ar-EG" : "en-GB", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" }) : "—");
 const ago = x => { const m = Math.round((Date.now() - x) / 6e4); if (m < 1) return t("now"); if (m < 60) return m + t("m"); if (m < 1440) return Math.round(m / 60) + t("h"); return Math.round(m / 1440) + t("d"); };
+const p2 = x => String(Math.max(0, +x || 0)).padStart(2, "0");
+const vc = (v, r) => (v ? p2(v.n) + "." + p2(r) : p2(r));
+const normVer = (txt, v) => String(txt || "").replace(/(^|[^\d.])(\d{1,2})[.\-_](\d{1,2})(?![\d.])/g, (m, a, n, r) => a + p2(n) + "." + p2(r));
 const vname = v => { const p = P(v.project); return `${p && p.type === "tLong" ? t("video") : t("reel")} ${v.n}`; };
 const vfull = v => { const p = P(v.project); return p ? `${p.title} · ${vname(v)}` : vname(v); };
 const isLateV = v => v.stage < 7 && v.due < Date.now() && !db.deliveries.some(d => d.video === v.id);
@@ -46,7 +49,7 @@ function toast(msg) { const id = Math.random(); set({ toasts: [...ui.toasts, { i
 async function run(fn) { try { set({ busy: true }); await fn(); } catch (e) { console.error(e); toast(e && e.message && /[؀-ۿa-z]/i.test(e.message) && e.message.length < 140 ? e.message : t("err")); } finally { set({ busy: false }); } }
 const actorName = e => (myRole() === "client" && e.actorRole === "editor" ? t("theEditor") : e.actorRole === "admin" ? "Cammio" : nm(e.actor));
 function itemName(e) { if (e.video) { const v = V(e.video); return v ? vfull(v) : t("video"); } if (e.task) { const x = TK(e.task); return x ? x.title : t("task"); } if (e.project) { const p = P(e.project); return p ? p.title : t("project"); } return ""; }
-function evText(e) { const tpl = EV[e.kind]; if (!tpl) return e.kind; const pr = e.params || {}; const stage = typeof pr.stage === "number" ? ST(pr.stage) : pr.stage || ""; return tpl[ui.lang].replace("{a}", actorName(e)).replace("{item}", itemName(e)).replace("{stage}", stage).replace("{round}", pr.round || "").replace("{n}", pr.n || "").replace("{text}", pr.text || ""); }
+function evText(e) { const tpl = EV[e.kind]; if (!tpl) return e.kind; const pr = e.params || {}; const stage = typeof pr.stage === "number" ? ST(pr.stage) : pr.stage || ""; return tpl[ui.lang].replace("{a}", actorName(e)).replace("{item}", itemName(e)).replace("{stage}", stage).replace("{round}", pr.round ? (e.video && V(e.video) ? vc(V(e.video), pr.round) : pr.round) : "").replace("{n}", pr.n || "").replace("{text}", pr.text || ""); }
 const notifText = n => { const e = db.events.find(x => x.id === n.eventId); return e ? evText(e) : (ui.lang === "ar" ? n.ar : n.en) || "…"; };
 
 /* ---- sheets / notes parsing ---- */
@@ -82,7 +85,7 @@ function ledger(ed, month) {
 const A = {
   // editor
   moveStage: (v, s) => run(async () => { await api.updVideo(v.id, { stage: s, pending: { type: "stage", stage: s } }); await api.log("stage_req", { video: v.id, params: { stage: s } }); toast(t("waitingCammio")); }),
-  deliver: (v, link, note) => run(async () => { const u = cleanUrl(link); if (!u) throw new Error(t("needLink")); const round = (v.round || 0) + 1; await api.addDelivery(v.id, round, u, note); await api.log("draft_sent", { video: v.id, params: { round } }); set({ sheet: null }); toast(t("sent")); }),
+  deliver: (v, link, note) => run(async () => { const u = cleanUrl(link); if (!u) throw new Error(t("needLink")); const round = (v.round || 0) + 1; await api.addDelivery(v.id, round, u, normVer(note, v)); await api.log("draft_sent", { video: v.id, params: { round } }); set({ sheet: null }); toast(t("sent")); }),
   gotNotes: v => run(async () => { await api.updVideo(v.id, { rs: "revising" }); await api.log("revising", { video: v.id }); }),
   tick: (n, done) => run(async () => { await api.setNote(n.id, done); const ns = notesOf(n.video); if (done && ns.every(x => x.done)) await api.log("notes_all_done", { video: n.video }); }),
   taskStage: (x, s) => run(async () => { await api.updTask(x.id, { stage: s }); await api.log("task_stage", { task: x.id, params: { stage: x.stages[s - 1] || t("done") } }); }),
@@ -245,7 +248,7 @@ function Inbox() {
   return html`<div class="page">
     <div class="hero"><h1>${t("inbox")}</h1>${!total && !replies.length && !lateV.length && !lateT.length ? html`<p class="muted">${t("allGood")}</p>` : ""}</div>
     ${pd.length || sr.length ? html`<${Section} title=${t("needsOk")} count=${pd.length + sr.length}><div class="list">
-      ${pd.map(d => { const v = V(d.video), p = P(v.project); return html`<div class="row-item static"><div class="ri-main" onClick=${() => set({ panel: { type: "v", id: v.id } })}><div class="ri-t">${vfull(v)} <${Chip} k="y">${t("draft")} ${d.round}<//></div><div class="ri-s">${nm(d.author)} → ${nm(p.client)} · ${ago(d.created)}${d.note ? " · “" + d.note + "”" : ""}</div></div>
+      ${pd.map(d => { const v = V(d.video), p = P(v.project); return html`<div class="row-item static"><div class="ri-main" onClick=${() => set({ panel: { type: "v", id: v.id } })}><div class="ri-t">${vfull(v)} <${Chip} k="y">${vc(V(d.video), d.round)}<//></div><div class="ri-s">${nm(d.author)} → ${nm(p.client)} · ${ago(d.created)}${d.note ? " · “" + d.note + "”" : ""}</div></div>
         <div class="ri-meta">${quick(html`<${ExtLink} href=${d.link}>Krock<//>`, "")}<button class="btn line sm" onClick=${() => A.holdDeliv(d)}>${t("hold")}</button><button class="btn sm" onClick=${() => A.approveDeliv(d)}>${t("approveSend")}</button></div></div>`; })}
       ${sr.map(v => html`<div class="row-item static"><div class="ri-main" onClick=${() => set({ panel: { type: "v", id: v.id } })}><div class="ri-t">${vfull(v)}</div><div class="ri-s">${nm(P(v.project).editor)}: ${ST(v.pub)} → <b>${ST(v.pending.stage)}</b> · ${ago(v.upd)}</div></div>
         <div class="ri-meta"><button class="btn line sm" onClick=${() => A.holdStage(v)}>${t("hold")}</button><button class="btn sm" onClick=${() => A.approveStage(v)}>${t("approveStage")}</button></div></div>`)}
@@ -382,22 +385,22 @@ function NextStep({ v, p }) {
   const r = myRole(), pd = pendingDeliv(v.id); const [link, setLink] = useState(""), [note, setNote] = useState("");
   const box = (title, body, k) => html`<div class=${"next " + (k || "")}><div class="next-h">${t("pNext")}</div><b>${title}</b>${body}</div>`;
   if (r === "admin") {
-    if (pd) return box(`${t("draftIn")}: ${t("draft")} ${pd.round}`, html`<div class="tiny muted">${nm(pd.author)} · ${fdt(pd.created)}${pd.note ? " · “" + pd.note + "”" : ""}</div><div class="acts"><${ExtLink} href=${pd.link}>Krock<//><span class="grow"></span><button class="btn line sm" onClick=${() => A.holdDeliv(pd)}>${t("hold")}</button><button class="btn sm" onClick=${() => A.approveDeliv(pd)}>${t("approveSend")}</button></div>`, "y");
+    if (pd) return box(`${t("draftIn")}: ${vc(v, pd.round)}`, html`<div class="tiny muted">${nm(pd.author)} · ${fdt(pd.created)}${pd.note ? " · “" + pd.note + "”" : ""}</div><div class="acts"><${ExtLink} href=${pd.link}>Krock<//><span class="grow"></span><button class="btn line sm" onClick=${() => A.holdDeliv(pd)}>${t("hold")}</button><button class="btn sm" onClick=${() => A.approveDeliv(pd)}>${t("approveSend")}</button></div>`, "y");
     if (v.pending) return box(`${t("stageReq")}: ${ST(v.pub)} → ${ST(v.pending.stage)}`, html`<div class="acts"><span class="grow"></span><button class="btn line sm" onClick=${() => A.holdStage(v)}>${t("hold")}</button><button class="btn sm" onClick=${() => A.approveStage(v)}>${t("approveStage")}</button></div>`, "y");
     return box(v.stage === 6 && v.rs === "awaiting" ? t("withClient") : v.rs === "notes" ? t("clientNotesIn") : ST(v.stage), html`<div class="acts"><select class="sm-sel" value=${v.stage} onChange=${e => A.setStage(v, +e.target.value)}>${[0, 1, 2, 3, 4, 5, 6, 7].map(i => html`<option value=${i}>${ST(i)}</option>`)}</select><span class="tiny muted">${t("setStage")}</span><span class="grow"></span>${v.stage < 7 && p.editor ? html`<button class="btn line sm" onClick=${() => A.ping(v)}>${t("askEditor")}</button>` : ""}</div>`);
   }
   if (r === "editor") {
-    if (pd) return box(t("waitingCammio"), html`<div class="tiny muted">${t("draft")} ${pd.round} · ${fdt(pd.created)}</div><div class="acts"><${ExtLink} href=${pd.link}>Krock<//></div>`);
-    if (v.stage === 6 && v.rs === "awaiting") return box(t("withClient"), html`<div class="tiny muted">${t("draft")} ${v.round}</div>`);
+    if (pd) return box(t("waitingCammio"), html`<div class="tiny muted">${vc(v, pd.round)} · ${fdt(pd.created)}</div><div class="acts"><${ExtLink} href=${pd.link}>Krock<//></div>`);
+    if (v.stage === 6 && v.rs === "awaiting") return box(t("withClient"), html`<div class="tiny muted">${vc(v, v.round)}</div>`);
     if (v.stage === 7) return box(ST(7), "");
-    const deliverForm = html`<div class="dform"><div class="row wrap"><a class="btn line sm" href=${UPLOAD_URL} target="_blank" rel="noopener">${t("step1")} ↗</a></div><label>${t("step2")}</label><input placeholder=${t("linkPh")} value=${link} onInput=${e => setLink(e.target.value)} dir="ltr" /><input placeholder=${t("noteOpt")} value=${note} onInput=${e => setNote(e.target.value)} /><button class="btn" onClick=${() => A.deliver(v, link, note)}>${t("sendToCammio")} · ${t("draft")} ${(v.round || 0) + 1}</button></div>`;
+    const deliverForm = html`<div class="dform"><div class="row wrap"><a class="btn line sm" href=${UPLOAD_URL} target="_blank" rel="noopener">${t("step1")} ↗</a><span class="tiny muted">${t("nameAs")}</span><code class="ver">${vc(v, (v.round || 0) + 1)}</code></div><label>${t("step2")}</label><input placeholder=${t("linkPh")} value=${link} onInput=${e => setLink(e.target.value)} dir="ltr" /><input placeholder=${t("noteOpt")} value=${note} onInput=${e => setNote(e.target.value)} /><button class="btn" onClick=${() => A.deliver(v, link, note)}>${t("sendToCammio")} · ${vc(v, (v.round || 0) + 1)}</button></div>`;
     if (v.rs === "notes") return box(t("clientNotesIn"), html`<div class="acts"><${ExtLink} href=${v.link}>Krock<//><span class="grow"></span><button class="btn sm" onClick=${() => A.gotNotes(v)}>${t("gotNotes")}</button></div>`, "y");
     return box(v.pending ? `${t("waitingCammio")}: ${ST(v.pending.stage)}` : v.rs === "revising" ? t("revising") : ST(v.stage), html`
       ${v.rs !== "revising" ? html`<div class="stagepick">${[1, 2, 3, 4, 5].map(i => html`<button disabled=${i <= v.stage} class=${i === v.stage + 1 ? "nextst" : ""} onClick=${() => A.moveStage(v, i)}>${ST(i)}</button>`)}</div>` : ""}
       <details open=${v.stage >= 4 || v.rs === "revising"}><summary>${t("deliverDraft")}</summary>${deliverForm}</details>`);
   }
   // client
-  if (v.pub === 6 && v.rs === "awaiting") { const u = usedRounds(v); return box(`${t("draftReady")} · ${t("draft")} ${v.round}`, html`<div class="row tiny muted">${t("rounds")} ${[1, 2, 3].map(i => html`<i class=${"rd" + (i <= u ? " on" : "")}></i>`)} ${u}/3</div><div class="acts"><${ExtLink} href=${v.link}>${t("openDraft")}<//><span class="grow"></span><button class="btn line sm" disabled=${u >= 3} onClick=${() => A.reviewNotes(v)}>${t("notesDone")}</button><button class="btn y sm" onClick=${() => A.approveFinal(v)}>${t("approveFinal")}</button></div>${u >= 3 ? html`<div class="tiny muted">${t("noRounds")}</div>` : ""}`, "y"); }
+  if (v.pub === 6 && v.rs === "awaiting") { const u = usedRounds(v); return box(`${t("draftReady")} · ${vc(v, v.round)}`, html`<div class="row tiny muted">${t("rounds")} ${[1, 2, 3].map(i => html`<i class=${"rd" + (i <= u ? " on" : "")}></i>`)} ${u}/3</div><div class="acts"><${ExtLink} href=${v.link}>${t("openDraft")}<//><span class="grow"></span><button class="btn line sm" disabled=${u >= 3} onClick=${() => A.reviewNotes(v)}>${t("notesDone")}</button><button class="btn y sm" onClick=${() => A.approveFinal(v)}>${t("approveFinal")}</button></div>${u >= 3 ? html`<div class="tiny muted">${t("noRounds")}</div>` : ""}`, "y"); }
   if (v.rs === "notes") return box(t("notesSentWait"), "");
   if (v.rs === "revising") return box(t("revising"), "");
   if (v.pub === 7) return box(ST(7), html`<div class="acts"><${ExtLink} href=${v.link}>${t("openDraft")}<//></div>`);
@@ -425,7 +428,7 @@ function NotesBlock({ v }) {
 function DelivBlock({ v }) {
   const ds = delivOf(v.id), r = myRole();
   const lbl = d => d.status === "pending" ? (r === "admin" ? t("dPending") : t("dPendingEd")) : d.status === "approved" ? t("dApproved") : d.status === "held" ? t("dHeld") : t("dSuper");
-  return ds.length ? html`<div class="list">${ds.map(d => html`<div class="row-item static"><div class="ri-main"><div class="ri-t">${t("draft")} ${d.round}${r !== "client" ? html` <${Chip} k=${d.status === "pending" ? "y" : d.status === "approved" ? "k" : ""}>${lbl(d)}<//>` : ""}</div><div class="ri-s">${r !== "client" ? nm(d.author) + " · " : ""}${fdt(d.created)}${d.note ? " · “" + d.note + "”" : ""}</div></div><div class="ri-meta"><${ExtLink} href=${d.link}>Krock<//>${r === "admin" && d.status === "pending" ? html`<button class="btn sm" onClick=${() => A.approveDeliv(d)}>${t("approveSend")}</button>` : ""}</div></div>`)}</div>` : html`<${Empty} />`;
+  return ds.length ? html`<div class="list">${ds.map(d => html`<div class="row-item static"><div class="ri-main"><div class="ri-t">${vc(V(d.video), d.round)}${r !== "client" ? html` <${Chip} k=${d.status === "pending" ? "y" : d.status === "approved" ? "k" : ""}>${lbl(d)}<//>` : ""}</div><div class="ri-s">${r !== "client" ? nm(d.author) + " · " : ""}${fdt(d.created)}${d.note ? " · “" + d.note + "”" : ""}</div></div><div class="ri-meta"><${ExtLink} href=${d.link}>Krock<//>${r === "admin" && d.status === "pending" ? html`<button class="btn sm" onClick=${() => A.approveDeliv(d)}>${t("approveSend")}</button>` : ""}</div></div>`)}</div>` : html`<${Empty} />`;
 }
 function Activity({ filter }) { const es = db.events.filter(filter); return es.length ? html`<div class="timeline">${es.map(e => html`<div class="tl"><span class="dot"></span><div class="grow">${evText(e)}<small>${fdt(e.time)}</small></div></div>`)}</div>` : html`<${Empty} />`; }
 function InfoBlock({ p }) {
@@ -548,6 +551,7 @@ function DeliverSheet() {
   return html`<${SheetHead} title=${t("deliver")} /><div class="sb form">${list.length ? html`
     <label>${t("whichItem")}<select value=${sel} onChange=${e => setSel(e.target.value)}>${list.map(x => html`<option value=${x.id}>${label(x)}</option>`)}</select></label>
     <a class="btn line" href=${UPLOAD_URL} target="_blank" rel="noopener">${t("step1")} ↗</a>
+    ${cur && cur.kind !== "task" ? html`<div class="row"><span class="tiny muted grow">${t("nameAs")}</span><code class="ver">${vc(cur, (cur.round || 0) + 1)}</code></div>` : ""}
     <label>${t("step2")}<input value=${link} onInput=${e => setLink(e.target.value)} placeholder=${t("linkPh")} dir="ltr" /></label>
     ${cur && cur.kind !== "task" ? html`<label>${t("noteOpt")}<input value=${note} onInput=${e => setNote(e.target.value)} /></label>` : html`<label class="row chk"><input type="checkbox" checked=${fin} onChange=${e => setFin(e.target.checked)} /> ${t("finishedTask")}</label>`}
     <button class=${"btn" + (ui.busy ? " busy" : "")} onClick=${() => (cur.kind === "task" ? A.taskDeliver(cur, link, fin) : A.deliver(cur, link, note))}>${t("sendToCammio")}</button>` : html`<${Empty} text=${t("nothingToDeliver")} />`}</div>`;

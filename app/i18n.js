@@ -26,7 +26,7 @@ export const T = {
   // statuses
   clientSees:{ar:"الكلاينت شايف",en:"Client sees"}, editorAt:{ar:"الإديتور عند",en:"Editor at"},
   dPending:{ar:"مستني موافقتك",en:"Awaiting your OK"}, dPendingEd:{ar:"مستني موافقة Cammio",en:"Awaiting Cammio"}, dApproved:{ar:"اتبعت للكلاينت",en:"Sent to client"}, dHeld:{ar:"اتوقف",en:"Held"}, dSuper:{ar:"اتبدل بنسخة أحدث",en:"Replaced"},
-  draft:{ar:"درافت",en:"Draft"}, round:{ar:"جولة",en:"Round"}, rounds:{ar:"جولات المراجعة",en:"Review rounds"},
+  draft:{ar:"درافت",en:"Draft"}, nameAs:{ar:"سمّي النسخة على Krock",en:"Name the version on Krock"}, round:{ar:"جولة",en:"Round"}, rounds:{ar:"جولات المراجعة",en:"Review rounds"},
   // admin actions
   approveSend:{ar:"ابعت للكلاينت",en:"Send to client"}, hold:{ar:"استنى",en:"Hold"}, approveStage:{ar:"وافق",en:"Approve"}, askEditor:{ar:"اسأل الإديتور",en:"Ask the editor"},
   stageReq:{ar:"طلب تحديث مرحلة",en:"Stage update"}, draftIn:{ar:"درافت وصل",en:"Draft delivered"}, setStage:{ar:"غيّر المرحلة يدوي",en:"Set stage manually"},
