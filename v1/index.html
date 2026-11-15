@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cammio Studio Hub</title>
+<meta name="description" content="Cammio Studio">
+<meta property="og:title" content="Cammio Studio">
+<meta property="og:description" content="by Cammio Studio">
+<meta name="theme-color" content="#F6F6F3">
+<meta name="color-scheme" content="light">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Inter+Tight:wght@400;500;600;700&family=Mrs+Saint+Delafield&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<script>
+/* ====== CONFIG — paste your Supabase keys here to go live. Empty = demo mode. ====== */
+window.HUB_CONFIG = {
+  SUPABASE_URL: "https://zysvapigcsjnimpjgryv.supabase.co",
+  SUPABASE_ANON_KEY: "sb_publishable_h6CZL7l6UFrPSrLODPjS6Q_kWtxagfc",
+  EMAIL_DOMAIN: "users.cammio.app",
+  UPLOAD_URL: "https://platform.krock.io/dashboard/projects"
+};
+</script>
+<style>
+:root{--bg:#F6F6F3;--card:#FFFFFF;--ink:#0B0B0B;--mute:#8A8A85;--line:#E6E6E1;--soft:#EFEFEA;--y:#FFD400;--red:#E5484D}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%;background:var(--bg);color:var(--ink)}
+body{font-family:"Inter Tight","IBM Plex Sans Arabic",-apple-system,system-ui,"Segoe UI",Tahoma,sans-serif;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+[dir=rtl] body{font-family:"IBM Plex Sans Arabic","Inter Tight",system-ui,sans-serif}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+a{color:inherit}
+input,textarea,select{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:11px 12px;width:100%;outline:none;transition:border-color .15s}
+input:focus,textarea:focus,select:focus{border-color:var(--ink)}
+textarea{min-height:84px;resize:vertical}
+label{display:block;font-size:12px;color:var(--mute);margin-bottom:6px}
+.muted{color:var(--mute)} .tiny{font-size:12px}
+.row{display:flex;align-items:center;gap:8px}
+.grow{flex:1;min-width:0}
+.btn{background:var(--ink);color:#fff;border-radius:10px;padding:10px 16px;font-weight:600;font-size:13px;white-space:nowrap;transition:transform .15s,opacity .15s}
+.btn:hover{transform:translateY(-1px)}
+.btn.y{background:var(--y);color:var(--ink)}
+.btn.line{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.line:hover{border-color:var(--ink)}
+.btn.sm{padding:7px 11px;font-size:12px;border-radius:8px}
+.btn[disabled],.btn.busy{opacity:.3;pointer-events:none}
+.ico{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;position:relative;transition:border-color .15s;flex:none}
+.ico:hover{border-color:var(--ink)}
+.ico b{position:absolute;top:-3px;inset-inline-end:-3px;background:var(--y);font-size:10px;min-width:16px;height:16px;border-radius:8px;display:grid;place-items:center;padding:0 4px}
+.av{width:26px;height:26px;border-radius:50%;background:var(--ink);color:#fff;display:inline-grid;place-items:center;font-size:11px;font-weight:600;flex:none;overflow:hidden}
+.av img{width:100%;height:100%;object-fit:cover}
+.av.lg{width:64px;height:64px;font-size:22px}
+.chip{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:2px 9px;white-space:nowrap;color:var(--mute)}
+.chip.y{background:var(--y);border-color:var(--y);color:var(--ink)}
+.chip.k{background:var(--ink);border-color:var(--ink);color:#fff}
+.chip.r{border-color:var(--red);color:var(--red)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--y);display:inline-block;flex:none}
+.dot.pulse{animation:pulse 2s infinite}
+
+/* signature */
+.sig{position:fixed;bottom:12px;right:16px;z-index:5;pointer-events:none;display:flex;align-items:flex-end;gap:2px;direction:ltr;opacity:.85}
+.sig small{font-family:"Inter Tight",sans-serif;font-size:10px;color:var(--mute);margin-bottom:9px;animation:sigby 8s ease-in-out infinite}
+.sig svg{overflow:visible}
+.sig text{font-family:"Mrs Saint Delafield",cursive;font-size:34px;fill:transparent;stroke:var(--ink);stroke-width:.7;stroke-dasharray:700;stroke-dashoffset:700;animation:sig 8s ease-in-out infinite}
+@keyframes sig{0%{stroke-dashoffset:700;fill:rgba(11,11,11,0);opacity:1}38%{stroke-dashoffset:0;fill:rgba(11,11,11,0)}50%{fill:rgba(11,11,11,1)}78%{fill:rgba(11,11,11,1);opacity:1;stroke-dashoffset:0}92%{opacity:0;stroke-dashoffset:0}100%{opacity:0;stroke-dashoffset:700}}
+@keyframes sigby{0%,5%{opacity:0}15%,78%{opacity:1}92%,100%{opacity:0}}
+
+/* login */
+.login{min-height:100vh;display:grid;place-items:center;padding:20px;overflow:hidden;position:relative}
+.lbox{width:min(340px,100%);position:relative}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--soft);border-radius:12px;padding:4px;margin-bottom:16px;position:relative}
+.seg button{padding:10px;border-radius:9px;font-weight:600;color:var(--mute);position:relative;z-index:1;transition:color .2s}
+.seg button.on{color:var(--ink)}
+.seg i{position:absolute;top:4px;bottom:4px;width:calc(50% - 4px);background:var(--card);border-radius:9px;box-shadow:0 1px 3px rgba(0,0,0,.08);transition:inset-inline-start .3s cubic-bezier(.2,.8,.2,1)}
+.lform{display:grid;gap:10px}
+.lform .btn{padding:13px;margin-top:4px}
+.err{color:var(--red);font-size:12px;min-height:18px}
+.demo{position:absolute;bottom:18px;inset-inline-start:18px;font-size:11px;color:var(--mute)}
+.demo button{text-decoration:underline;color:var(--mute);font-size:11px}
+.corner{position:absolute;top:18px;inset-inline-end:18px}
+.lines{position:absolute;inset:0;pointer-events:none;opacity:.5}
+
+/* app */
+.top{height:60px;display:flex;align-items:center;gap:8px;padding:0 24px;border-bottom:1px solid var(--line);background:var(--bg);position:sticky;top:0;z-index:20}
+.me{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:3px 10px 3px 3px;transition:border-color .15s}
+[dir=rtl] .me{padding:3px 3px 3px 10px}
+.me:hover{border-color:var(--ink)}
+.main{max-width:980px;margin:0 auto;padding:28px 24px 90px}
+.head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.head h1{font-size:22px;font-weight:600;letter-spacing:-.02em}
+.tabs{display:flex;gap:2px;background:var(--soft);border-radius:11px;padding:3px;margin-bottom:16px;overflow-x:auto;width:fit-content;max-width:100%}
+.tab{padding:7px 13px;border-radius:8px;color:var(--mute);font-weight:500;white-space:nowrap;font-size:13px;display:flex;align-items:center;gap:6px}
+.tab.on{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.tab em{font-style:normal;font-size:10px;background:var(--y);border-radius:8px;padding:0 6px;color:var(--ink)}
+.list{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.item{border-bottom:1px solid var(--line)}
+.item:last-child{border-bottom:0}
+.it{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:14px 16px;cursor:pointer;transition:background .15s}
+.it:hover{background:#FBFBF9}
+.it .t{font-weight:600}
+.it .s{font-size:12px;color:var(--mute);margin-top:2px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.meta{display:flex;align-items:center;gap:8px}
+.det{display:none;padding:4px 16px 18px;animation:fade .25s}
+.item.open .det{display:block}
+.item.open .it{background:#FBFBF9}
+.empty{padding:40px 16px;text-align:center;color:var(--mute)}
+.steps{display:flex;gap:3px;margin:6px 0 14px}
+.steps span{flex:1;height:4px;border-radius:2px;background:var(--line);position:relative;overflow:hidden}
+.steps span.on{background:var(--ink)}
+.steps span.cur{background:var(--y)}
+.steps span.cur:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.8),transparent);animation:sh 1.6s infinite}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:13px;margin-bottom:14px}
+.kv dt{color:var(--mute)}
+.kv a{text-decoration:underline;text-underline-offset:3px}
+.box{border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--bg)}
+.box.y{border-color:var(--y);background:#FFFBE6}
+.rd{display:flex;gap:4px}
+.rd i{width:16px;height:4px;border-radius:2px;background:var(--line)}
+.rd i.on{background:var(--ink)}
+.acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+.st{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+.st b{font-size:24px;font-weight:600;letter-spacing:-.02em;display:block;line-height:1.1}
+.st span{font-size:12px;color:var(--mute)}
+.st.hl b{background:linear-gradient(transparent 62%,var(--y) 62%);display:inline}
+.loading{min-height:100vh;display:grid;place-items:center;color:var(--mute)}
+
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.25);z-index:40;opacity:0;pointer-events:none;transition:.25s}
+.scrim.on{opacity:1;pointer-events:auto}
+.sheet{position:fixed;top:0;bottom:0;inset-inline-end:0;width:min(420px,100%);background:var(--card);z-index:50;border-inline-start:1px solid var(--line);transform:translateX(105%);transition:transform .3s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column}
+[dir=rtl] .sheet{transform:translateX(-105%)}
+.sheet.on{transform:none!important}
+.sheet header{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;border-bottom:1px solid var(--line);font-weight:600}
+.sheet .body{padding:18px;overflow:auto;flex:1;display:grid;gap:14px;align-content:start}
+.opt{display:flex;gap:6px;flex-wrap:wrap}
+.opt button{border:1px solid var(--line);border-radius:8px;padding:7px 11px;font-size:12px;color:var(--mute)}
+.opt button.on{border-color:var(--ink);color:var(--ink);background:var(--soft)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sep{height:1px;background:var(--line);margin:4px 0}
+.nt{padding:13px 18px;border-bottom:1px solid var(--line);font-size:13px;display:flex;gap:10px}
+.nt:hover{background:#FBFBF9}
+.flash{animation:flash 1.6s ease}
+@keyframes flash{0%,40%{box-shadow:inset 0 0 0 2px var(--y);background:#FFFBE6}100%{box-shadow:none}}
+.nt small{display:block;color:var(--mute);font-size:11px;margin-top:2px}
+.toasts{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:90;display:grid;gap:6px;justify-items:center}
+.toast{background:var(--ink);color:#fff;border-radius:10px;padding:11px 14px;font-size:13px;max-width:340px;display:flex;gap:8px;align-items:center;animation:pop .3s cubic-bezier(.2,.8,.2,1)}
+.menu{position:absolute;z-index:30;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.08);padding:5px;min-width:200px;animation:pop .2s}
+.menu button{display:flex;width:100%;text-align:start;padding:8px 10px;border-radius:8px;font-size:13px;gap:8px;align-items:center}
+.menu button:hover{background:var(--soft)}
+.menu button[disabled]{opacity:.35}
+.avpick{display:flex;align-items:center;gap:14px}
+.avpick label{margin:0;cursor:pointer;color:var(--ink);text-decoration:underline;text-underline-offset:3px;font-size:13px}
+.avpick input{display:none}
+
+.tour-ring{position:fixed;z-index:95;border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,.55),0 0 0 2px var(--y);transition:all .35s cubic-bezier(.2,.8,.2,1);pointer-events:none}
+.tour-tip{position:fixed;z-index:96;background:var(--card);border-radius:14px;padding:16px;width:min(290px,calc(100vw - 32px));box-shadow:0 14px 40px rgba(0,0,0,.2);transition:top .35s cubic-bezier(.2,.8,.2,1),left .35s cubic-bezier(.2,.8,.2,1)}
+.tour-tip p{font-size:14px;margin:6px 0 14px}
+.tour-block{position:fixed;inset:0;z-index:94}
+
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,212,0,.7)}50%{box-shadow:0 0 0 6px rgba(255,212,0,0)}}
+@keyframes sh{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.rise{animation:rise .6s cubic-bezier(.2,.8,.2,1) both}
+@media(max-width:640px){.stats{grid-template-columns:1fr 1fr}.main{padding:20px 14px 90px}.top{padding:0 14px}.me .nm{display:none}.me{padding:3px!important}.it .meta .chip.hide-m{display:none}}
+</style>
+</head>
+<body>
+<script>
+/* on-screen diagnostics: shows any error instead of a blank page */
+window.__hubErrs=[];
+function __hubShow(msg){window.__hubErrs.push(msg);var b=document.getElementById("hub-diag");if(!b){b=document.createElement("div");b.id="hub-diag";b.style.cssText="position:fixed;left:12px;right:12px;bottom:60px;z-index:999;background:#fff3f3;color:#a00;border:1px solid #e5484d;border-radius:10px;padding:10px 12px;font:12px/1.5 monospace;direction:ltr;white-space:pre-wrap;max-height:40vh;overflow:auto";(document.body||document.documentElement).appendChild(b);}b.textContent="Error (send a screenshot to Claude):\n"+window.__hubErrs.join("\n")+"\n\n"+navigator.userAgent;}
+window.addEventListener("error",function(e){__hubShow((e.message||"error")+" @ line "+(e.lineno||"?"));});
+window.addEventListener("unhandledrejection",function(e){__hubShow("promise: "+((e.reason&&e.reason.message)||e.reason));});
+setTimeout(function(){var r=document.getElementById("root");if(r&&r.querySelector(".loading"))__hubShow("page script did not start");},12000);
+</script>
+<div id="root"><div class="loading">…</div></div>
+<div class="scrim" id="scrim" data-a="closeAll"></div>
+<aside class="sheet" id="sheet"></aside>
+<div class="toasts" id="toasts"></div>
+<div id="tour"></div>
+<div class="sig" aria-hidden="true"><small>by</small><svg width="168" height="40" viewBox="0 0 168 40"><text x="2" y="32" textLength="160" lengthAdjust="spacingAndGlyphs">Cammio Studio</text></svg></div>
+
+<script>
+const CFG = window.HUB_CONFIG || {};
+const LIVE = !!(CFG.SUPABASE_URL && CFG.SUPABASE_ANON_KEY);
+
+/* ===== i18n ===== */
+const T={
+ client:{ar:"كلاينت",en:"Client"}, editor:{ar:"إديتور",en:"Editor"}, admin:{ar:"أدمن",en:"Admin"}, pending:{ar:"مستني",en:"Pending"},
+ user:{ar:"اسم المستخدم",en:"Username"}, pass:{ar:"الباسورد",en:"Password"}, enter:{ar:"دخول",en:"Sign in"},
+ badLogin:{ar:"اليوزر أو الباسورد غلط",en:"Wrong username or password"}, wrongSide:{ar:"الحساب ده مش من النوع ده",en:"This account isn't on this side"},
+ noRole:{ar:"الحساب لسه متفعّلش",en:"Account not activated yet"},
+ demo:{ar:"تجربة",en:"Demo"}, out:{ar:"خروج",en:"Sign out"}, help:{ar:"جولة",en:"Tour"}, err:{ar:"حصل خطأ، جرّب تاني",en:"Something went wrong, try again"},
+ enableN:{ar:"فعّل الإشعارات",en:"Enable notifications"},
+ myVideos:{ar:"فيديوهاتي",en:"My videos"}, newReq:{ar:"طلب جديد",en:"New request"},
+ active:{ar:"شغّال",en:"Active"}, waiting:{ar:"مستني",en:"Pending"}, delivered:{ar:"اتسلّم",en:"Delivered"},
+ reviewNow:{ar:"محتاج مراجعتك",en:"Needs your review"},
+ editorL:{ar:"الإديتور",en:"Editor"}, stage:{ar:"المرحلة",en:"Stage"}, due:{ar:"الديدلاين",en:"Due"},
+ material:{ar:"الماتيريال",en:"Material"}, reference:{ar:"الريفرنس",en:"Reference"}, notes:{ar:"الملاحظات",en:"Notes"}, open:{ar:"فتح",en:"Open"},
+ draft:{ar:"درافت",en:"Draft"}, openKrock:{ar:"افتح على Krock",en:"Open on Krock"},
+ notesDone:{ar:"خلصت ملاحظاتي",en:"Notes done"}, approve:{ar:"اعتماد نهائي",en:"Approve final"},
+ rounds:{ar:"المراجعات",en:"Rounds"}, noRounds:{ar:"خلصت الـ٣ مراجعات",en:"All 3 rounds used"},
+ notesSent:{ar:"ملاحظاتك وصلت للإديتور",en:"Your notes reached the editor"}, revising:{ar:"الإديتور بيعدّل",en:"Editor is revising"},
+ underReview:{ar:"الطلب بيتراجع",en:"Request under review"},
+ fTitle:{ar:"اسم المشروع",en:"Project name"}, fType:{ar:"النوع",en:"Type"},
+ tReels:{ar:"ريلز",en:"Reels"}, tLong:{ar:"يوتيوب طويل",en:"Long-form"}, tMotion:{ar:"موشن",en:"Motion"},
+ fDrive:{ar:"لينك الدرايف",en:"Drive link"}, fRef:{ar:"ريفرنس (اختياري)",en:"Reference (optional)"},
+ fNotes:{ar:"ملاحظات للإديتور",en:"Notes for the editor"}, fCount:{ar:"عدد الفيديوهات",en:"Videos"},
+ fFirst:{ar:"أول ديدلاين",en:"First deadline"}, fCad:{ar:"التسليم",en:"Delivery"},
+ cOnce:{ar:"مرة واحدة",en:"All at once"}, cDaily:{ar:"كل يوم",en:"Daily"}, c2:{ar:"كل يومين",en:"Every 2 days"}, cWeek:{ar:"كل أسبوع",en:"Weekly"},
+ send:{ar:"ابعت",en:"Send"}, sent:{ar:"اتبعت ✓",en:"Sent ✓"}, need:{ar:"الاسم ولينك الدرايف مطلوبين",en:"Name and Drive link are required"},
+ st0:{ar:"جديد",en:"New"}, st1:{ar:"اتستلم",en:"Received"}, st2:{ar:"تحضير",en:"Prep"}, st3:{ar:"فيرست كات",en:"First cut"},
+ st4:{ar:"جرافيكس",en:"Graphics"}, st5:{ar:"ساوند",en:"Sound"}, st6:{ar:"مراجعة",en:"Review"}, st7:{ar:"اتسلّم",en:"Delivered"},
+ tasks:{ar:"التاسكات",en:"Tasks"}, today:{ar:"النهارده",en:"Today"}, late:{ar:"متأخر",en:"Late"}, tomorrow:{ar:"بكره",en:"Tomorrow"}, later:{ar:"بعدين",en:"Later"}, done:{ar:"خلص",en:"Done"},
+ update:{ar:"تحديث",en:"Update"}, toCammio:{ar:"عند Cammio",en:"With Cammio"},
+ sendDraft:{ar:"ابعت الدرافت",en:"Send draft"}, krockLink:{ar:"لينك Krock",en:"Krock link"},
+ gotNotes:{ar:"استلمت التعديلات",en:"Got the notes"}, clientNotes:{ar:"الكلاينت كتب ملاحظاته",en:"Client left notes"},
+ waitClient:{ar:"عند الكلاينت",en:"With client"}, newTag:{ar:"جديد",en:"New"},
+ checkin:{ar:"إنت فين؟",en:"Where are you?"}, checkinSub:{ar:"كل ٣ ساعات",en:"Every 3 hours"}, save:{ar:"ابعت لـCammio",en:"Send to Cammio"},
+ nextIn:{ar:"التشييك الجاي",en:"Next check-in"}, noTasks:{ar:"مفيش حاجة هنا",en:"Nothing here"},
+ approvals:{ar:"موافقات",en:"Approvals"}, requests:{ar:"طلبات",en:"Requests"}, all:{ar:"الكل",en:"All"}, accounts:{ar:"الحسابات",en:"Accounts"},
+ publish:{ar:"ابعت للكلاينت",en:"Send to client"}, hold:{ar:"استنى",en:"Hold"}, assign:{ar:"وافق وسلّم",en:"Approve & assign"},
+ name:{ar:"الاسم",en:"Name"}, create:{ar:"اعمل الحساب",en:"Create"}, ping:{ar:"اسأله",en:"Ping"}, pinged:{ar:"اتسأل ✓",en:"Pinged ✓"},
+ sActive:{ar:"شغال",en:"active"}, sReview:{ar:"مراجعة",en:"review"}, sLate:{ar:"متأخر",en:"late"}, sAppr:{ar:"مستني موافقتك",en:"to approve"},
+ copy:{ar:"نسخ",en:"Copy"}, edit:{ar:"تعديل",en:"Edit"}, tasksTab:{ar:"مهام",en:"Tasks"}, projL:{ar:"المشروع",en:"Project"}, projName:{ar:"اسم المشروع",en:"Project name"}, members:{ar:"مين يشوف المشروع",en:"Who can see this project"}, owner:{ar:"صاحب الطلب",en:"Owner"},
+ noteToEd:{ar:"نوتة للإديتور",en:"Note to editor"}, askEd:{ar:"اسأل الإديتور هو فين",en:"Ask the editor for status"}, askedEd:{ar:"اتبعت للإديتور ✓",en:"Sent to the editor ✓"}, theEditor:{ar:"الإديتور",en:"The editor"}, started:{ar:"بدأ الشغل على",en:"Work started on"}, money:{ar:"الفلوس",en:"Money"}, ledger:{ar:"سجلّي",en:"My record"}, mDone:{ar:"فيديو اتسلّم",en:"delivered"}, mEarned:{ar:"المستحق",en:"Earned"},
+ mLate:{ar:"تأخير",en:"Late"}, mEarly:{ar:"بدري",en:"Early"}, mDeduct:{ar:"الخصم",en:"Deduction"}, mNet:{ar:"الصافي",en:"Net"}, mNotYet:{ar:"لسه",en:"Not yet"},
+ mRule:{ar:"مسموح {a} تأخير في الشهر · بعدها كل تأخير بـ {p} · كل تسليم بدري بيشيل تأخير",en:"{a} lates allowed per month · then {p} each · every early delivery cancels one"},
+ sAllow:{ar:"تأخيرات مسموحة في الشهر",en:"Allowed lates / month"}, sPenalty:{ar:"خصم كل تأخير زيادة",en:"Deduction per extra late"}, sEarly:{ar:"يعتبر بدري لو قبل الديدلاين بـ (ساعات)",en:"Counts as early if this many hours before due"},
+ sCurrency:{ar:"العملة",en:"Currency"}, rates:{ar:"أسعار",en:"Rates for"}, rulesL:{ar:"القواعد",en:"Rules"}, pkg:{ar:"الباكدج",en:"Package"}, pkgSize:{ar:"حجم الباكدج (عدد الفيديوهات)",en:"Package size (videos)"},
+ pkgOf:{ar:"اتسلّم {d} من {n}",en:"{d} of {n} delivered"}, pkgLeft:{ar:"فاضل {r}",en:"{r} left"}, pkgReq:{ar:"طلبت {q} سكريبت",en:"{q} scripts requested"}, priceDefault:{ar:"السعر الافتراضي",en:"Default"}, notesL:{ar:"نوتس",en:"Notes"}, secCl:{ar:"الكلاينتس",en:"Clients"}, secTm:{ar:"التيم",en:"Team"}, fromClient:{ar:"جه منه",en:"From them"}, toClient:{ar:"هيوصله — مستني موافقتك",en:"Going to them — needs your OK"},
+ projectsL:{ar:"المشاريع",en:"Projects"}, clientSees:{ar:"شايف",en:"Sees"}, owed:{ar:"المستحق عليه",en:"Owed"}, paid:{ar:"دفع",en:"Paid"}, remaining:{ar:"الباقي",en:"Remaining"}, pricePerVideo:{ar:"سعر الفيديو",en:"Price / video"},
+ waitingYou:{ar:"مستني موافقتك",en:"Needs your OK"}, hisWork:{ar:"شغله",en:"His work"}, handed:{ar:"سلّمه",en:"Delivered"}, sentNotesLbl:{ar:"بعت ملاحظات",en:"sent notes"}, noClients:{ar:"مفيش كلاينتس لسه",en:"No clients yet"}, noEditors:{ar:"مفيش إديتورز لسه",en:"No editors yet"}, thisMonth:{ar:"الشهر ده",en:"This month"}, work:{ar:"الشغل",en:"Work"}, videosL:{ar:"فيديوهات",en:"Videos"}, deliverTitle:{ar:"تسليم",en:"Deliver"}, whichItem:{ar:"بتسلّم إيه؟",en:"What are you delivering?"},
+ finishedAll:{ar:"خلصت المهمة كلها",en:"Task fully done"}, sendToCammio:{ar:"ابعت لـCammio",en:"Send to Cammio"}, nothingToDeliver:{ar:"مفيش حاجة مستنية تسليم دلوقتي",en:"Nothing waiting for delivery"}, waitingClientShort:{ar:"عند الكلاينت",en:"with client"}, sheetLink:{ar:"لينك شيت جوجل",en:"Google Sheet link"}, readSheet:{ar:"اقرا الشيت",en:"Read sheet"}, orPaste:{ar:"أو الصق الصفوف بنفسك",en:"or paste rows yourself"},
+ notPublic:{ar:"الشيت مش مفتوح. خلّي المشاركة Anyone with the link وجرّب تاني",en:"Sheet isn't open. Set sharing to Anyone with the link and retry"}, badSheet:{ar:"اللينك ده مش شيت جوجل",en:"That isn't a Google Sheet link"}, noRows:{ar:"ملقتش صفوف مشاهد في الشيت",en:"No scene rows found in the sheet"}, nTc:{ar:"تايم كود",en:"Timecode"}, nCue:{ar:"كلمة مميزة",en:"Cue word"}, nVisual:{ar:"المشهد",en:"Visual"}, nSfx:{ar:"صوت / حركة",en:"SFX / move"},
+ nPaste:{ar:"لصق من الشيت",en:"Paste from sheet"}, nPastePh:{ar:"انسخ الصفوف من الشيت (تايم كود، كلمة، مشهد، صوت) والصقها هنا",en:"Copy rows from the sheet (timecode, cue, visual, sfx) and paste here"},
+ nFound:{ar:"نوتة اتعرفت",en:"notes found"}, nAddAll:{ar:"ضيفهم",en:"Add them"}, nAddOne:{ar:"ضيف نوتة",en:"Add note"}, nAllDone:{ar:"خلّص كل النوتس",en:"finished all notes"}, nClear:{ar:"امسح كل النوتس",en:"Clear all notes"}, upload:{ar:"رفع جديد",en:"New upload"}, step1:{ar:"١. ارفع على Krock",en:"1. Upload on Krock"}, step2:{ar:"٢. الصق اللينك هنا",en:"2. Paste the link here"},
+ deliver:{ar:"تسليم: ارفع وابعت اللينك",en:"Deliver: upload & send link"}, finishT:{ar:"خلّصت المهمة",en:"Finish task"}, resLink:{ar:"لينك التسليم (اختياري)",en:"Delivery link (optional)"}, deliveryL:{ar:"التسليم",en:"Delivery"}, sendFinish:{ar:"ابعت وخلّص",en:"Send & finish"}, newTask:{ar:"مهمة جديدة",en:"New task"}, task:{ar:"مهمة",en:"Task"},
+ tTitle:{ar:"المهمة",en:"Task"}, tNotes:{ar:"تفاصيل (اختياري)",en:"Details (optional)"}, tLink:{ar:"لينك (اختياري)",en:"Link (optional)"}, tDue:{ar:"الديدلاين",en:"Due"},
+ tStages:{ar:"المراحل",en:"Stages"}, tStagePh:{ar:"اكتب مرحلة ودوس Enter",en:"Type a stage, press Enter"}, add:{ar:"ضيف",en:"Add"}, tFor:{ar:"لمين",en:"For"},
+ tNeed:{ar:"اختار إديتور واكتب المهمة",en:"Pick an editor and write the task"}, delTask:{ar:"مسح المهمة",en:"Delete task"}, noStages:{ar:"من غير مراحل: خلصت / لسه",en:"No stages: done / not done"}, markDone:{ar:"خلصت",en:"Done"}, role:{ar:"النوع",en:"Role"}, editUser:{ar:"تعديل الحساب",en:"Edit account"}, curPass:{ar:"الباسورد الحالي",en:"Current password"},
+ passUnknown:{ar:"الشخص غيّره بنفسه أو اتعمل قبل الميزة دي — حط باسورد جديد",en:"Changed by the user or created earlier — set a new one"},
+ setPass:{ar:"باسورد جديد (اختياري)",en:"New password (optional)"}, show:{ar:"إظهار",en:"Show"}, hide:{ar:"إخفاء",en:"Hide"},
+ del:{ar:"مسح الحساب",en:"Delete account"}, delSure:{ar:"متأكد؟ دوس تاني للمسح",en:"Sure? Tap again to delete"}, deleted:{ar:"اتمسح ✓",en:"Deleted ✓"}, copyLogin:{ar:"نسخ بيانات الدخول",en:"Copy login"}, copied:{ar:"اتنسخ ✓",en:"Copied ✓"}, setRole:{ar:"فعّل كـ",en:"Activate as"},
+ accErr:{ar:"اليوزر موجود أو الباسورد أقل من ٦ حروف",en:"Username taken or password under 6 characters"},
+ now:{ar:"دلوقتي",en:"now"}, m:{ar:"د",en:"m"}, h:{ar:"س",en:"h"}, d:{ar:"ي",en:"d"},
+ next:{ar:"التالي",en:"Next"}, finish:{ar:"تمام",en:"Got it"}, skip:{ar:"تخطي",en:"Skip"},
+ settings:{ar:"حسابي",en:"My account"}, photo:{ar:"غيّر الصورة",en:"Change photo"}, titleL:{ar:"الوصف",en:"Title"}, titlePh:{ar:"مثلاً: Video editor",en:"e.g. Video editor"},
+ langL:{ar:"اللغة",en:"Language"}, saveS:{ar:"احفظ",en:"Save"}, saved:{ar:"اتحفظ ✓",en:"Saved ✓"},
+ newPass:{ar:"باسورد جديد",en:"New password"}, changePass:{ar:"غيّر الباسورد",en:"Change password"}, passShort:{ar:"٦ حروف على الأقل",en:"At least 6 characters"},
+};
+let LANG=(()=>{try{return localStorage.getItem("hub_lang")||"ar"}catch(_){return "ar"}})();
+const t=k=>T[k]?T[k][LANG]:k; const ST=i=>t("st"+i); const STen=i=>T["st"+i].en; const STar=i=>T["st"+i].ar;
+
+const TOURS={
+ client:[["pkg",{ar:"الباكدج بتاعك: طلبت كام سكريبت واتسلّملك كام.",en:"Your package: scripts requested and delivered."}],
+  ["new",{ar:"ابدأ من هنا: حط لينك الدرايف وملاحظاتك.",en:"Start here: drop your Drive link and notes."}],
+  ["row",{ar:"كل فيديو والمرحلة اللي هو فيها لايف. افتح أي فيديو تلاقي النوتس، وتقدر تضيف نوتة للإديتور بالتايم كود أو تسأله هو فين.",en:"Every video and its live stage. Open one to see notes, add a timecoded note for the editor, or ask for status."}],
+  ["bell",{ar:"أول ما الدرافت يجهز هيوصلك إشعار هنا.",en:"When a draft is ready you'll be notified here."}],
+  ["me",{ar:"من هنا تغيّر صورتك واسمك والباسورد.",en:"Change your photo, name and password here."}]],
+ editor:[["tabs",{ar:"تاسكاتك: المتأخر، النهارده، بكره.",en:"Your tasks: late, today, tomorrow."}],
+  ["upload",{ar:"خلصت حاجة؟ دوس هنا: اختار الفيديو، ارفع على Krock، والصق اللينك. بيوصل لـCammio على طول.",en:"Finished something? Tap here: pick the video, upload on Krock, paste the link. It goes to Cammio."}],
+  ["upd",{ar:"حدّث مرحلتك من هنا. بتروح لـCammio الأول.",en:"Update your stage here. It goes to Cammio first."}],
+  ["ledger",{ar:"كل فيديو بتسلّمه بيتسجل هنا بسعره، والأحمر تأخير والأخضر بدري.",en:"Every delivered video is logged here with its price; red = late, green = early."}],
+  ["chk",{ar:"كل ٣ ساعات هنسألك إنت فين.",en:"Every 3 hours we'll ask where you are."}],
+  ["bell",{ar:"مشاريع جديدة وملاحظات الكلاينت بتوصل هنا.",en:"New projects and client notes land here."}],
+  ["me",{ar:"صورتك وبياناتك من هنا.",en:"Your photo and details live here."}]],
+ admin:[["sec-cl",{ar:"الكلاينتس: كل كلاينت لوحده — جه منه إيه، هيوصله إيه (مستني موافقتك)، مشاريعه وفلوسه.",en:"Clients: per client — what came in, what's going out (needs your OK), projects and money."}],
+  ["sec-tm",{ar:"التيم: كل إديتور لوحده — سلّمك إيه ومستني موافقتك، شغله، اللي خلّصه، وفلوسه.",en:"Team: per editor — what he delivered for your OK, his work, done items, and pay."}],
+  ["sec-acc",{ar:"الحسابات: اعمل يوزر وباسورد لأي حد وعدّله.",en:"Accounts: create and edit usernames and passwords."}],
+  ["bell",{ar:"دوس على أي إشعار يوديك للحاجة نفسها على طول.",en:"Tap any notification to jump straight to it."}]],
+};
+
+/* ===== state ===== */
+const H=36e5,D=24*H; const sod=x=>{const d=new Date(x);d.setHours(0,0,0,0);return d.getTime()};
+let NREF=null;
+let profiles={}, projects=[], videos=[], notifs=[], creds={}, tasks=[], vnotes=[], members=[], rates={}, settings={late_allowance:"3",late_penalty:"0",early_hours:"24",currency:"EGP"};
+let S={me:null,side:"client",tab:null,open:null,sheet:null,form:{type:"tReels",cad:"c2",count:4},err:"",ready:false,busy:false};
+
+/* ===== helpers ===== */
+const F=(f,n)=>f.querySelector(`[name="${n}"]`);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const nm=u=>profiles[u]?.name||profiles[u]?.username||"—";
+const role=u=>profiles[u]?.role;
+const av=(u,cls="")=>{const p=profiles[u];return `<span class="av ${cls}">${p&&p.avatar_url?`<img src="${esc(p.avatar_url)}" alt="">`:esc((nm(u)||"?")[0])}</span>`};
+const fd=ts=>new Date(ts).toLocaleDateString(LANG==="ar"?"ar-EG":"en-GB",{day:"numeric",month:"short"});
+function ago(ts){const m=Math.round((Date.now()-ts)/6e4);if(m<1)return t("now");if(m<60)return m+t("m");if(m<1440)return Math.round(m/60)+t("h");return Math.round(m/1440)+t("d");}
+const V=id=>videos.find(v=>v.id===id), P=id=>projects.find(p=>p.id===id);
+const isLong=v=>P(v.project)?.type==="tLong";
+const vn=v=>(isLong(v)?(LANG==="ar"?"فيديو":"Video"):(LANG==="ar"?"ريل":"Reel"))+" "+v.n;
+const vnAr=v=>(isLong(v)?"فيديو":"ريل")+" "+v.n, vnEn=v=>(isLong(v)?"Video":"Reel")+" "+v.n;
+const isLate=v=>v.stage<7&&v.due<Date.now();
+function steps(s){let h="";for(let i=1;i<=7;i++)h+=`<span class="${i<s?"on":i===s?(s===7?"on":"cur"):""}"></span>`;return `<div class="steps">${h}</div>`;}
+const cleanUrl=x=>{const m=String(x||"").match(/https?:\/\/[^\s]+/g);if(!m)return "";let u=m[m.length-1];const i=u.lastIndexOf("http");return i>0?u.slice(i):u;};
+const isMine=p=>!!p&&(p.client===S.me||members.some(m=>m.project===p.id&&m.client===S.me));
+const clientsOf=p=>[p.client].concat(members.filter(m=>m.project===p.id).map(m=>m.client)).filter((x,i,a)=>x&&a.indexOf(x)===i);
+const ym=ts=>{const d=new Date(ts);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");};
+const curMonth=()=>S.month||ym(Date.now());
+const money=n=>`${Math.round(n).toLocaleString(LANG==="ar"?"ar-EG":"en-US")} ${esc(settings.currency||"")}`;
+const tpl=(k,o)=>t(k).replace(/\{(\w)\}/g,(_,x)=>o[x]);
+function priceOf(v,ed){if(v.price!=null)return v.price;const p=P(v.project);return (rates[ed]&&rates[ed][p.type])||0;}
+function ledger(ed,month){
+ const early=(+settings.early_hours||0)*H, allow=+settings.late_allowance||0, pen=+settings.late_penalty||0;
+ const items=videos.filter(v=>{const p=P(v.project);if(!p||p.status!=="active")return false;const who=v.deliveredBy||p.editor;return who===ed&&ym(v.deliveredAt||v.due)===month;})
+  .map(v=>{const at=v.deliveredAt;const late=at?at>v.due:Date.now()>v.due;const isEarly=!!at&&at<=v.due-early;return {v,at,late,early:isEarly,price:priceOf(v,ed)};})
+  .sort((a,b)=>(a.at||a.v.due)-(b.at||b.v.due));
+ const done=items.filter(i=>i.at);const earned=done.reduce((a,i)=>a+i.price,0);
+ const reds=items.filter(i=>i.late).length, greens=items.filter(i=>i.early).length;
+ const net=Math.max(0,reds-greens), excess=Math.max(0,net-allow), deduction=excess*pen;
+ return {items,done:done.length,earned,reds,greens,net,allow,excess,deduction,total:Math.max(0,earned-deduction),pen};}
+function monthNav(){const [y,m]=curMonth().split("-").map(Number);const label=new Date(y,m-1,1).toLocaleDateString(LANG==="ar"?"ar-EG":"en-GB",{month:"long",year:"numeric"});
+ return `<div class="row" style="margin-bottom:12px"><button class="btn line sm" data-a="mPrev">${LANG==="ar"?"→":"←"}</button><b style="min-width:120px;text-align:center">${label}</b><button class="btn line sm" data-a="mNext">${LANG==="ar"?"←":"→"}</button></div>`;}
+function ledgerView(ed,admin){const L=ledger(ed,curMonth());
+ const dots=(n,c)=>Array.from({length:n},()=>`<span class="dot" style="background:${c}"></span>`).join(" ");
+ return `${monthNav()}
+ <div class="stats" style="grid-template-columns:repeat(4,1fr)">
+  <div class="st"><b>${L.done}</b><span>${t("mDone")}</span></div>
+  <div class="st"><b>${money(L.earned)}</b><span>${t("mEarned")}</span></div>
+  <div class="st"><b style="${L.excess?"color:var(--red)":""}">${L.net}/${L.allow}</b><span class="row" style="flex-wrap:wrap;gap:4px">${dots(L.reds,"var(--red)")} ${dots(L.greens,"#2FBF71")}</span></div>
+  <div class="st hl"><b>${money(L.total)}</b><br><span>${t("mNet")}${L.deduction?` · −${money(L.deduction)}`:""}</span></div></div>
+ <div class="tiny muted" style="margin:-6px 0 12px">${tpl("mRule",{a:L.allow,p:money(L.pen)})}</div>
+ <div class="list">${L.items.length?L.items.map(i=>{const p=P(i.v.project);const c=i.late?"var(--red)":i.early?"#2FBF71":"var(--line)";
+  return `<div class="item"><div class="it" style="cursor:default"><div class="grow"><div class="t row"><span class="dot" style="background:${c}"></span>${vn(i.v)} <span class="muted" style="font-weight:400">· ${esc(nm(p.client))}</span></div>
+   <div class="s">${esc(p.title)} · ${t("due")} ${fd(i.v.due)} · ${i.at?fd(i.at):`<span class="muted">${t("mNotYet")}</span>`}${i.late?` · <span style="color:var(--red)">${t("mLate")}</span>`:i.early?` · <span style="color:#2FBF71">${t("mEarly")}</span>`:""}</div></div>
+   <div class="meta">${admin?`<input data-price="${i.v.id}" data-ed="${ed}" type="number" min="0" value="${i.v.price!=null?i.v.price:""}" placeholder="${(rates[ed]&&rates[ed][p.type])||0}" style="width:96px;padding:6px 8px;font-size:13px" title="${t("priceDefault")}: ${(rates[ed]&&rates[ed][p.type])||0}">`:`<span class="chip ${i.at?"k":""}">${money(i.price)}</span>`}</div></div></div>`;}).join(""):`<div class="empty">${t("noTasks")}</div>`}</div>`;}
+function moneyAdmin(edArg){const eds=Object.keys(profiles).filter(u=>role(u)==="editor");const ed=edArg||(S.moneyEd&&eds.includes(S.moneyEd)?S.moneyEd:eds[0]);
+ if(!ed)return `<div class="empty">${t("noTasks")}</div>`;const r=rates[ed]||{};
+ return `${edArg?"":`<div class="opt" style="margin-bottom:12px">${eds.map(e=>`<button class="${e===ed?"on":""}" data-a="moneyEd" data-u="${e}">${esc(nm(e))}</button>`).join("")}</div>`}
+ ${ledgerView(ed,true)}
+ <div class="grid g2" style="margin-top:16px">
+  <div class="list" style="padding:16px"><b>${t("rates")} ${esc(nm(ed))}</b><div style="display:grid;gap:10px;margin-top:12px">${["tReels","tLong","tMotion"].map(tp=>`<div class="row"><span class="grow">${t(tp)}</span><input type="number" min="0" data-rate="${tp}" data-ed="${ed}" value="${r[tp]!=null?r[tp]:""}" placeholder="0" style="width:110px"></div>`).join("")}</div></div>
+  <div class="list" style="padding:16px"><b>${t("rulesL")}</b><div style="display:grid;gap:10px;margin-top:12px">
+   ${[["late_allowance","sAllow"],["late_penalty","sPenalty"],["early_hours","sEarly"]].map(([k,l])=>`<div class="row"><span class="grow tiny">${t(l)}</span><input type="number" min="0" data-setting="${k}" value="${esc(settings[k]||"")}" style="width:90px"></div>`).join("")}
+   <div class="row"><span class="grow tiny">${t("sCurrency")}</span><input data-setting="currency" value="${esc(settings.currency||"")}" style="width:90px"></div></div></div></div>`;}
+function notesChip(vid){const ns=notesOf(vid);if(!ns.length)return "";const d=ns.filter(n=>n.done).length;return `<span class="chip ${d===ns.length?"k":"y"}">${t("notesL")} ${d}/${ns.length}</span>`;}
+function notesList(vid,canTick){const ns=notesOf(vid);if(!ns.length)return "";
+ return `<div class="box" style="margin-bottom:12px;padding:6px 10px"><div class="row tiny muted" style="padding:6px 0">${t("notesL")} · ${ns.filter(n=>n.done).length}/${ns.length}</div>${ns.map(n=>`<label class="row" style="align-items:flex-start;gap:10px;padding:8px 0;border-top:1px solid var(--line);margin:0;color:var(--ink);cursor:${canTick?"pointer":"default"}">
+  <input type="checkbox" style="width:16px;height:16px;margin-top:3px;flex:none;accent-color:#0B0B0B" data-note="${n.id}" ${n.done?"checked":""} ${canTick?"":"disabled"}>
+  <span style="font-family:ui-monospace,monospace;font-size:12px;background:var(--y);border-radius:5px;padding:1px 6px;flex:none;direction:ltr">${esc(n.tc||"—")}</span>
+  <span class="grow" style="${n.done?"opacity:.45;text-decoration:line-through":""}"><b>${esc(n.cue)}</b>${n.visual?` — ${esc(n.visual)}`:""}${n.sfx?`<span class="tiny muted" style="display:block">${esc(n.sfx)}</span>`:""}</span></label>`).join("")}</div>`;}
+function tSteps(x){const n=tTotal(x);let h="";for(let i=1;i<=n;i++)h+=`<span class="${i<=x.stage?"on":i===x.stage+1?"cur":""}"></span>`;return `<div class="steps">${h}</div>`;}
+const tStageName=x=>x.stages.length?(tDone(x)?t("done"):x.stages[x.stage]||""):(tDone(x)?t("done"):t("task"));
+const T_=id=>tasks.find(x=>x.id===id);
+function used(v){if(v.pub<6)return 0;if(v.rs==="awaiting")return v.round-1;if(v.pub===7)return Math.max(0,v.round-1);return v.round;}
+function rd(n){let h="";for(let i=1;i<=3;i++)h+=`<i class="${i<=n?"on":""}"></i>`;return `<span class="rd">${h}</span>`;}
+function toast(m){const e=document.createElement("div");e.className="toast";e.innerHTML=`<span class="dot"></span>${esc(m)}`;document.getElementById("toasts").appendChild(e);setTimeout(()=>{e.style.transition=".3s";e.style.opacity=0;setTimeout(()=>e.remove(),300)},3600);}
+function sysNotify(text){try{if("Notification" in window&&Notification.permission==="granted"&&document.hidden)new Notification("Cammio Studio",{body:text});}catch(_){}}
+const ico={
+ bell:`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>`,
+ help:`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>`,
+ out:`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>`,
+ x:`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>`,
+ ext:`↗`,
+};
+
+/* ================= DATA LAYER ================= */
+const vFromDb=r=>({deliveredAt:r.delivered_at?Date.parse(r.delivered_at):null,deliveredBy:r.delivered_by,price:r.price==null?null:+r.price,id:r.id,project:r.project,n:r.n,due:Date.parse(r.due),stage:r.stage,pub:r.pub,round:r.round,rs:r.rs,link:r.link||"",pending:r.pending,isNew:r.is_new,upd:Date.parse(r.updated_at)});
+const pFromDb=r=>({id:r.id,client:r.client,title:r.title,type:r.type,drive:r.drive,ref:r.ref||"",notes:r.notes||"",count:r.count,cad:r.cad,first:Date.parse(r.first),status:r.status,editor:r.editor,created:Date.parse(r.created_at)});
+const tFromDb=r=>({resLink:r.result_link||"",id:r.id,kind:"task",editor:r.editor,title:r.title,notes:r.notes||"",link:r.link||"",due:Date.parse(r.due),stages:r.stages||[],stage:r.stage,isNew:r.is_new,upd:Date.parse(r.updated_at)});
+const nFromDb=r=>({author:r.author,id:r.id,video:r.video,tc:r.tc||"",cue:r.cue||"",visual:r.visual||"",sfx:r.sfx||"",done:!!r.done,sort:r.sort||0});
+const tcSec=tc=>{const p=String(tc||"").split(":").map(Number);if(p.some(isNaN)||!tc)return 1e9;return p.reduce((a,b)=>a*60+b,0);};
+const notesOf=vid=>vnotes.filter(n=>n.video===vid).sort((a,b)=>tcSec(a.tc)-tcSec(b.tc)||a.sort-b.sort);
+function parseCSV(t){const rows=[];let row=[],cell="",q=false;for(let i=0;i<t.length;i++){const c=t[i];
+ if(q){if(c==='"'){if(t[i+1]==='"'){cell+='"';i++;}else q=false;}else cell+=c;}
+ else if(c==='"')q=true;else if(c===","){row.push(cell);cell="";}else if(c==="\n"||c==="\r"){if(c==="\r"&&t[i+1]==="\n")i++;row.push(cell);rows.push(row);row=[];cell="";}else cell+=c;}
+ if(cell!==""||row.length){row.push(cell);rows.push(row);}return rows;}
+function shortCue(x){const w=String(x||"").replace(/\.{2,}|…/g," ").replace(/\s+/g," ").trim().split(" ");return w.length>7?w.slice(0,7).join(" ")+"…":w.join(" ");}
+function sheetToNotes(csv){const rows=parseCSV(csv).map(r=>r.map(c=>String(c||"").trim()));
+ const H=[["tc",/time ?code|تايم|التوقيت|الوقت/i],["cue",/المنطوق|النص|الكلام|الكلمة|كلمة|الجملة|script|cue|voice|word/i],["visual",/المشهود|المشهد|الكادر|visual|scene|shot/i],["asset",/العنصر|asset|cutout/i],["sfx",/sfx|صوت|الصوتي|ملاحظ|notes|edit/i]];
+ let hi=-1,map={};
+ for(let i=0;i<rows.length&&hi<0;i++){const m={};rows[i].forEach((c,j)=>{if(!c||c.length>60)return;for(const [k,re] of H){if(m[k]==null&&re.test(c)){m[k]=j;break;}}});if(Object.keys(m).length>=2){hi=i;map=m;}}
+ if(hi<0)return parseNotes(rows.map(r=>r.filter(Boolean).join("\t")).join("\n"));
+ const out=[];const isTc=c=>/^\d{1,2}:\d{2}(:\d{2})?([.,]\d+)?$/.test(c);
+ rows.slice(hi+1).forEach(r=>{const g=k=>map[k]!=null?(r[map[k]]||""):"";const filled=r.filter(Boolean);if(filled.length<2)return;
+  let tc=g("tc");if(!isTc(tc)){const f=r.find(isTc);tc=f||"";}
+  const cue=shortCue(g("cue")),vis=g("visual"),asset=g("asset"),sfx=g("sfx");if(!cue&&!vis)return;
+  out.push({tc,cue,visual:vis+(asset&&!vis.includes(asset)?` (${asset})`:""),sfx});});
+ return out;}
+function parseNotes(text){const out=[];const isTc=c=>/^\d{1,2}:\d{2}(:\d{2})?([.,]\d+)?$/.test(c);
+ String(text||"").split(/\r?\n/).forEach(line=>{const cells=line.split("\t").map(c=>c.trim()).filter(Boolean);if(!cells.length)return;
+  if(cells.some(c=>/time ?code|تايم|المنطوق|المشهود/i.test(c)))return;
+  let tc="";const i=cells.findIndex(isTc);if(i>=0){tc=cells[i];cells.splice(i,1);}
+  if(cells.length&&/^\d{1,3}$/.test(cells[0])&&cells.length>1)cells.shift();
+  if(!tc&&cells.length<2)return;
+  out.push({tc,cue:cells[0]||"",visual:cells[1]||"",sfx:cells.slice(2).join(" · ")});});
+ return out;}
+const tTotal=x=>Math.max(1,x.stages.length), tDone=x=>x.stage>=tTotal(x);
+const vToDb=p=>{const o={};for(const k in p){if(k==="deliveredAt"||k==="deliveredBy")continue;if(k==="isNew")o.is_new=p[k];else if(k==="due")o.due=new Date(p[k]).toISOString();else o[k]=p[k];}return o;};
+const email=u=>`${u}@${CFG.EMAIL_DOMAIN||"users.cammio.app"}`;
+
+let sb=null, chan=null, reloadT=null;
+const api = LIVE ? {
+ async init(){
+  const load=src=>new Promise((res,rej)=>{const s=document.createElement("script");s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);});
+  try{await load("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js");}
+  catch(_){await load("https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js");}
+  sb=supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false,lock:async(_n,_t,fn)=>await fn()}});
+  const {data}=await Promise.race([sb.auth.getSession(),new Promise(r=>setTimeout(()=>r({data:{}}),5000))]);
+  if(data.session){const p=await this.myProfile(data.session.user.id); if(p&&p.role!=="pending"){S.me=p.id;await this.loadAll();this.subscribe();}}
+ },
+ async myProfile(id){const {data}=await sb.from("profiles").select("*").eq("id",id).single();if(data)profiles[data.id]=data;return data;},
+ async login(u,pw,side){
+  const {data,error}=await sb.auth.signInWithPassword({email:email(u),password:pw});
+  if(error) throw new Error(t("badLogin"));
+  const p=await this.myProfile(data.user.id);
+  if(!p||p.role==="pending"){await sb.auth.signOut();throw new Error(t("noRole"));}
+  const ok=side==="client"?p.role==="client":p.role!=="client";
+  if(!ok){await sb.auth.signOut();throw new Error(t("wrongSide"));}
+  S.me=p.id; await this.loadAll(); this.subscribe();
+ },
+ async logout(){if(chan){sb.removeChannel(chan);chan=null;}await sb.auth.signOut();profiles={};projects=[];videos=[];notifs=[];},
+ async loadAll(){
+  const [a,b,c,d,e,f,g,h,k]=await Promise.all([
+   sb.from("profiles").select("*"),
+   sb.from("projects").select("*").order("created_at",{ascending:false}),
+   sb.from("videos").select("*").order("n"),
+   sb.from("notifs").select("*").eq("user_id",S.me).order("created_at",{ascending:false}).limit(60),
+   sb.from("tasks").select("*").order("due"),
+   sb.from("video_notes").select("*").order("sort"),
+   sb.from("editor_rates").select("*"),
+   sb.from("settings").select("*"),
+   sb.from("project_members").select("*")]);
+  members=(k.data||[]);
+  rates={};(g.data||[]).forEach(r=>{(rates[r.editor]=rates[r.editor]||{})[r.type]=+r.price;});
+  (h.data||[]).forEach(r=>settings[r.key]=r.value);
+  vnotes=(f.data||[]).map(nFromDb);
+  tasks=(e.data||[]).map(tFromDb);
+  profiles={};(a.data||[]).forEach(p=>profiles[p.id]=p);
+  projects=(b.data||[]).map(pFromDb); videos=(c.data||[]).map(vFromDb);
+  notifs=(d.data||[]).map(n=>({ref:n.ref,id:n.id,ar:n.ar,en:n.en,read:n.read,time:Date.parse(n.created_at)}));
+  const me=profiles[S.me]; if(me&&me.lang&&me.lang!==LANG){LANG=me.lang;}
+  creds={}; if(me&&me.role==="admin"){const c=await sb.from("admin_creds").select("*");(c.data||[]).forEach(r=>creds[r.user_id]=r.password);}
+ },
+ subscribe(){
+  if(chan) sb.removeChannel(chan);
+  const kick=()=>{clearTimeout(reloadT);reloadT=setTimeout(async()=>{await this.loadAll();render();},250);};
+  chan=sb.channel("hub")
+   .on("postgres_changes",{event:"*",schema:"public",table:"videos"},kick)
+   .on("postgres_changes",{event:"*",schema:"public",table:"projects"},kick)
+   .on("postgres_changes",{event:"*",schema:"public",table:"profiles"},kick)
+   .on("postgres_changes",{event:"*",schema:"public",table:"tasks"},kick)
+   .on("postgres_changes",{event:"*",schema:"public",table:"video_notes"},kick)
+   .on("postgres_changes",{event:"*",schema:"public",table:"editor_rates"},kick)
+   .on("postgres_changes",{event:"*",schema:"public",table:"settings"},kick)
+   .on("postgres_changes",{event:"*",schema:"public",table:"project_members"},kick)
+   .on("postgres_changes",{event:"INSERT",schema:"public",table:"notifs",filter:`user_id=eq.${S.me}`},pl=>{const n=pl.new;const txt=LANG==="ar"?n.ar:n.en;toast(txt);sysNotify(txt);kick();})
+   .subscribe();
+ },
+ async createProject(f){const {error}=await sb.from("projects").insert({client:S.me,title:f.title,type:f.type,drive:f.drive,ref:f.ref,notes:f.notes,count:f.count,cad:f.cad,first:new Date(f.first).toISOString()});if(error)throw error;await this.loadAll();},
+ async updVideo(id,patch){const {error}=await sb.from("videos").update(vToDb(patch)).eq("id",id);if(error)throw error;Object.assign(V(id),patch,{upd:Date.now()});if(patch.pending&&patch.pending.type==="draft"&&!V(id).deliveredAt)V(id).deliveredAt=Date.now();},
+ async updProject(id,patch){const {error}=await sb.from("projects").update(patch).eq("id",id);if(error)throw error;await this.loadAll();},
+ async notify(uid,ar,en,ref){if(!uid)return;await sb.from("notifs").insert({user_id:uid,ar,en,ref:ref===undefined?NREF:ref});},
+ async notifyAdmins(ar,en,ref){await sb.rpc("notify_admins",{p_ar:ar,p_en:en,p_ref:ref===undefined?NREF:ref});},
+ async markRead(){notifs.forEach(n=>n.read=true);await sb.from("notifs").update({read:true}).eq("user_id",S.me).eq("read",false);},
+ async createAccount({name,username,password,role}){
+  const {error}=await sb.rpc("admin_create_user",{p_username:username,p_name:name,p_password:password,p_role:role});
+  if(error) throw new Error(t("accErr"));
+  await this.loadAll();
+ },
+ async setRole(id,role){const r=await sb.from("profiles").update({role}).eq("id",id);if(r.error)throw r.error;await this.loadAll();},
+ async updateUser(id,{name,username,role,password}){const {error}=await sb.rpc("admin_update_user",{p_id:id,p_name:name||null,p_username:username||null,p_role:role||null,p_password:password||null});if(error)throw new Error(t("accErr"));await this.loadAll();},
+ async fetchSheet(url){const {data,error}=await sb.functions.invoke("sheet",{body:{url}});if(error){let code="";try{code=(await error.context.json()).error}catch(_){}throw new Error(code==="not_public"?t("notPublic"):code==="bad_url"?t("badSheet"):t("err"));}if(data&&data.error)throw new Error(data.error==="not_public"?t("notPublic"):t("err"));return data.csv;},
+ async notifyEditor(pid,ar,en,ref){const {error}=await sb.rpc("notify_project_editor",{p_project:pid,p_ar:ar,p_en:en,p_ref:ref===undefined?NREF:ref});if(error)throw error;},
+ async notifyClients(pid,ar,en,ref){const {error}=await sb.rpc("notify_project_clients",{p_project:pid,p_ar:ar,p_en:en,p_ref:ref===undefined?NREF:ref});if(error)throw error;},
+ async addMember(pid,cid){const {error}=await sb.from("project_members").insert({project:pid,client:cid});if(error)throw error;await this.loadAll();},
+ async removeMember(pid,cid){const {error}=await sb.from("project_members").delete().eq("project",pid).eq("client",cid);if(error)throw error;await this.loadAll();},
+ async setRate(editor,type,price){(rates[editor]=rates[editor]||{})[type]=price;const {error}=await sb.from("editor_rates").upsert({editor,type,price});if(error)throw error;},
+ async setSetting(key,value){settings[key]=value;const {error}=await sb.from("settings").upsert({key,value});if(error)throw error;},
+ async setClientField(id,patch){Object.assign(profiles[id],patch);const {error}=await sb.from("profiles").update(patch).eq("id",id);if(error)throw error;},
+ async setPackage(id,n){profiles[id].package_size=n;const {error}=await sb.from("profiles").update({package_size:n}).eq("id",id);if(error)throw error;},
+ async addNotes(vid,rows){const base=notesOf(vid).length;const {error}=await sb.from("video_notes").insert(rows.map((r,i)=>({video:vid,tc:r.tc,cue:r.cue,visual:r.visual,sfx:r.sfx,sort:base+i})));if(error)throw error;await this.loadAll();},
+ async setNote(id,done){const n=vnotes.find(x=>x.id===id);if(n)n.done=done;const {error}=await sb.from("video_notes").update({done}).eq("id",id);if(error)throw error;},
+ async delNote(id){const {error}=await sb.from("video_notes").delete().eq("id",id);if(error)throw error;vnotes=vnotes.filter(x=>x.id!==id);},
+ async clearNotes(vid){const {error}=await sb.from("video_notes").delete().eq("video",vid);if(error)throw error;vnotes=vnotes.filter(x=>x.video!==vid);},
+ async createTask(f){const {error}=await sb.from("tasks").insert({editor:f.editor,title:f.title,notes:f.notes,link:f.link,due:new Date(f.due).toISOString(),stages:f.stages});if(error)throw error;await this.loadAll();},
+ async updTask(id,p){const o={...p};if("isNew" in o){o.is_new=o.isNew;delete o.isNew;}if("resLink" in o){o.result_link=o.resLink;delete o.resLink;}if("due" in o)o.due=new Date(o.due).toISOString();const {error}=await sb.from("tasks").update(o).eq("id",id);if(error)throw error;await this.loadAll();},
+ async delTask(id){const {error}=await sb.from("tasks").delete().eq("id",id);if(error)throw error;await this.loadAll();},
+ async deleteUser(id){const {error}=await sb.rpc("admin_delete_user",{p_id:id});if(error)throw error;await this.loadAll();},
+ async updProfile(patch){const r=await sb.from("profiles").update(patch).eq("id",S.me);if(r.error)throw r.error;Object.assign(profiles[S.me],patch);},
+ async uploadAvatar(file){const ext=(file.name.split(".").pop()||"jpg").toLowerCase();const path=`${S.me}/avatar-${Date.now()}.${ext}`;
+  const up=await sb.storage.from("avatars").upload(path,file,{upsert:true,contentType:file.type});if(up.error)throw up.error;
+  return sb.storage.from("avatars").getPublicUrl(path).data.publicUrl;},
+ async changePassword(pw){const {error}=await sb.auth.updateUser({password:pw});if(error)throw error;await sb.rpc("forget_my_cred");},
+} : (()=>{ /* ---------- DEMO (in-memory) ---------- */
+ const passwords={}; const nbox={};
+ const seed=()=>{
+  const T0=sod(Date.now());
+  const mk=(id,name,r,title="")=>{profiles[id]={id,username:id,name,role:r,avatar_url:"",title,lang:"ar"};passwords[id]="1234";nbox[id]=[];};
+  mk("cammio","Cammio","admin","Team lead");mk("ahmed","Ahmed","editor","Video editor");mk("peter","Peter","editor","Motion + reels");
+  mk("ali","Ali Zakaria","client");mk("marketer","Ali's Marketer","client");mk("rakan","Rakan Ali","client");mk("naggar","Ahmed El Naggar","client");
+  projects=[
+   {id:"p1",client:"ali",title:"ريلز نوفمبر",type:"tReels",drive:"https://drive.google.com/drive/folders/ali-nov",ref:"https://instagram.com/reel/example",notes:"نفس ستايل الريلز اللي فاتت، كابشن كلمة بكلمة.",count:4,cad:"c2",first:T0-2*D+20*H,status:"active",editor:"ahmed",created:Date.now()-4*D},
+   {id:"p2",client:"rakan",title:"يوتيوب: قصة البداية",type:"tLong",drive:"https://drive.google.com/drive/folders/rakan",ref:"",notes:"الصور حسب السكرين شوتس اللي في الفولدر.",count:1,cad:"cOnce",first:T0+5*D+20*H,status:"pending",editor:null,created:Date.now()-3*H},
+   {id:"p3",client:"naggar",title:"Product launch",type:"tReels",drive:"https://drive.google.com/drive/folders/naggar",ref:"",notes:"English captions + minimal motion.",count:2,cad:"cDaily",first:T0+20*H,status:"active",editor:"peter",created:Date.now()-2*D}];
+  videos=[];projects.forEach(gen);
+  Object.assign(V("p1v1"),{stage:7,pub:7,round:2,upd:Date.now()-D});
+  Object.assign(V("p1v2"),{stage:6,pub:6,round:1,rs:"awaiting",link:"https://platform.krock.io/review/demo1",upd:Date.now()-2*H});
+  Object.assign(V("p1v3"),{stage:3,pub:2,pending:{type:"stage",stage:3},upd:Date.now()-50*6e4});
+  Object.assign(V("p1v4"),{stage:1,pub:1,upd:Date.now()-5*H});
+  Object.assign(V("p3v1"),{stage:6,pub:6,round:1,rs:"notes",link:"https://platform.krock.io/review/demo2",upd:Date.now()-40*6e4});
+  Object.assign(V("p3v2"),{stage:5,pub:4,pending:{type:"draft",link:"https://platform.krock.io/review/demo3",round:1},upd:Date.now()-20*6e4});
+  members=[{project:"p1",client:"marketer"}];
+  rates={ahmed:{tReels:150,tLong:600,tMotion:800},peter:{tReels:200,tLong:800,tMotion:1200}};settings={late_allowance:"2",late_penalty:"50",early_hours:"24",currency:"EGP"};profiles.ali.package_size=30;
+  Object.assign(V("p1v1"),{deliveredAt:V("p1v1").due-30*H,deliveredBy:"ahmed"});Object.assign(V("p1v2"),{deliveredAt:V("p1v2").due+5*H,deliveredBy:"ahmed"});
+  Object.assign(V("p3v1"),{deliveredAt:V("p3v1").due-2*H,deliveredBy:"peter"});
+  vnotes=[["00:04","محامي شاطر","أكوام ورق تتراكم حوالين علي","زوم بطيء"],["00:11","راحت عليها","ختم أحمر باطل/EXPIRED","قطع حاد + صوت ختم"],["00:19","الكتابة","صفحة آلة كاتبة تتكتب","مسح أفقي"]].map((r,i)=>({id:"n"+i,video:"p1v3",tc:r[0],cue:r[1],visual:r[2],sfx:r[3],done:i===0,sort:i}));
+  tasks=[{id:"t1",kind:"task",editor:"ahmed",title:"ثمبنيل لقناة علي",notes:"٣ أفكار مختلفة",link:"",due:T0+20*H,stages:["أفكار","سكتش","نهائي"],stage:1,isNew:true,upd:Date.now()-H}];
+  const sn=(u,ar,en,a)=>nbox[u].push({ar,en,time:Date.now()-a,read:a>3*H});
+  sn("ali","درافت ١ من ريل ٢ جاهز","Draft 1 of Reel 2 is ready",2*H);
+  sn("cammio","Peter بعت درافت ١ — ريل ٢ (Ahmed El Naggar)","Peter sent Draft 1 — Reel 2 (Ahmed El Naggar)",20*6e4);
+  sn("cammio","Ahmed: ريل ٣ ← فيرست كات","Ahmed: Reel 3 → First cut",50*6e4);
+  sn("peter","Ahmed El Naggar كتب ملاحظاته — ريل ١","Ahmed El Naggar left notes — Reel 1",40*6e4);
+ };
+ function gen(p){const s={cOnce:0,cDaily:1,c2:2,cWeek:7}[p.cad];for(let i=0;i<p.count;i++)videos.push({id:p.id+"v"+(i+1),project:p.id,n:i+1,due:p.first+i*s*D,stage:0,pub:0,round:0,rs:null,link:"",pending:null,isNew:false,upd:Date.now()});}
+ const push=(u,ar,en)=>{(nbox[u]=nbox[u]||[]).unshift({ar,en,ref:NREF,time:Date.now(),read:false});if(u===S.me){toast(LANG==="ar"?ar:en);}};
+ return {
+  async init(){seed();},
+  async login(u,pw,side){const p=profiles[u];if(!p||passwords[u]!==pw)throw new Error(t("badLogin"));
+   if(p.role==="pending")throw new Error(t("noRole"));
+   const ok=side==="client"?p.role==="client":p.role!=="client";if(!ok)throw new Error(t("wrongSide"));S.me=u;this.sync();},
+  sync(){notifs=nbox[S.me]||[];},
+  async logout(){},
+  async createProject(f){const p={id:"p"+Date.now().toString(36),client:S.me,title:f.title,type:f.type,drive:f.drive,ref:f.ref,notes:f.notes,count:f.count,cad:f.cad,first:new Date(f.first).getTime(),status:"pending",editor:null,created:Date.now()};projects.unshift(p);gen(p);},
+  async updVideo(id,patch){const v=V(id);if(patch.pending&&patch.pending.type==="draft"&&!v.deliveredAt){v.deliveredAt=Date.now();v.deliveredBy=P(v.project).editor;}Object.assign(v,patch,{upd:Date.now()});},
+  async updProject(id,patch){Object.assign(P(id),patch);},
+  async notify(uid,ar,en){if(uid)push(uid,ar,en);},
+  async notifyAdmins(ar,en){Object.keys(profiles).filter(u=>profiles[u].role==="admin").forEach(u=>push(u,ar,en));},
+  async markRead(){notifs.forEach(n=>n.read=true);},
+  async createAccount({name,username,password,role}){if(profiles[username]||password.length<6)throw new Error(t("accErr"));profiles[username]={id:username,username,name,role,avatar_url:"",title:"",lang:"ar"};passwords[username]=password;creds[username]=password;nbox[username]=[];},
+  async setRole(id,r){profiles[id].role=r;},
+  async updateUser(id,{name,username,role,password}){const p=profiles[id];if(name)p.name=name;if(role)p.role=role;if(username&&username!==p.username){if(Object.values(profiles).some(x=>x.username===username))throw new Error(t("accErr"));p.username=username;}if(password){if(password.length<6)throw new Error(t("accErr"));passwords[id]=password;creds[id]=password;}},
+  async setRate(editor,type,price){(rates[editor]=rates[editor]||{})[type]=price;},
+  async fetchSheet(url){throw new Error(t("err"));},
+  async notifyEditor(pid,ar,en){const p=P(pid);if(p.editor)push(p.editor,ar,en);},
+  async notifyClients(pid,ar,en){clientsOf(P(pid)).filter(c=>c!==S.me).forEach(c=>push(c,ar,en));},
+  async addMember(pid,cid){members.push({project:pid,client:cid});},
+  async removeMember(pid,cid){members=members.filter(m=>!(m.project===pid&&m.client===cid));},
+  async setSetting(key,value){settings[key]=value;},
+  async setPackage(id,n){profiles[id].package_size=n;},
+  async setClientField(id,patch){Object.assign(profiles[id],patch);},
+  async addNotes(vid,rows){const base=notesOf(vid).length;rows.forEach((r,i)=>vnotes.push({id:"n"+Math.random().toString(36).slice(2),video:vid,...r,author:S.me,done:false,sort:base+i}));},
+  async setNote(id,done){vnotes.find(x=>x.id===id).done=done;},
+  async delNote(id){vnotes=vnotes.filter(x=>x.id!==id);},
+  async clearNotes(vid){vnotes=vnotes.filter(x=>x.video!==vid);},
+  async createTask(f){tasks.push({id:"t"+Date.now().toString(36),kind:"task",editor:f.editor,title:f.title,notes:f.notes,link:f.link,due:f.due,stages:f.stages,stage:0,isNew:true,upd:Date.now()});},
+  async updTask(id,p){Object.assign(tasks.find(x=>x.id===id),p,{upd:Date.now()});},
+  async delTask(id){tasks=tasks.filter(x=>x.id!==id);},
+  async deleteUser(id){tasks=tasks.filter(x=>x.editor!==id);delete profiles[id];projects.forEach(p=>{if(p.editor===id){p.editor=null;p.status="pending";}});const mine=projects.filter(p=>p.client===id).map(p=>p.id);projects=projects.filter(p=>p.client!==id);videos=videos.filter(v=>!mine.includes(v.project));},
+  async updProfile(patch){Object.assign(profiles[S.me],patch);},
+  async uploadAvatar(file){return await new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.onerror=rej;fr.readAsDataURL(file);});},
+  async changePassword(pw){passwords[S.me]=pw;delete creds[S.me];},
+  demoPass:u=>passwords[u],
+ };
+})();
+
+/* ================= VIEWS ================= */
+function loginView(){
+ return `<div class="login">
+  <svg class="lines" width="100%" height="100%"><defs><pattern id="g" width="48" height="48" patternUnits="userSpaceOnUse"><path d="M48 0H0V48" fill="none" stroke="#E6E6E1" stroke-width="1"/></pattern></defs><rect width="100%" height="100%" fill="url(#g)"/></svg>
+  <div class="corner"><button class="btn line sm" data-a="lang">${LANG==="ar"?"EN":"ع"}</button></div>
+  <div class="lbox rise">
+   <div class="seg"><i style="inset-inline-start:${S.side==="client"?"4px":"50%"}"></i>
+    <button class="${S.side==="client"?"on":""}" data-a="side" data-s="client">${t("client")}</button>
+    <button class="${S.side==="editor"?"on":""}" data-a="side" data-s="editor">${t("editor")}</button></div>
+   <form class="lform" id="lf">
+    <input name="u" placeholder="${t("user")}" autocomplete="username" autocapitalize="off" spellcheck="false">
+    <input name="p" type="password" placeholder="${t("pass")}" autocomplete="current-password">
+    <div class="err">${esc(S.err)}</div>
+    <button class="btn ${S.busy?"busy":""}" type="submit">${t("enter")}</button>
+   </form>
+  </div>
+  ${LIVE?"":`<div class="demo">${t("demo")}: ${["ali","marketer","ahmed","peter","cammio"].map(u=>`<button data-a="fill" data-u="${u}">${u}</button>`).join(" · ")} — 1234</div>`}
+ </div>`;
+}
+function topBar(){
+ const un=notifs.filter(n=>!n.read).length;
+ const canAsk=("Notification" in window)&&Notification.permission==="default";
+ return `<div class="top"><div class="grow"></div>
+  ${canAsk?`<button class="btn line sm" data-a="askN">🔔 ${t("enableN")}</button>`:""}
+  <button class="btn line sm" data-a="lang">${LANG==="ar"?"EN":"ع"}</button>
+  <button class="ico" data-a="tour" data-tour="help" title="${t("help")}">${ico.help}</button>
+  <button class="ico" data-a="bell" data-tour="bell">${ico.bell}${un?`<b>${un}</b>`:""}</button>
+  <button class="me" data-a="settings" data-tour="me">${av(S.me)}<span class="tiny nm">${esc(nm(S.me))}</span></button>
+  <button class="ico" data-a="logout" title="${t("out")}">${ico.out}</button></div>`;
+}
+function item(id,L,R,det){const o=S.open===id;return `<div class="item ${o?"open":""}"><div class="it" data-a="toggle" data-id="${id}"><div class="grow">${L}</div><div class="meta">${R}</div></div><div class="det">${o?det:""}</div></div>`;}
+function links(p){return `<dl class="kv"><dt>${t("material")}</dt><dd><a href="${esc(p.drive)}" target="_blank" rel="noopener">Drive ${ico.ext}</a></dd>${p.ref?`<dt>${t("reference")}</dt><dd><a href="${esc(p.ref)}" target="_blank" rel="noopener">${t("open")} ${ico.ext}</a></dd>`:""}${p.notes?`<dt>${t("notes")}</dt><dd>${esc(p.notes)}</dd>`:""}</dl>`;}
+
+/* client */
+function clientView(){
+ const ps=projects.filter(isMine);
+ const vs=videos.filter(v=>ps.some(p=>p.id===v.project));
+ const tab=S.tab||"active";
+ const need=vs.filter(v=>P(v.project).status==="active"&&v.pub===6&&v.rs==="awaiting");
+ const g={active:vs.filter(v=>P(v.project).status==="active"&&v.pub<7).sort((a,b)=>(b.rs==="awaiting")-(a.rs==="awaiting")||a.due-b.due),
+  waiting:vs.filter(v=>P(v.project).status==="pending"),delivered:vs.filter(v=>v.pub===7)};
+ return `${topBar()}<div class="main">
+  <div class="head"><h1>${t("myVideos")}</h1><button class="btn y" data-a="newReq" data-tour="new">+ ${t("newReq")}</button></div>
+  ${(()=>{const pk=profiles[S.me]&&profiles[S.me].package_size;const req=vs.length,dl=vs.filter(v=>v.pub===7).length;if(!pk&&!req)return "";const n=pk||req;const pct=Math.min(100,Math.round(dl/n*100));
+   return `<div class="list" data-tour="pkg" style="padding:16px;margin-bottom:16px"><div class="row"><b class="grow">${t("pkg")}</b><span class="tiny muted">${tpl("pkgReq",{q:req})}</span></div>
+    <div style="height:8px;background:var(--soft);border-radius:4px;margin:12px 0 8px;overflow:hidden"><div style="height:100%;width:${pct}%;background:var(--ink);border-radius:4px;transition:width .6s"></div></div>
+    <div class="row tiny"><span class="grow">${tpl("pkgOf",{d:dl,n})}</span>${pk?`<span class="chip y">${tpl("pkgLeft",{r:Math.max(0,pk-dl)})}</span>`:""}</div></div>`;})()}
+  <div class="tabs">${["active","waiting","delivered"].map(k=>`<button class="tab ${tab===k?"on":""}" data-a="tab" data-t="${k}">${t(k)}${k==="active"&&need.length?`<em>${need.length}</em>`:g[k].length&&k!=="active"?` <span class="muted">${g[k].length}</span>`:""}</button>`).join("")}</div>
+  <div class="list" data-tour="row">${g[tab].length?g[tab].map(clientItem).join(""):`<div class="empty">${t("noTasks")}</div>`}</div></div>`;
+}
+function clientItem(v){
+ const p=P(v.project),pend=p.status==="pending";
+ const L=`<div class="t row">${v.rs==="awaiting"&&v.pub===6?'<span class="dot pulse"></span>':""}${vn(v)}</div><div class="s">${esc(p.title)}</div>`;
+ const R=pend?`<span class="chip">${t("underReview")}</span>`:`${v.pub===6&&v.rs==="awaiting"?`<span class="chip y">${t("reviewNow")}</span>`:`<span class="chip ${v.pub===7?"k":""}">${ST(v.pub)}</span>`}<span class="chip hide-m">${fd(v.due)}</span>`;
+ let det=pend?links(p):`${steps(v.pub)}<dl class="kv"><dt>${t("editorL")}</dt><dd>${t("theEditor")} · ${ST(v.pub)}</dd><dt>${t("stage")}</dt><dd>${ST(v.pub)}</dd><dt>${t("due")}</dt><dd>${fd(v.due)}</dd></dl>`;
+ if(!pend){det+=notesList(v.id,false)+`<div class="acts" style="margin-bottom:10px"><button class="btn line sm" data-a="notesOpen" data-v="${v.id}">+ ${t("noteToEd")}</button>${v.pub<7?`<button class="btn line sm" data-a="askEd" data-v="${v.id}">${t("askEd")}</button>`:""}</div>`;}
+ if(!pend&&v.pub===6){const u=used(v);
+  if(v.rs==="awaiting") det+=`<div class="box y"><div class="row"><b class="grow">${t("draft")} ${v.round}</b><span class="tiny muted">${t("rounds")}</span>${rd(u)}</div>
+   <div class="acts"><a class="btn sm" href="${esc(v.link)}" target="_blank" rel="noopener" style="text-decoration:none">${t("openKrock")} ${ico.ext}</a>
+   <button class="btn line sm" data-a="cNotes" data-v="${v.id}" ${u>=3?"disabled":""}>${t("notesDone")}</button>
+   <button class="btn y sm" data-a="cApprove" data-v="${v.id}">${t("approve")}</button></div>${u>=3?`<div class="tiny muted" style="margin-top:8px">${t("noRounds")}</div>`:""}</div>`;
+  else det+=`<div class="box row"><span class="grow tiny">${v.rs==="notes"?t("notesSent"):t("revising")}</span>${rd(u)}</div>`;}
+ return item(v.id,L,R,det);
+}
+function reqSheet(){
+ const f=S.form;const o=(k,vals)=>`<div class="opt">${vals.map(x=>`<button type="button" class="${f[k]===x?"on":""}" data-a="fo" data-k="${k}" data-v="${x}">${t(x)}</button>`).join("")}</div>`;
+ return `<header>${t("newReq")}<button class="ico" data-a="closeAll">${ico.x}</button></header>
+ <form class="body" id="rf">
+  <div><label>${t("fTitle")}</label><input name="title" value="${esc(f.title||"")}"></div>
+  <div><label>${t("fType")}</label>${o("type",["tReels","tLong","tMotion"])}</div>
+  <div><label>${t("fDrive")}</label><input name="drive" type="url" placeholder="https://drive.google.com/…" value="${esc(f.drive||"")}"></div>
+  <div><label>${t("fRef")}</label><input name="ref" type="url" placeholder="https://…" value="${esc(f.ref||"")}"></div>
+  <div><label>${t("fNotes")}</label><textarea name="notes">${esc(f.notes||"")}</textarea></div>
+  <div class="two"><div><label>${t("fCount")}</label><input name="count" type="number" min="1" max="60" value="${f.count}"></div><div><label>${t("fFirst")}</label><input name="first" type="date" value="${esc(f.first||"")}"></div></div>
+  <div><label>${t("fCad")}</label>${o("cad",["cOnce","cDaily","c2","cWeek"])}</div>
+  <button class="btn" type="submit">${t("send")}</button></form>`;
+}
+
+/* editor */
+function bucket(v){if(v.kind==="task"?tDone(v):v.stage===7)return"done";const T0=sod(Date.now()),d=sod(v.due);if(v.due<Date.now())return"late";if(d===T0)return"today";if(d===T0+D)return"tomorrow";return"later";}
+function nextChk(){let last=0;try{last=+localStorage.getItem("hub_chk_"+S.me)||0}catch(_){}if(!last){last=Date.now();try{localStorage.setItem("hub_chk_"+S.me,last)}catch(_){}}return Math.max(0,last+3*H-Date.now());}
+function editorView(){
+ const mine=videos.filter(v=>{const p=P(v.project);return p&&p.editor===S.me&&p.status==="active"}).concat(tasks.filter(x=>x.editor===S.me));
+ const keys=["late","today","tomorrow","later","done"];const g={};keys.forEach(k=>g[k]=mine.filter(v=>bucket(v)===k).sort((a,b)=>a.due-b.due));g.ledger=[];
+ const tab=S.tab||(g.late.length?"late":g.today.length?"today":"later");
+ const firstId=(g[tab].find(v=>v.kind==="task"?!tDone(v):!updDisabled(v))||{}).id;
+ return `${topBar()}<div class="main">
+  <div class="head"><h1>${t("tasks")}</h1><div class="row"><button class="btn y sm" data-a="deliverOpen" data-tour="upload">+ ${t("deliverTitle")}</button><button class="btn line sm row" data-a="checkin" data-tour="chk"><span class="dot pulse"></span>${t("nextIn")} · ${(Math.round(nextChk()/H*10)/10)}${t("h")}</button></div></div>
+  <div class="tabs" data-tour="tabs">${keys.map(k=>`<button class="tab ${tab===k?"on":""}" data-a="tab" data-t="${k}">${t(k)}${g[k].length?(k==="late"||k==="today"?`<em>${g[k].length}</em>`:` <span class="muted">${g[k].length}</span>`):""}</button>`).join("")}<button class="tab ${tab==="ledger"?"on":""}" data-a="tab" data-t="ledger" data-tour="ledger">${t("ledger")}</button></div>
+  ${tab==="ledger"?ledgerView(S.me,false):`<div class="list">${g[tab].length?g[tab].map(v=>v.kind==="task"?taskItem(v,v.id===firstId):editorItem(v,v.id===firstId)).join(""):`<div class="empty">${t("noTasks")}</div>`}</div>`}</div>`;
+}
+const updDisabled=v=>!!v.pending||v.stage===7||(v.stage===6&&v.rs==="awaiting");
+function editorItem(v,first){
+ const p=P(v.project);
+ const status=v.pending?`<span class="chip y">${t("toCammio")}</span>`:v.stage===6&&v.rs==="notes"?`<span class="chip k">${t("clientNotes")}</span>`:v.stage===6&&v.rs==="awaiting"?`<span class="chip">${t("waitClient")}</span>`:`<span class="chip ${v.stage===7?"k":""}">${ST(v.stage)}</span>`;
+ const L=`<div class="t row">${v.isNew?`<span class="chip y">${t("newTag")}</span>`:""}${vn(v)} <span class="muted" style="font-weight:400">· ${esc(nm(p.client))}</span></div><div class="s">${esc(p.title)} · ${fd(v.due)}${isLate(v)?` · <span style="color:var(--red)">${t("late")}</span>`:""}</div>`;
+ const R=`${notesChip(v.id)}${status}${v.stage<7?`<button class="btn sm ${v.stage<5&&!v.pending?"":"line"}" data-a="updMenu" data-v="${v.id}" ${first?'data-tour="upd"':""} ${updDisabled(v)?"disabled":""}>${t("update")}</button>`:""}`;
+ let det=`${steps(v.stage)}${notesList(v.id,true)}${links(p)}`;
+ if(v.pending) det+=`<div class="box tiny">${v.pending.type==="draft"?`${t("draft")} ${v.pending.round}`:ST(v.pending.stage)} → ${t("toCammio")}</div>`;
+ else if(v.stage===5||(v.stage===6&&v.rs==="revising")||(S.draftOpen===v.id&&v.stage<6)) det+=`<div class="box y"><b>${t("draft")} ${v.stage===6?v.round+1:1}</b>
+  <div class="row" style="margin:10px 0"><a class="btn line sm" href="${esc(CFG.UPLOAD_URL)}" target="_blank" rel="noopener" style="text-decoration:none">${t("step1")} ${ico.ext}</a></div>
+  <label>${t("step2")}</label><div class="row"><input id="lk_${v.id}" placeholder="https://platform.krock.io/…"><button class="btn sm" data-a="eDraft" data-v="${v.id}">${t("sendDraft")}</button></div></div>`;
+ else if(v.stage===6&&v.rs==="notes") det+=`<div class="box y"><b>${t("clientNotes")} · ${t("draft")} ${v.round}</b><div class="acts"><a class="btn line sm" href="${esc(v.link)}" target="_blank" rel="noopener" style="text-decoration:none">${t("openKrock")} ${ico.ext}</a><button class="btn sm" data-a="eGot" data-v="${v.id}">${t("gotNotes")}</button></div></div>`;
+ return item(v.id,L,R,det);
+}
+function taskItem(x,first){
+ const done=tDone(x);
+ const L=`<div class="t row">${x.isNew?`<span class="chip y">${t("newTag")}</span>`:""}${esc(x.title)}</div><div class="s"><span class="chip">${t("task")}</span>${fd(x.due)}${!done&&x.due<Date.now()?` · <span style="color:var(--red)">${t("late")}</span>`:""}</div>`;
+ const R=`<span class="chip ${done?"k":""}">${esc(tStageName(x))}</span>${done?"":`<button class="btn sm" data-a="tMenu" data-t="${x.id}" ${first?'data-tour="upd"':""}>${t("update")}</button>`}`;
+ const det=`${tSteps(x)}${x.stages.length?`<div class="opt" style="margin-bottom:12px">${x.stages.map((st,i)=>`<span class="chip ${i<x.stage?"k":i===x.stage?"y":""}">${esc(st)}</span>`).join("")}</div>`:""}<dl class="kv">${x.resLink?`<dt>${t("deliveryL")}</dt><dd><a href="${esc(x.resLink)}" target="_blank" rel="noopener">${t("open")} ${ico.ext}</a></dd>`:""}${x.link?`<dt>${t("tLink").split(" ")[0]}</dt><dd><a href="${esc(x.link)}" target="_blank" rel="noopener">${t("open")} ${ico.ext}</a></dd>`:""}${x.notes?`<dt>${t("notes")}</dt><dd>${esc(x.notes)}</dd>`:""}</dl>`;
+ return item(x.id,L,R,det);
+}
+function checkinSheet(){
+ const vs=videos.filter(v=>{const p=P(v.project);return p&&p.editor===S.me&&p.status==="active"&&v.stage<5&&!v.pending});
+ return `<header><span>${t("checkin")} <span class="muted tiny">· ${t("checkinSub")}</span></span><button class="ico" data-a="closeAll">${ico.x}</button></header>
+ <div class="body">${vs.length?vs.map(v=>`<div><label>${vn(v)} · ${esc(nm(P(v.project).client))}</label><select data-ci="${v.id}">${[0,1,2,3,4,5].map(i=>`<option value="${i}" ${i===v.stage?"selected":""}>${ST(i)}</option>`).join("")}</select></div>`).join(""):`<div class="muted">${t("noTasks")}</div>`}
+ <button class="btn" data-a="ciSave">${t("save")}</button></div>`;
+}
+
+/* admin */
+function apprItem(v){const p=P(v.project);const what=v.pending.type==="draft"?`${t("draft")} ${v.pending.round}`:`${ST(v.pub)} → ${ST(v.pending.stage)}`;
+ return item(v.id,`<div class="t">${vn(v)} <span class="muted" style="font-weight:400">· ${esc(p.title)}</span></div><div class="s">${esc(nm(p.editor))} → ${esc(nm(p.client))} · ${ago(v.upd)}</div>`,
+  `<span class="chip y">${what}</span><button class="btn line sm" data-a="hold" data-v="${v.id}">${t("hold")}</button><button class="btn sm" data-a="pub" data-v="${v.id}">${t("publish")}</button>`,
+  `${steps(v.pending.type==="draft"?6:v.pending.stage)}${v.pending.type==="draft"?`<dl class="kv"><dt>Krock</dt><dd><a href="${esc(v.pending.link)}" target="_blank" rel="noopener">${t("open")} ${ico.ext}</a></dd></dl>`:""}${notesList(v.id,false)}${links(p)}`);}
+function reqItem(p){const eds=Object.keys(profiles).filter(u=>role(u)==="editor");
+ return item(p.id,`<div class="t">${esc(p.title)}</div><div class="s">${esc(nm(p.client))} · ${p.count} × ${t(p.type)} · ${t(p.cad)} · ${fd(p.first)}</div>`,`<span class="chip y">${t("requests")}</span><span class="chip">${ago(p.created)}</span>`,
+  `${links(p)}<div class="row"><select id="as_${p.id}" style="width:auto">${eds.map(e=>`<option value="${e}">${esc(nm(e))}</option>`).join("")}</select><button class="btn sm" data-a="assign" data-p="${p.id}" ${eds.length?"":"disabled"}>${t("assign")}</button></div>`);}
+function workItem(v,mode){const p=P(v.project);
+ const sub=mode==="cl"?`${esc(nm(p.editor))} · ${ago(v.upd)}`:`${esc(nm(p.client))} · ${esc(p.title)} · ${ago(v.upd)}`;
+ const chip=mode==="cl"?`<span class="chip ${v.pub===7?"k":""}">${t("clientSees")}: ${ST(v.pub)}</span>`:`<span class="chip ${v.stage===7?"k":""}">${ST(v.stage)}</span>`;
+ return item(v.id,`<div class="t row">${v.isNew&&mode!=="cl"?`<span class="chip y">${t("newTag")}</span>`:""}${vn(v)}${v.rs==="notes"?` <span class="chip k">${t("sentNotesLbl")}</span>`:""}</div><div class="s">${sub}</div>`,
+  `${notesChip(v.id)}${isLate(v)?`<span class="chip r">${t("late")}</span>`:""}${chip}<span class="chip hide-m">${fd(v.due)}</span>`,
+  `${steps(mode==="cl"?v.pub:v.stage)}<dl class="kv"><dt>${t("client")}</dt><dd>${ST(v.pub)}</dd><dt>${t("editor")}</dt><dd>${ST(v.stage)}</dd>${v.link?`<dt>Krock</dt><dd><a href="${esc(v.link)}" target="_blank" rel="noopener">${t("open")} ${ico.ext}</a></dd>`:""}</dl>${notesList(v.id,false)}${links(p)}
+  <div class="acts"><button class="btn sm" data-a="notesOpen" data-v="${v.id}">${t("notesL")} (${notesOf(v.id).length})</button><button class="btn line sm" data-a="projOpen" data-p="${p.id}">${t("projL")}: ${esc(p.title)} · ${clientsOf(p).length} 👤</button>${v.stage<7&&p.editor?`<button class="btn line sm" data-a="ping" data-v="${v.id}">${t("ping")} ${esc(nm(p.editor))}</button>`:""}</div>`);}
+function taskAdminItem(x){return item(x.id,
+  `<div class="t row">${x.isNew?`<span class="chip y">${t("newTag")}</span>`:""}${esc(x.title)}</div><div class="s"><span class="chip">${t("task")}</span>${fd(x.due)} · ${ago(x.upd)}</div>`,
+  `${!tDone(x)&&x.due<Date.now()?`<span class="chip r">${t("late")}</span>`:""}<span class="chip ${tDone(x)?"k":""}">${esc(tStageName(x))}</span>`,
+  `${tSteps(x)}${x.notes?`<p class="tiny muted" style="margin-bottom:10px">${esc(x.notes)}</p>`:""}<dl class="kv">${x.resLink?`<dt>${t("deliveryL")}</dt><dd><a href="${esc(x.resLink)}" target="_blank" rel="noopener">${t("open")} ${ico.ext}</a></dd>`:""}${x.link?`<dt>${t("material")}</dt><dd><a href="${esc(x.link)}" target="_blank" rel="noopener">${t("open")} ${ico.ext}</a></dd>`:""}</dl><div class="acts"><button class="btn line sm" data-a="editTask" data-t="${x.id}">${t("edit")}</button><button class="btn line sm" data-a="pingTask" data-t="${x.id}">${t("ping")} ${esc(nm(x.editor))}</button></div>`);}
+const grp=(title,inner,extra)=>`<div class="row" style="margin:20px 0 8px"><b class="grow">${title}</b>${extra||""}</div><div class="list">${inner||`<div class="empty">${t("noTasks")}</div>`}</div>`;
+const chipPick=(arr,sel,act,badge)=>`<div class="opt" style="margin-bottom:14px">${arr.map(u=>`<button class="${u===sel?"on":""} row" style="gap:6px" data-a="${act}" data-u="${u}">${av(u)} ${esc(nm(u))}${badge(u)?` <em style="font-style:normal;font-size:10px;background:var(--y);border-radius:8px;padding:0 6px;color:var(--ink)">${badge(u)}</em>`:""}</button>`).join("")}</div>`;
+function clientsSection(){
+ const cls=Object.keys(profiles).filter(u=>role(u)==="client");if(!cls.length)return `<div class="empty">${t("noClients")}</div>`;
+ const projOf=c=>projects.filter(p=>clientsOf(p).includes(c));
+ const badge=c=>{const ps=projOf(c);return ps.filter(p=>p.status==="pending").length+videos.filter(v=>v.pending&&v.pending.type==="draft"&&ps.some(p=>p.id===v.project)).length;};
+ const c=cls.includes(S.selC)?S.selC:cls.slice().sort((a,b)=>badge(b)-badge(a)||projOf(b).length-projOf(a).length)[0];S.selC=c;
+ const ps=projOf(c), pids=ps.map(p=>p.id), vs=videos.filter(v=>pids.includes(v.project)&&P(v.project).status==="active");
+ const pr=profiles[c], dl=vs.filter(v=>v.pub===7).length, price=+pr.client_price||0, paid=+pr.client_paid||0, owed=dl*price, pk=pr.package_size;
+ const head=`<div class="list" style="padding:16px"><div class="row">${av(c,"lg")}<div class="grow"><b style="font-size:17px">${esc(nm(c))}</b><div class="tiny muted">@${esc(pr.username)} · ${ps.length} ${t("projects")}</div></div><button class="btn line sm" data-a="editUser" data-u="${c}">${t("edit")}</button></div>
+  <div class="stats" style="margin:14px 0 0;grid-template-columns:repeat(4,1fr)">
+   <div class="st"><b>${dl}${pk?`<span class="muted" style="font-size:14px">/${pk}</span>`:""}</b><span>${t("delivered")}</span></div>
+   <div class="st"><b>${money(owed)}</b><span>${t("owed")}</span></div>
+   <div class="st"><b>${money(paid)}</b><span>${t("paid")}</span></div>
+   <div class="st ${owed-paid>0?"hl":""}"><b>${money(Math.max(0,owed-paid))}</b><br><span>${t("remaining")}</span></div></div>
+  <div class="row" style="margin-top:12px;flex-wrap:wrap"><span class="tiny muted">${t("pricePerVideo")}</span><input type="number" min="0" data-cmoney="client_price" data-u="${c}" value="${pr.client_price??""}" style="width:100px;padding:6px 8px"><span class="tiny muted">${t("paid")}</span><input type="number" min="0" data-cmoney="client_paid" data-u="${c}" value="${pr.client_paid??""}" style="width:110px;padding:6px 8px"></div></div>`;
+ const fromThem=ps.filter(p=>p.status==="pending").map(reqItem).join("")+vs.filter(v=>v.rs==="notes").map(v=>workItem(v,"cl")).join("");
+ const toThem=vs.filter(v=>v.pending&&v.pending.type==="draft").map(apprItem).join("");
+ const projHtml=ps.filter(p=>p.status==="active").map(p=>`<div class="item" style="padding:10px 16px;display:flex;gap:8px;align-items:center"><b class="grow">${esc(p.title)}</b><span class="chip">${videos.filter(v=>v.project===p.id&&v.pub===7).length}/${videos.filter(v=>v.project===p.id).length}</span><button class="btn line sm" data-a="projOpen" data-p="${p.id}">${t("projL")}</button></div>`+videos.filter(v=>v.project===p.id).sort((a,b)=>a.n-b.n).map(v=>workItem(v,"cl")).join("")).join("");
+ return chipPick(cls,c,"selC",badge)+head+grp(t("fromClient"),fromThem)+grp(t("toClient"),toThem)+grp(t("projectsL"),projHtml);}
+function teamSection(){
+ const eds=Object.keys(profiles).filter(u=>role(u)==="editor");if(!eds.length)return `<div class="empty">${t("noEditors")}</div>`;
+ const vOf=e=>videos.filter(v=>{const p=P(v.project);return p&&p.status==="active"&&p.editor===e;});
+ const badge=e=>vOf(e).filter(v=>v.pending).length;
+ const e=eds.includes(S.selE)?S.selE:eds.slice().sort((a,b)=>badge(b)-badge(a))[0];S.selE=e;
+ const vs=vOf(e), ts=tasks.filter(x=>x.editor===e), appr=vs.filter(v=>v.pending);
+ const sub=S.tsub||(appr.length?"appr":"work");
+ const L=ledger(e,curMonth());const lateN=vs.filter(isLate).length+ts.filter(x=>!tDone(x)&&x.due<Date.now()).length;
+ const head=`<div class="list" style="padding:16px"><div class="row">${av(e,"lg")}<div class="grow"><b style="font-size:17px">${esc(nm(e))}</b><div class="tiny muted">${esc(profiles[e].title||"@"+profiles[e].username)}</div></div><button class="btn line sm" data-a="editUser" data-u="${e}">${t("edit")}</button></div>
+  <div class="stats" style="margin:14px 0 0;grid-template-columns:repeat(4,1fr)">
+   <div class="st ${appr.length?"hl":""}"><b>${appr.length}</b><br><span>${t("waitingYou")}</span></div>
+   <div class="st"><b>${vs.filter(v=>v.stage<7).length+ts.filter(x=>!tDone(x)).length}</b><span>${t("sActive")}</span></div>
+   <div class="st"><b style="${lateN?"color:var(--red)":""}">${lateN}</b><span>${t("sLate")}</span></div>
+   <div class="st"><b>${money(L.total)}</b><span>${t("thisMonth")}</span></div></div></div>`;
+ const subs=[["appr",t("waitingYou"),appr.length],["work",t("hisWork"),0],["done",t("handed"),0],["money",t("money"),0]];
+ const subBar=`<div class="tabs" style="margin-top:16px">${subs.map(([k,l,n])=>`<button class="tab ${sub===k?"on":""}" data-a="tsub" data-t="${k}">${l}${n?`<em>${n}</em>`:""}</button>`).join("")}</div>`;
+ let body="";
+ if(sub==="appr") body=`<div class="list">${appr.map(apprItem).join("")||`<div class="empty">${t("noTasks")}</div>`}</div>`;
+ if(sub==="work"){const items=vs.filter(v=>v.stage<7).concat(ts.filter(x=>!tDone(x))).sort((a,b)=>a.due-b.due);
+  body=`<div class="row" style="margin-bottom:8px"><span class="grow"></span><button class="btn y sm" data-a="newTask" data-u="${e}">+ ${t("newTask")}</button></div><div class="list">${items.map(x=>x.kind==="task"?taskAdminItem(x):workItem(x,"tm")).join("")||`<div class="empty">${t("noTasks")}</div>`}</div>`;}
+ if(sub==="done"){const items=vs.filter(v=>v.stage===7).concat(ts.filter(tDone)).sort((a,b)=>(b.upd||0)-(a.upd||0));body=`<div class="list">${items.map(x=>x.kind==="task"?taskAdminItem(x):workItem(x,"tm")).join("")||`<div class="empty">${t("noTasks")}</div>`}</div>`;}
+ if(sub==="money") body=moneyAdmin(e);
+ return chipPick(eds,e,"selE",badge)+head+subBar+body;}
+function accountsSection(){return `<div class="list"><div class="item" style="padding:14px 16px"><form id="af" class="row" style="flex-wrap:wrap">
+  <input name="name" placeholder="${t("name")}" style="flex:1;min-width:120px"><input name="u" placeholder="${t("user")}" style="flex:1;min-width:110px" autocapitalize="off" spellcheck="false"><input name="p" placeholder="${t("pass")} (6+)" style="flex:1;min-width:100px">
+  <select name="role" style="width:auto"><option value="client">${t("client")}</option><option value="editor">${t("editor")}</option></select><button class="btn sm" type="submit">${t("create")}</button></form></div>`+
+  Object.keys(profiles).sort((a,b)=>(role(b)==="pending")-(role(a)==="pending")).map(u=>`<div class="item"><div class="it" style="cursor:default"><div class="grow row">${av(u)}<div><div class="t">${esc(nm(u))}</div><div class="s">@${esc(profiles[u].username)}${profiles[u].title?` · ${esc(profiles[u].title)}`:""}</div></div></div><div class="meta">
+   ${role(u)==="pending"?`<button class="btn line sm" data-a="setRole" data-u="${u}" data-r="client">${t("setRole")}${t("client")}</button><button class="btn line sm" data-a="setRole" data-u="${u}" data-r="editor">${t("editor")}</button>`:`<span class="chip ${role(u)==="admin"?"k":""}">${t(role(u))}</span>`}
+   ${role(u)!=="admin"?`<button class="btn line sm" data-a="editUser" data-u="${u}">${t("edit")}</button>`:""}</div></div></div>`).join("")+`</div>`;}
+function adminView(){
+ const sec=S.sec||"tm";
+ const reqN=projects.filter(p=>p.status==="pending").length, clDraft=videos.filter(v=>v.pending&&v.pending.type==="draft").length;
+ const apprN=videos.filter(v=>v.pending&&P(v.project)?.status==="active").length, pendAcc=Object.values(profiles).filter(p=>p.role==="pending").length;
+ const btn=(k,l,n)=>`<button class="tab ${sec===k?"on":""}" style="padding:10px 18px;font-size:14px" data-a="sec" data-s="${k}" data-tour="sec-${k}">${l}${n?`<em>${n}</em>`:""}</button>`;
+ return `${topBar()}<div class="main">
+  <div class="tabs" style="margin-bottom:20px">${btn("cl",t("secCl"),reqN)}${btn("tm",t("secTm"),apprN)}${btn("acc",t("accounts"),pendAcc)}</div>
+  ${sec==="cl"?clientsSection():sec==="tm"?teamSection():accountsSection()}</div>`;}
+
+/* sheets */
+function deliverables(){const vs=videos.filter(v=>{const p=P(v.project);return p&&p.editor===S.me&&p.status==="active"&&v.stage<7&&!(v.pending&&v.pending.type==="draft")&&!(v.stage===6&&v.rs!=="revising");}).sort((a,b)=>a.due-b.due);
+ const ts=tasks.filter(x=>x.editor===S.me&&!tDone(x)).sort((a,b)=>a.due-b.due);return vs.concat(ts);}
+function deliverSheet(){const list=deliverables();if(S.delivId&&!list.some(x=>x.id===S.delivId))S.delivId=null;const cur=list.find(x=>x.id===S.delivId)||list[0];if(cur)S.delivId=cur.id;
+ const label=x=>x.kind==="task"?`${t("task")}: ${x.title}`:`${vn(x)} · ${nm(P(x.project).client)} · ${P(x.project).title}${notesOf(x.id).length?` (${t("notesL")} ${notesOf(x.id).filter(n=>n.done).length}/${notesOf(x.id).length})`:""}`;
+ return `<header>${t("deliverTitle")}<button class="ico" data-a="closeAll">${ico.x}</button></header>
+ <div class="body">${list.length?`
+  <div><label>${t("whichItem")}</label><select id="delivSel">${list.map(x=>`<option value="${x.id}" ${x.id===S.delivId?"selected":""}>${esc(label(x))}</option>`).join("")}</select></div>
+  <a class="btn line" href="${esc(CFG.UPLOAD_URL)}" target="_blank" rel="noopener" style="text-decoration:none;text-align:center">${t("step1")} ${ico.ext}</a>
+  <div><label>${t("step2")}</label><input id="delivLink" placeholder="https://platform.krock.io/…" style="direction:ltr"></div>
+  ${cur&&cur.kind==="task"?`<label class="row" style="margin:0;color:var(--ink)"><input type="checkbox" id="delivDone" style="width:16px;height:16px;accent-color:#0B0B0B"> ${t("finishedAll")}</label>`:""}
+  <button class="btn" data-a="deliverSend">${t("sendToCammio")}</button>`:`<div class="empty">${t("nothingToDeliver")}</div>`}</div>`;}
+function projSheet(){const p=P(S.projP);if(!p)return "";const cls=Object.keys(profiles).filter(u=>role(u)==="client");
+ return `<header>${t("projL")}<button class="ico" data-a="closeAll">${ico.x}</button></header>
+ <div class="body"><form id="pjf" style="display:grid;gap:10px"><div><label>${t("projName")}</label><input name="title" value="${esc(p.title)}"></div><button class="btn sm" type="submit">${t("saveS")}</button></form>
+  <div class="sep"></div><label style="margin:0">${t("members")}</label>
+  <div style="display:grid;gap:6px">${cls.map(c=>{const own=c===p.client,on=own||members.some(m=>m.project===p.id&&m.client===c);
+   return `<button class="row" style="justify-content:space-between;border:1px solid ${on?"var(--ink)":"var(--line)"};border-radius:10px;padding:8px 10px" ${own?"disabled":`data-a="memToggle" data-u="${c}"`}><span class="row">${av(c)} ${esc(nm(c))} <span class="tiny muted">@${esc(profiles[c].username)}</span></span><span class="chip ${on?"k":""}">${own?t("owner"):on?"✓":"+"}</span></button>`;}).join("")}</div></div>`;}
+function notesSheet(){const v=V(S.notesV);if(!v)return "";const p=P(v.project);const ns=notesOf(v.id);const pv=parseNotes(S.paste||"");const isAdm=role(S.me)==="admin";
+ return `<header>${t("notesL")} · ${vn(v)} <span class="muted tiny">${esc(p.title)}</span><button class="ico" data-a="closeAll">${ico.x}</button></header>
+ <div class="body">
+  <div><label>${t("sheetLink")}</label><div class="row"><input id="sheetUrl" placeholder="https://docs.google.com/spreadsheets/d/…" style="direction:ltr" value="${esc(S.sheetUrl||"")}"><button class="btn sm ${S.sheetBusy?"busy":""}" data-a="readSheet">${t("readSheet")}</button></div></div>
+  <div><label>${t("orPaste")}</label><textarea id="pasteBox" placeholder="${t("nPastePh")}" style="min-height:110px;font-size:12px">${esc(S.paste||"")}</textarea>
+   ${pv.length?`<div class="row" style="margin-top:8px"><span class="chip y">${pv.length} ${t("nFound")}</span><span class="grow"></span><button class="btn sm" data-a="pasteAdd">${t("nAddAll")}</button></div>
+   <div class="tiny muted" style="margin-top:6px">${pv.slice(0,3).map(r=>`${esc(r.tc||"—")} · ${esc(r.cue)}`).join("<br>")}${pv.length>3?"<br>…":""}</div>`:""}</div>
+  <div class="sep"></div>
+  <form id="nf" style="display:grid;gap:8px"><label style="margin:0">${t("nAddOne")}</label>
+   <div class="two"><input name="tc" placeholder="${t("nTc")} 01:23" style="direction:ltr"><input name="cue" placeholder="${t("nCue")}"></div>
+   <input name="visual" placeholder="${t("nVisual")}"><input name="sfx" placeholder="${t("nSfx")}">
+   <button class="btn line sm" type="submit">${t("add")}</button></form>
+  <div class="sep"></div>
+  ${ns.length?`<div>${ns.map(n=>`<div class="row" style="padding:7px 0;border-bottom:1px solid var(--line);align-items:flex-start"><span style="font-family:ui-monospace,monospace;font-size:12px;background:${n.done?"var(--soft)":"var(--y)"};border-radius:5px;padding:1px 6px;direction:ltr">${esc(n.tc||"—")}</span><span class="grow tiny"><b>${esc(n.cue)}</b> ${esc(n.visual)}${n.sfx?` · <span class="muted">${esc(n.sfx)}</span>`:""}${n.done?` <span class="chip k">✓</span>`:""}</span>${isAdm||n.author===S.me?`<button class="tiny muted" data-a="noteDel" data-n="${n.id}">✕</button>`:""}</div>`).join("")}</div>
+   ${isAdm?`<button class="btn line sm" style="color:var(--red)" data-a="notesClear">${S.delArm?t("delSure"):t("nClear")}</button>`:""}`:""}
+ </div>`;}
+function finSheet(){const x=T_(S.finT);if(!x)return "";
+ return `<header>${t("finishT")}<button class="ico" data-a="closeAll">${ico.x}</button></header>
+ <div class="body"><b>${esc(x.title)}</b>
+  <a class="btn line" href="${esc(CFG.UPLOAD_URL)}" target="_blank" rel="noopener" style="text-decoration:none;text-align:center">${t("step1")} ${ico.ext}</a>
+  <div><label>${t("resLink")}</label><input id="finLink" placeholder="https://…"></div>
+  <button class="btn" data-a="finSend">${t("sendFinish")}</button></div>`;}
+function taskSheet(){
+ const f=S.tf; const eds=Object.keys(profiles).filter(u=>role(u)==="editor");
+ return `<header>${S.editT?t("edit"):t("newTask")}<button class="ico" data-a="closeAll">${ico.x}</button></header>
+ <form class="body" id="tf">
+  <div><label>${t("tFor")}</label><div class="opt">${eds.map(e=>`<button type="button" class="${f.editor===e?"on":""}" data-a="tfo" data-k="editor" data-v="${e}">${esc(nm(e))}</button>`).join("")||`<span class="muted tiny">—</span>`}</div></div>
+  <div><label>${t("tTitle")}</label><input name="title" value="${esc(f.title||"")}"></div>
+  <div><label>${t("tNotes")}</label><textarea name="notes">${esc(f.notes||"")}</textarea></div>
+  <div class="two"><div><label>${t("tLink")}</label><input name="link" type="url" placeholder="https://…" value="${esc(f.link||"")}"></div><div><label>${t("tDue")}</label><input name="due" type="date" value="${esc(f.due||"")}"></div></div>
+  <div><label>${t("tStages")}</label>
+   <div class="opt" style="margin-bottom:8px">${f.stages.map((st,i)=>`<button type="button" class="on" data-a="tfDel" data-i="${i}">${i+1}. ${esc(st)} ✕</button>`).join("")||`<span class="tiny muted">${t("noStages")}</span>`}</div>
+   <div class="row"><input id="tfStage" placeholder="${t("tStagePh")}"><button type="button" class="btn line sm" data-a="tfAdd">${t("add")}</button></div></div>
+  <button class="btn" type="submit">${S.editT?t("saveS"):t("send")}</button>
+  ${S.editT?`<div class="sep"></div><button type="button" class="btn line" style="color:var(--red);border-color:${S.delArm?"var(--red)":"var(--line)"}" data-a="delTask">${S.delArm?t("delSure"):t("delTask")}</button>`:""}
+ </form>`;
+}
+function editUserSheet(){
+ const u=S.editU,p=profiles[u];if(!p)return "";const pw=creds[u];
+ return `<header>${t("editUser")}<button class="ico" data-a="closeAll">${ico.x}</button></header>
+ <form class="body" id="uf">
+  <div class="row">${av(u,"lg")}<div><b>${esc(p.name)}</b><div class="tiny muted">@${esc(p.username)}</div></div></div>
+  <div><label>${t("name")}</label><input name="name" value="${esc(p.name)}"></div>
+  <div><label>${t("user")}</label><input name="username" value="${esc(p.username)}" autocapitalize="off" spellcheck="false"></div>
+  <div><label>${t("role")}</label><div class="opt">${["client","editor"].map(r=>`<button type="button" class="${(S.editRole||p.role)===r?"on":""}" data-a="editRole" data-r="${r}">${t(r)}</button>`).join("")}</div></div>
+  ${(S.editRole||p.role)==="client"?`<div><label>${t("pkgSize")}</label><input name="pkg" type="number" min="0" value="${p.package_size||""}"></div>`:""}
+  <div class="box"><label>${t("curPass")}</label>${pw?`<div class="row"><code class="grow" style="font-size:14px;letter-spacing:.04em">${S.showPw?esc(pw):"••••••••"}</code><button type="button" class="btn line sm" data-a="togglePw">${S.showPw?t("hide"):t("show")}</button><button type="button" class="btn line sm" data-a="copyLogin" data-u="${u}">${t("copyLogin")}</button></div>`:`<div class="tiny muted">${t("passUnknown")}</div>`}</div>
+  <div><label>${t("setPass")}</label><input name="password" placeholder="${t("passShort")}" autocomplete="off"></div>
+  <button class="btn" type="submit">${t("saveS")}</button>
+  <div class="sep"></div>
+  <button type="button" class="btn line" style="color:var(--red);border-color:${S.delArm?"var(--red)":"var(--line)"}" data-a="delUser" data-u="${u}">${S.delArm?t("delSure"):t("del")}</button>
+ </form>`;
+}
+function bellSheet(){return `<header>${ico.bell}<span class="grow"></span><button class="ico" data-a="closeAll">${ico.x}</button></header><div style="overflow:auto">${notifs.length?notifs.map(n=>`<button class="nt" style="width:100%;text-align:start;${n.ref?"cursor:pointer":"cursor:default"}" ${n.ref?`data-a="goNotif" data-ref="${esc(n.ref)}"`:""}>${n.read?'<span style="width:7px;flex:none"></span>':'<span class="dot" style="margin-top:6px"></span>'}<div class="grow">${esc(LANG==="ar"?n.ar:n.en)}<small>${ago(n.time)}</small></div>${n.ref?`<span class="muted" style="align-self:center">${LANG==="ar"?"‹":"›"}</span>`:""}</button>`).join(""):`<div class="empty">${t("noTasks")}</div>`}</div>`;}
+function settingsSheet(){
+ const p=profiles[S.me];
+ return `<header>${t("settings")}<button class="ico" data-a="closeAll">${ico.x}</button></header>
+ <div class="body">
+  <div class="avpick">${av(S.me,"lg")}<div><label for="avf">${t("photo")}</label><input id="avf" type="file" accept="image/*"><div class="tiny muted">@${esc(p.username)} · ${t(p.role)}</div></div></div>
+  <form id="sf" style="display:grid;gap:14px">
+   <div><label>${t("name")}</label><input name="name" value="${esc(p.name)}"></div>
+   <div><label>${t("titleL")}</label><input name="title" value="${esc(p.title||"")}" placeholder="${t("titlePh")}"></div>
+   <div><label>${t("langL")}</label><div class="opt"><button type="button" class="${LANG==="ar"?"on":""}" data-a="setLang" data-l="ar">العربية</button><button type="button" class="${LANG==="en"?"on":""}" data-a="setLang" data-l="en">English</button></div></div>
+   <button class="btn" type="submit">${t("saveS")}</button>
+  </form>
+  <div class="sep"></div>
+  <form id="pf" style="display:grid;gap:10px"><div><label>${t("newPass")}</label><input name="np" type="password" placeholder="${t("passShort")}" autocomplete="new-password"></div><button class="btn line" type="submit">${t("changePass")}</button></form>
+ </div>`;
+}
+
+/* ================= RENDER ================= */
+function render(){
+ document.documentElement.lang=LANG;document.documentElement.dir=LANG==="ar"?"rtl":"ltr";
+ const root=document.getElementById("root");
+ if(!S.ready){root.innerHTML=`<div class="loading">…</div>`;return;}
+ const r=S.me?role(S.me):null;
+ root.innerHTML=!S.me?loginView():r==="client"?clientView():r==="editor"?editorView():adminView();
+ const sh=document.getElementById("sheet");
+ sh.innerHTML=S.sheet==="req"?reqSheet():S.sheet==="chk"?checkinSheet():S.sheet==="bell"?bellSheet():S.sheet==="set"?settingsSheet():S.sheet==="user"?editUserSheet():S.sheet==="task"?taskSheet():S.sheet==="fin"?finSheet():S.sheet==="notes"?notesSheet():S.sheet==="proj"?projSheet():S.sheet==="deliver"?deliverSheet():"";
+ sh.classList.toggle("on",!!S.sheet);document.getElementById("scrim").classList.toggle("on",!!S.sheet);
+ const lf=document.getElementById("lf");if(lf)lf.onsubmit=doLogin;
+ const rf=document.getElementById("rf");if(rf){rf.onsubmit=doReq;rf.oninput=e=>{if(e.target.name)S.form[e.target.name]=e.target.value;};}
+ const af=document.getElementById("af");if(af)af.onsubmit=doAcc;
+ const sf=document.getElementById("sf");if(sf)sf.onsubmit=doSettings;
+ const pf=document.getElementById("pf");if(pf)pf.onsubmit=doPass;
+ const avf=document.getElementById("avf");if(avf)avf.onchange=doAvatar;
+ const uf=document.getElementById("uf");if(uf)uf.onsubmit=doEditUser;
+ const pb=document.getElementById("pasteBox");if(pb){pb.oninput=()=>{S.paste=pb.value;clearTimeout(window.__pt);window.__pt=setTimeout(()=>{const st=pb.selectionStart;render();const nb=document.getElementById("pasteBox");if(nb){nb.focus();try{nb.setSelectionRange(st,st)}catch(_){}}},350);};}
+ const pjf=document.getElementById("pjf");if(pjf)pjf.onsubmit=e=>{e.preventDefault();const tt=F(pjf,"title").value.trim();if(!tt)return;run(async()=>{await api.updProject(S.projP,{title:tt});toast(t("saved"));});};
+ const ds=document.getElementById("delivSel");if(ds)ds.onchange=()=>{S.delivId=ds.value;render();};
+ const nf=document.getElementById("nf");if(nf)nf.onsubmit=async e=>{e.preventDefault();const r={tc:F(nf,"tc").value.trim(),cue:F(nf,"cue").value.trim(),visual:F(nf,"visual").value.trim(),sfx:F(nf,"sfx").value.trim()};if(!r.cue&&!r.visual)return;NREF="v:"+S.notesV;await run(async()=>{await api.addNotes(S.notesV,[r]);const v=V(S.notesV),p=P(v.project);if(role(S.me)==="client"){await api.notifyEditor(p.id,`نوتة جديدة على ${vnAr(v)} (${p.title})${r.tc?" — "+r.tc:""}`,`New note on ${vnEn(v)} (${p.title})${r.tc?" — "+r.tc:""}`);await api.notifyClients(p.id,`${nm(S.me)} ضاف نوتة على ${vnAr(v)}`,`${nm(S.me)} added a note on ${vnEn(v)}`);}else if(p.editor)await api.notify(p.editor,`نوتة جديدة على ${vnAr(v)} — ${nm(p.client)}`,`New note on ${vnEn(v)} — ${nm(p.client)}`);});const n2=document.getElementById("nf");n2&&F(n2,"tc").focus();};
+ document.querySelectorAll("[data-note]").forEach(cb=>cb.onchange=()=>toggleNote(cb.dataset.note,cb.checked));
+ document.querySelectorAll("[data-cmoney]").forEach(i=>i.onchange=()=>run(async()=>{await api.setClientField(i.dataset.u,{[i.dataset.cmoney]:i.value===""?null:Math.max(0,+i.value)});toast(t("saved"));}));
+ document.querySelectorAll("[data-price]").forEach(i=>i.onchange=()=>run(async()=>{await api.updVideo(i.dataset.price,{price:i.value===""?null:Math.max(0,+i.value)});toast(t("saved"));}));
+ document.querySelectorAll("[data-rate]").forEach(i=>i.onchange=()=>run(async()=>{await api.setRate(i.dataset.ed,i.dataset.rate,Math.max(0,+i.value||0));toast(t("saved"));}));
+ document.querySelectorAll("[data-setting]").forEach(i=>i.onchange=()=>run(async()=>{await api.setSetting(i.dataset.setting,String(i.value).trim());toast(t("saved"));}));
+ const tf=document.getElementById("tf");if(tf){tf.onsubmit=doTask;tf.oninput=e=>{if(e.target.name)S.tf[e.target.name]=e.target.value;};const si=document.getElementById("tfStage");if(si)si.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();addStage();}};}
+}
+async function run(fn){try{await fn();}catch(e){console.error(e);toast(e&&e.message&&!/^[a-z_ ]+$/i.test(e.message)?e.message:t("err"));}render();}
+
+async function doLogin(e){
+ e.preventDefault();const u=F(e.target,"u").value.trim().toLowerCase(),pw=F(e.target,"p").value;
+ if(!u||!pw)return;S.busy=true;render();
+ try{await Promise.race([window.__initP,new Promise(r=>setTimeout(r,15000))]);if(LIVE&&!sb)throw new Error(t("err"));await api.login(u,pw,S.side);S.err="";S.tab=null;S.open=null;S.busy=false;render();
+  const TOUR_V=3;const me=profiles[S.me]||{};
+  if((me.tour_version||0)<TOUR_V){me.tour_version=TOUR_V;api.updProfile({tour_version:TOUR_V}).catch(()=>{});setTimeout(startTour,450);}
+ }catch(err){S.err=err.message||t("badLogin");S.busy=false;render();}
+}
+async function doReq(e){
+ e.preventDefault();const f=S.form;NREF="tab:req";if(!f.title||!f.drive){toast(t("need"));return;}
+ const T0=sod(Date.now());
+ const first=f.first?new Date(f.first+"T20:00:00").getTime():T0+2*D+20*H;
+ await run(async()=>{await api.createProject({title:f.title,type:f.type,drive:f.drive,ref:f.ref||"",notes:f.notes||"",count:Math.max(1,Math.min(60,+f.count||1)),cad:f.cad,first});
+  await api.notifyAdmins(`${nm(S.me)}: طلب جديد — ${f.title}`,`${nm(S.me)}: new request — ${f.title}`);
+  S.form={type:"tReels",cad:"c2",count:4};S.sheet=null;S.tab="waiting";toast(t("sent"));});
+}
+async function doAcc(e){
+ e.preventDefault();const f=e.target;const username=F(f,"u").value.trim().toLowerCase().replace(/[^a-z0-9._-]/g,""),name=F(f,"name").value.trim(),password=F(f,"p").value,r=F(f,"role").value;
+ if(!name||!username||password.length<6){toast(t("accErr"));return;}
+ await run(async()=>{await api.createAccount({name,username,password,role:r});toast("@"+username+" ✓");});
+}
+async function doSettings(e){e.preventDefault();const f=e.target;await run(async()=>{await api.updProfile({name:F(f,"name").value.trim()||profiles[S.me].name,title:F(f,"title").value.trim(),lang:LANG});toast(t("saved"));});}
+async function toggleNote(id,done){const n=vnotes.find(x=>x.id===id);if(!n)return;const v=V(n.video),p=P(v.project);NREF="v:"+v.id;
+ await run(async()=>{await api.setNote(id,done);const ns=notesOf(v.id);if(done&&ns.every(x=>x.done))await api.notifyAdmins(`${nm(S.me)} ${t("nAllDone")} — ${vnAr(v)} (${nm(p.client)})`,`${nm(S.me)} finished all notes — ${vnEn(v)} (${nm(p.client)})`);});}
+function addStage(){const si=document.getElementById("tfStage");const v=(si&&si.value||"").trim();if(!v)return;S.tf.stages.push(v);render();const n=document.getElementById("tfStage");n&&n.focus();}
+async function doTask(e){e.preventDefault();const f=S.tf;NREF=S.editT?"t:"+S.editT:"tab:today";if(!f.editor||!f.title||!f.title.trim()){toast(t("tNeed"));return;}
+ const due=f.due?new Date(f.due+"T20:00:00").getTime():sod(Date.now())+20*H;
+ const pending=(document.getElementById("tfStage")||{}).value;if(pending&&pending.trim())f.stages.push(pending.trim());
+ await run(async()=>{if(S.editT){const old=T_(S.editT);const patch={editor:f.editor,title:f.title.trim(),notes:f.notes||"",link:cleanUrl(f.link),due,stages:f.stages};if(old&&old.stage>f.stages.length)patch.stage=f.stages.length;await api.updTask(S.editT,patch);}
+  else{await api.createTask({editor:f.editor,title:f.title.trim(),notes:f.notes||"",link:cleanUrl(f.link),due,stages:f.stages});await api.notify(f.editor,`مهمة جديدة: ${f.title.trim()}`,`New task: ${f.title.trim()}`);}
+  S.sheet=null;S.editT=null;S.sec="tm";S.selE=f.editor;S.tsub="work";toast(t("sent"));});}
+async function doEditUser(e){e.preventDefault();const f=e.target,u=S.editU,p=profiles[u];
+ const name=F(f,"name").value.trim(),username=F(f,"username").value.trim().toLowerCase().replace(/[^a-z0-9._-]/g,""),password=F(f,"password").value,r=S.editRole||p.role;
+ if(password&&password.length<6){toast(t("passShort"));return;}
+ const pkI=F(f,"pkg");if(pkI){const nv=pkI.value===""?null:Math.max(0,+pkI.value);if(nv!==(p.package_size||null))await api.setPackage(u,nv).catch(()=>{});}
+ await run(async()=>{await api.updateUser(u,{name:name!==p.name?name:null,username:username&&username!==p.username?username:null,role:r!==p.role?r:null,password:password||null});S.showPw=!!password;toast(t("saved"));});}
+async function doPass(e){e.preventDefault();const np=F(e.target,"np").value;if(np.length<6){toast(t("passShort"));return;}await run(async()=>{await api.changePassword(np);toast(t("saved"));});}
+async function doAvatar(e){const file=e.target.files[0];if(!file)return;if(file.size>3e6){toast("≤ 3MB");return;}await run(async()=>{const url=await api.uploadAvatar(file);await api.updProfile({avatar_url:url});toast(t("saved"));});}
+
+/* ================= ACTIONS ================= */
+document.addEventListener("click",e=>{
+ const b=e.target.closest("[data-a]");
+ if(!e.target.closest(".menu")) document.querySelectorAll(".menu").forEach(m=>m.remove());
+ if(!b)return;
+ const a=b.dataset.a, v=b.dataset.v?V(b.dataset.v):null, p=v?P(v.project):null;
+ const me=S.me;
+ NREF=v?"v:"+v.id:(b.dataset.t&&T_(b.dataset.t))?"t:"+b.dataset.t:b.dataset.p?"p:"+b.dataset.p:(S.sheet==="notes"&&S.notesV)?"v:"+S.notesV:(S.sheet==="fin"&&S.finT)?"t:"+S.finT:(S.sheet==="task"&&S.editT)?"t:"+S.editT:(S.sheet==="deliver"&&S.delivId)?(V(S.delivId)?"v:":"t:")+S.delivId:null;
+ switch(a){
+  case "lang":LANG=LANG==="ar"?"en":"ar";try{localStorage.setItem("hub_lang",LANG)}catch(_){}render();if(S.me)api.updProfile({lang:LANG}).catch(()=>{});return;
+  case "setLang":LANG=b.dataset.l;try{localStorage.setItem("hub_lang",LANG)}catch(_){}break;
+  case "side":S.side=b.dataset.s;S.err="";break;
+  case "fill":{if(LIVE)return;S.side=role(b.dataset.u)==="client"?"client":"editor";render();const f=document.getElementById("lf");F(f,"u").value=b.dataset.u;F(f,"p").value=api.demoPass(b.dataset.u);return;}
+  case "logout":run(async()=>{await api.logout();S.me=null;S.sheet=null;S.tab=null;});return;
+  case "tab":S.tab=b.dataset.t;S.open=null;break;
+  case "toggle":if(e.target.closest("button,a,select,input"))return;S.open=S.open===b.dataset.id?null:b.dataset.id;{const vv=V(b.dataset.id);if(vv&&vv.isNew&&role(me)==="editor"){vv.isNew=false;api.updVideo(vv.id,{isNew:false}).catch(()=>{});}const tt=T_(b.dataset.id);if(tt&&tt.isNew&&role(me)==="editor"){tt.isNew=false;api.updTask(tt.id,{isNew:false}).catch(()=>{});}}break;
+  case "newReq":S.sheet="req";break;
+  case "settings":S.sheet="set";break;
+  case "sec":S.sec=b.dataset.s;S.open=null;break;
+  case "selC":S.selC=b.dataset.u;S.open=null;break;
+  case "selE":S.selE=b.dataset.u;S.tsub=null;S.open=null;break;
+  case "tsub":S.tsub=b.dataset.t;S.open=null;break;
+  case "deliverOpen":S.delivId=null;S.sheet="deliver";break;
+  case "deliverSend":{const id=S.delivId;const lk=cleanUrl(document.getElementById("delivLink").value);if(!lk){toast(t("krockLink"));return;}
+   const vv=V(id);if(vv){const pp=P(vv.project);const rn=vv.stage===6?vv.round+1:1;NREF="v:"+vv.id;
+     run(async()=>{await api.updVideo(vv.id,{pending:{type:"draft",link:lk,round:rn}});await api.notifyAdmins(`${nm(me)} بعت درافت ${rn} — ${vnAr(vv)} (${nm(pp.client)} · ${pp.title})`,`${nm(me)} sent Draft ${rn} — ${vnEn(vv)} (${nm(pp.client)} · ${pp.title})`);S.sheet=null;toast(t("toCammio"));});return;}
+   const x=T_(id);if(!x)return;const fin=document.getElementById("delivDone")&&document.getElementById("delivDone").checked;NREF="t:"+x.id;
+   run(async()=>{await api.updTask(x.id,fin?{resLink:lk,stage:x.stages.length||1}:{resLink:lk});await api.notifyAdmins(`${nm(me)} ${fin?"خلّص":"سلّم تحديث"}: ${x.title} — ${lk}`,`${nm(me)} ${fin?"finished":"delivered an update"}: ${x.title} — ${lk}`);S.sheet=null;toast("✓");});return;}
+  case "goNotif":openRef(b.dataset.ref);return;
+  case "bell":S.sheet="bell";render();run(()=>api.markRead());return;
+  case "checkin":S.sheet="chk";break;
+  case "closeAll":S.sheet=null;break;
+  case "tour":startTour();return;
+  case "askN":try{Notification.requestPermission().then(render,render);}catch(_){}return;
+  case "fo":S.form[b.dataset.k]=b.dataset.v;break;
+  /* client */
+  case "cNotes":run(async()=>{await api.updVideo(v.id,{rs:"notes"});
+   await api.notifyEditor(p.id,`${nm(S.me)} كتب ملاحظاته — ${vnAr(v)} (${p.title})`,`${nm(S.me)} left notes — ${vnEn(v)} (${p.title})`);await api.notifyClients(p.id,`${nm(S.me)} بعت الملاحظات — ${vnAr(v)}`,`${nm(S.me)} sent notes — ${vnEn(v)}`);
+   await api.notifyAdmins(`${nm(p.client)} راجع درافت ${v.round} — ${vnAr(v)}`,`${nm(p.client)} reviewed Draft ${v.round} — ${vnEn(v)}`);toast(t("sent"));});return;
+  case "cApprove":run(async()=>{await api.updVideo(v.id,{stage:7,pub:7,rs:null});
+   await api.notifyEditor(p.id,`${vnAr(v)} اتعمد نهائي ✓ (${p.title})`,`${vnEn(v)} approved ✓ (${p.title})`);await api.notifyClients(p.id,`${nm(S.me)} اعتمد ${vnAr(v)} ✓`,`${nm(S.me)} approved ${vnEn(v)} ✓`);await api.notifyAdmins(`${nm(p.client)} اعتمد ${vnAr(v)}`,`${nm(p.client)} approved ${vnEn(v)}`);toast("✓");});return;
+  /* editor */
+  case "updMenu":{
+   if(v.stage>=5){S.open=v.id;render();const i=document.getElementById("lk_"+v.id);i&&i.focus();return;}
+   const r=b.getBoundingClientRect();const m=document.createElement("div");m.className="menu";
+   m.innerHTML=[1,2,3,4,5].map(i=>`<button data-a="eStage" data-v="${v.id}" data-s="${i}" ${i<=v.stage?"disabled":""}><span class="dot" style="background:${i===v.stage+1?"var(--y)":"var(--line)"}"></span>${ST(i)}</button>`).join("")+`<button data-a="openDraft" data-v="${v.id}"><span class="dot"></span>${t("deliver")}</button>`;
+   document.body.appendChild(m);const mw=m.offsetWidth;
+   m.style.top=(r.bottom+window.scrollY+6)+"px";m.style.left=Math.max(8,Math.min(window.innerWidth-mw-8,(LANG==="ar"?r.left:r.right-mw)))+"px";return;}
+  case "openDraft":document.querySelectorAll(".menu").forEach(m=>m.remove());S.draftOpen=v.id;S.open=v.id;render();{const i=document.getElementById("lk_"+v.id);i&&i.focus();}return;
+  case "eStage":{const ns=+b.dataset.s;document.querySelectorAll(".menu").forEach(m=>m.remove());
+   run(async()=>{await api.updVideo(v.id,{stage:ns,pending:{type:"stage",stage:ns}});
+    await api.notifyAdmins(`${nm(me)}: ${vnAr(v)} ← ${STar(ns)} (${nm(p.client)})`,`${nm(me)}: ${vnEn(v)} → ${STen(ns)} (${nm(p.client)})`);toast(t("toCammio"));});return;}
+  case "eDraft":{const lk=cleanUrl(document.getElementById("lk_"+v.id).value);if(!lk){toast(t("krockLink"));return;}
+   const rn=v.stage===5?1:v.round+1;
+   run(async()=>{await api.updVideo(v.id,{pending:{type:"draft",link:lk,round:rn}});
+    await api.notifyAdmins(`${nm(me)} بعت درافت ${rn} — ${vnAr(v)} (${nm(p.client)})`,`${nm(me)} sent Draft ${rn} — ${vnEn(v)} (${nm(p.client)})`);toast(t("toCammio"));});return;}
+  case "eGot":run(async()=>{await api.updVideo(v.id,{rs:"revising"});await api.notifyClients(p.id,`الإديتور بيعدّل ${vnAr(v)}`,`The editor is revising ${vnEn(v)}`);});return;
+  case "ciSave":{const sels=[...document.querySelectorAll("[data-ci]")];
+   run(async()=>{let ch=0;for(const s of sels){const x=V(s.dataset.ci),ns=+s.value;if(ns!==x.stage){await api.updVideo(x.id,{stage:ns,pending:{type:"stage",stage:ns}});ch++;}}
+    await api.notifyAdmins(`${nm(me)} عمل تشييك (${ch} تحديث)`,`${nm(me)} checked in (${ch} updates)`);
+    try{localStorage.setItem("hub_chk_"+me,Date.now())}catch(_){}S.sheet=null;toast(t("toCammio"));});return;}
+  /* admin */
+  case "pub":{const pd=v.pending;
+   run(async()=>{if(pd.type==="draft"){await api.updVideo(v.id,{stage:6,pub:6,round:pd.round,link:pd.link,rs:"awaiting",pending:null});
+     await api.notifyClients(p.id,`درافت ${pd.round} من ${vnAr(v)} جاهز تشوفه`,`Draft ${pd.round} of ${vnEn(v)} is ready`);await api.notify(p.editor,`Cammio بعت درافت ${pd.round} للكلاينت`,`Cammio sent Draft ${pd.round} to the client`);}
+    else{await api.updVideo(v.id,{pub:pd.stage,pending:null});await api.notifyClients(p.id,`${vnAr(v)}: ${STar(pd.stage)}`,`${vnEn(v)}: ${STen(pd.stage)}`);}
+    S.open=null;toast("✓");});return;}
+  case "hold":run(async()=>{await api.updVideo(v.id,{pending:null});await api.notify(p.editor,`Cammio وقّف التحديث — ${vnAr(v)}، كلّمه`,`Cammio held the update — ${vnEn(v)}, check with him`);S.open=null;});return;
+  case "assign":{const pp=P(b.dataset.p),ed=document.getElementById("as_"+pp.id).value;
+   run(async()=>{await api.updProject(pp.id,{status:"active",editor:ed});
+    for(const x of videos.filter(x=>x.project===pp.id)) await api.updVideo(x.id,{isNew:true});
+    await api.notify(ed,`مشروع جديد: ${pp.title} (${nm(pp.client)})`,`New project: ${pp.title} (${nm(pp.client)})`);
+    await api.notifyClients(pp.id,`بدأ الشغل على ${pp.title} مع الإديتور`,`Work started on ${pp.title} with the editor`);S.open=null;toast("✓");});return;}
+  case "ping":run(async()=>{await api.notify(p.editor,`Cammio: إنت فين في ${vnAr(v)}؟`,`Cammio: where are you on ${vnEn(v)}?`);toast(t("pinged"));});return;
+  case "setRole":run(async()=>{await api.setRole(b.dataset.u,b.dataset.r);toast("✓");});return;
+  case "askEd":run(async()=>{await api.notifyEditor(p.id,`${nm(S.me)} بيسأل: إنت فين في ${vnAr(v)}؟ (${p.title})`,`${nm(S.me)} asks: where are you on ${vnEn(v)}? (${p.title})`);await api.notifyAdmins(`${nm(S.me)} سأل الإديتور عن ${vnAr(v)} (${p.title})`,`${nm(S.me)} asked the editor about ${vnEn(v)} (${p.title})`);toast(t("askedEd"));});return;
+  case "projOpen":S.projP=b.dataset.p;S.sheet="proj";break;
+  case "memToggle":{const pid=S.projP,cid=b.dataset.u;const on=members.some(m=>m.project===pid&&m.client===cid);run(async()=>{if(on)await api.removeMember(pid,cid);else{await api.addMember(pid,cid);const pr=P(pid);await api.notify(cid,`اتضفت على مشروع: ${pr.title}`,`You were added to project: ${pr.title}`);}toast("✓");});return;}
+  case "moneyEd":S.moneyEd=b.dataset.u;break;
+  case "mPrev":case "mNext":{const [y,m]=curMonth().split("-").map(Number);const d=new Date(y,m-1+(a==="mNext"?1:-1),1);S.month=ym(d.getTime());break;}
+  case "notesOpen":S.notesV=b.dataset.v;S.paste="";S.delArm=false;S.sheet="notes";break;
+  case "readSheet":{const url=(document.getElementById("sheetUrl").value||"").trim();S.sheetUrl=url;if(!/docs\.google\.com\/spreadsheets\/d\//.test(url)){toast(t("badSheet"));return;}
+   S.sheetBusy=true;render();run(async()=>{try{const csv=await api.fetchSheet(url);const rows=sheetToNotes(csv);if(!rows.length){toast(t("noRows"));return;}
+     S.paste=rows.map(r=>[r.tc,r.cue,r.visual,r.sfx].map(x=>String(x||"").replace(/[\t\n]/g," ")).join("\t")).join("\n");}finally{S.sheetBusy=false;}});return;}
+  case "pasteAdd":{const rows=parseNotes(S.paste);const v=V(S.notesV),p=P(v.project);run(async()=>{await api.addNotes(S.notesV,rows);S.paste="";if(role(S.me)==="client"){await api.notifyEditor(p.id,`نوتس جديدة (${rows.length}) على ${vnAr(v)} (${p.title})`,`${rows.length} new notes on ${vnEn(v)} (${p.title})`);await api.notifyClients(p.id,`${nm(S.me)} ضاف ${rows.length} نوتس`,`${nm(S.me)} added ${rows.length} notes`);toast("✓");return;}await api.notify(p.editor,`نوتس جديدة (${rows.length}) على ${vnAr(v)} — ${nm(p.client)}`,`${rows.length} new notes on ${vnEn(v)} — ${nm(p.client)}`);toast("✓");});return;}
+  case "noteDel":run(()=>api.delNote(b.dataset.n));return;
+  case "notesClear":if(!S.delArm){S.delArm=true;render();setTimeout(()=>{if(S.delArm){S.delArm=false;render();}},4000);return;}S.delArm=false;run(()=>api.clearNotes(S.notesV));return;
+  case "newTask":S.editT=null;S.delArm=false;S.tf={editor:b.dataset.u||S.selE||Object.keys(profiles).find(u=>role(u)==="editor")||"",title:"",notes:"",link:"",due:"",stages:[]};S.sheet="task";break;
+  case "editTask":{const x=T_(b.dataset.t);const d=new Date(x.due);const pad=n=>String(n).padStart(2,"0");S.editT=x.id;S.delArm=false;S.tf={editor:x.editor,title:x.title,notes:x.notes,link:x.link,due:`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`,stages:x.stages.slice()};S.sheet="task";break;}
+  case "tfo":S.tf[b.dataset.k]=b.dataset.v;break;
+  case "tfAdd":addStage();return;
+  case "tfDel":S.tf.stages.splice(+b.dataset.i,1);break;
+  case "delTask":if(!S.delArm){S.delArm=true;render();setTimeout(()=>{if(S.delArm){S.delArm=false;render();}},4000);return;}
+   S.delArm=false;run(async()=>{await api.delTask(S.editT);S.sheet=null;S.editT=null;toast(t("deleted"));});return;
+  case "pingTask":{const x=T_(b.dataset.t);run(async()=>{await api.notify(x.editor,`Cammio: إنت فين في "${x.title}"؟`,`Cammio: where are you on "${x.title}"?`);toast(t("pinged"));});return;}
+  case "tMenu":{const x=T_(b.dataset.t);
+   if(!x.stages.length){S.finT=x.id;S.sheet="fin";render();return;}
+   const r=b.getBoundingClientRect();const m=document.createElement("div");m.className="menu";
+   m.innerHTML=x.stages.map((st,i)=>`<button data-a="tStage" data-t="${x.id}" data-s="${i+1}" ${i<x.stage?"disabled":""}><span class="dot" style="background:${i===x.stage?"var(--y)":"var(--line)"}"></span>${esc(st)}</button>`).join("");
+   document.body.appendChild(m);const mw=m.offsetWidth;m.style.top=(r.bottom+window.scrollY+6)+"px";m.style.left=Math.max(8,Math.min(window.innerWidth-mw-8,(LANG==="ar"?r.left:r.right-mw)))+"px";return;}
+  case "tStage":{const x=T_(b.dataset.t),ns=+b.dataset.s;document.querySelectorAll(".menu").forEach(m=>m.remove());
+   if(ns>=x.stages.length){S.finT=x.id;S.sheet="fin";render();return;}
+   run(async()=>{await api.updTask(x.id,{stage:ns});const st=x.stages[ns-1]||"";await api.notifyAdmins(`${nm(me)}: ${x.title} ← ${st}${ns>=x.stages.length?" ✓":""}`,`${nm(me)}: ${x.title} → ${st}${ns>=x.stages.length?" ✓":""}`);toast("✓");});return;}
+  case "finSend":{const x=T_(S.finT);const lk=(document.getElementById("finLink").value||"").trim();if(lk&&!/^https?:\/\//.test(lk)){toast(t("krockLink"));return;}
+   run(async()=>{await api.updTask(x.id,{stage:tTotal(x)===x.stages.length?x.stages.length:1,resLink:lk});await api.notifyAdmins(`${nm(me)} خلّص: ${x.title}${lk?" — "+lk:""}`,`${nm(me)} finished: ${x.title}${lk?" — "+lk:""}`);S.sheet=null;S.finT=null;toast("✓");});return;}
+  case "editUser":S.editU=b.dataset.u;S.editRole=null;S.showPw=false;S.delArm=false;S.sheet="user";break;
+  case "editRole":S.editRole=b.dataset.r;break;
+  case "togglePw":S.showPw=!S.showPw;break;
+  case "delUser":if(!S.delArm){S.delArm=true;render();setTimeout(()=>{if(S.delArm){S.delArm=false;render();}},4000);return;}
+   S.delArm=false;run(async()=>{await api.deleteUser(b.dataset.u);S.sheet=null;toast(t("deleted"));});return;
+  case "copyLogin":{const u=b.dataset.u;const txt=`${location.href.split("#")[0]}\n${LANG==="ar"?"يوزر":"user"}: ${profiles[u].username}${creds[u]?`\n${LANG==="ar"?"باسورد":"password"}: ${creds[u]}`:""}`;
+   try{navigator.clipboard.writeText(txt).then(()=>toast(t("copied")),()=>toast(txt.replace(/\n/g," · ")));}catch(_){toast(txt.replace(/\n/g," · "));}return;}
+ }
+ render();
+});
+
+/* ================= NOTIFICATION ROUTING ================= */
+function openRef(ref){if(!ref)return;const [k,id]=ref.split(":");const r=role(S.me);let tab=null,open=null;
+ if(k==="tab"){tab=id;}
+ else if(k==="v"){const v=V(id);if(!v){toast(t("noTasks"));return;}const p=P(v.project);open=id;
+  if(r==="admin"){if(p.status==="pending"){S.sec="cl";S.selC=p.client;}else{S.sec="tm";S.selE=p.editor;S.tsub=v.pending?"appr":v.stage===7?"done":"work";}}
+  else if(r==="editor")tab=bucket(v);
+  else tab=p.status==="pending"?"waiting":(v.pub===7?"delivered":"active");
+  if(r==="admin"&&p.status==="pending")open=p.id;}
+ if(r==="admin"&&k==="t"){const x=T_(id);S.sec="tm";S.selE=x.editor;S.tsub=tDone(x)?"done":"work";tab=null;}
+ if(r==="admin"&&k==="p"){const p=P(id);if(p.status==="pending"){S.sec="cl";S.selC=p.client;}else{S.sec="cl";S.selC=p.client;}tab=null;}
+ if(r==="admin"&&k==="tab"){S.sec=id==="req"?"cl":"tm";tab=null;}
+ else if(k==="t"){const x=T_(id);if(!x){toast(t("noTasks"));return;}open=id;tab=r==="admin"?null:bucket(x);}
+ else if(k==="p"){const p=P(id);if(!p)return;if(r==="admin"){tab=null;open=p.status==="pending"?id:(videos.find(v=>v.project===id)||{}).id;}
+  else if(r==="editor"){const v=videos.find(v=>v.project===id&&v.stage<7);if(v){tab=bucket(v);open=v.id;}}
+  else{tab=p.status==="pending"?"waiting":"active";open=(videos.find(v=>v.project===id)||{}).id;}}
+ S.sheet=null;if(tab)S.tab=tab;S.open=open;render();
+ if(open)setTimeout(()=>{const el=document.querySelector(`[data-id="${open}"]`);if(el){const it=el.closest(".item");it.scrollIntoView({behavior:"smooth",block:"center"});it.classList.add("flash");}},60);}
+/* ================= TOUR ================= */
+let TS=null;
+function startTour(){if(!S.me)return;const st=(TOURS[role(S.me)]||[]).filter(([k])=>document.querySelector(`[data-tour="${k}"]`));if(!st.length)return;TS={st,i:0};drawTour();}
+function drawTour(){
+ const host=document.getElementById("tour");if(!TS){host.innerHTML="";return;}
+ const [k,txt]=TS.st[TS.i];const el=document.querySelector(`[data-tour="${k}"]`);if(!el){TS=null;host.innerHTML="";return;}
+ el.scrollIntoView({block:"nearest"});const r=el.getBoundingClientRect(),pad=6,last=TS.i===TS.st.length-1;
+ host.innerHTML=`<div class="tour-block"></div><div class="tour-ring" style="top:${r.top-pad}px;left:${r.left-pad}px;width:${r.width+pad*2}px;height:${r.height+pad*2}px"></div>
+ <div class="tour-tip" id="tip"><div class="row tiny muted"><span class="dot"></span>${TS.i+1} / ${TS.st.length}</div><p>${txt[LANG]}</p>
+ <div class="row"><button class="tiny muted grow" style="text-align:start" data-tr="skip">${last?"":t("skip")}</button><button class="btn sm ${last?"y":""}" data-tr="next">${last?t("finish"):t("next")}</button></div></div>`;
+ const tip=document.getElementById("tip");const tw=tip.offsetWidth,th=tip.offsetHeight;
+ let top=r.bottom+14;if(top+th>innerHeight-10)top=r.top-th-14;let left=r.left+r.width/2-tw/2;left=Math.max(12,Math.min(innerWidth-tw-12,left));
+ tip.style.top=Math.max(10,top)+"px";tip.style.left=left+"px";
+}
+document.getElementById("tour").addEventListener("click",e=>{const b=e.target.closest("[data-tr]");if(!b)return;if(b.dataset.tr==="skip"||TS.i===TS.st.length-1)TS=null;else TS.i++;drawTour();});
+addEventListener("resize",()=>TS&&drawTour());
+
+/* 3-hour check-in for editors (while the site is open) */
+setInterval(()=>{if(S.me&&role(S.me)==="editor"){if(nextChk()===0&&S.sheet!=="chk"){S.sheet="chk";render();toast(t("checkin"));sysNotify(t("checkin"));}else if(!S.sheet&&!TS){const el=document.querySelector('[data-tour="chk"]');if(el)el.lastChild.textContent=`${t("nextIn")} · ${(Math.round(nextChk()/H*10)/10)}${t("h")}`;}}},60000);
+
+window.__initP=(async()=>{try{await api.init();}catch(e){console.error(e);}})();
+S.ready=true;render();
+window.__initP.then(()=>{if(S.me)render();});
+</script>
+</body>
+</html>
