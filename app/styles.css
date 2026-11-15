@@ -252,3 +252,4 @@ input:focus,select:focus,textarea:focus{border-color:rgba(0,0,0,.25);box-shadow:
   .panel,.sheet{top:auto;bottom:0;inset-inline-end:0;border-radius:18px 18px 0 0;height:92vh}
   .main{padding:14px 14px 120px}
 }
+.sig,.sig svg,.sig text{direction:ltr;unicode-bidi:isolate}
