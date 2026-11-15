@@ -164,20 +164,23 @@ const List = ({ children }) => html`<div class="list">${children && children.len
 
 /* ================= LOGIN ================= */
 function Login() {
-  const [u, setU] = useState(""), [p, setP] = useState("");
+  const [u, setU] = useState(""), [p, setP] = useState(""), [picked, setPicked] = useState(false);
   const submit = async e => { e.preventDefault(); if (!u || !p) return; set({ busy: true, err: "" }); try { await api.login(u.trim().toLowerCase(), p, ui.side, { bad: t("badLogin"), side: t("wrongSide"), noRole: t("noRole") }); afterLogin(); } catch (er) { set({ err: er.message || t("badLogin") }); } finally { set({ busy: false }); } };
+  const pick = side => { set({ side, err: "" }); setPicked(true); };
   return html`<div class="login">
     <div class="corner"><button class="btn line sm" onClick=${() => setLang(ui.lang === "ar" ? "en" : "ar")}>${ui.lang === "ar" ? "EN" : "ع"}</button></div>
-    <form class="lbox rise" onSubmit=${submit}>
-      <div class="seg"><i style=${{ insetInlineStart: ui.side === "client" ? "4px" : "50%" }}></i>
-        <button type="button" class=${ui.side === "client" ? "on" : ""} onClick=${() => set({ side: "client", err: "" })}>${t("client")}</button>
-        <button type="button" class=${ui.side === "editor" ? "on" : ""} onClick=${() => set({ side: "editor", err: "" })}>${t("editor")}</button></div>
-      <input placeholder=${t("user")} value=${u} onInput=${e => setU(e.target.value)} autocapitalize="off" spellcheck="false" autocomplete="username" />
+    ${!picked ? html`<div class="lbox rise pick">
+      <div class="pick-q">${ui.lang === "ar" ? "داخل كـ" : "Sign in as"}</div>
+      <button class="pick-b" onClick=${() => pick("client")}><span class="pick-i">${ico.users}</span><b>${t("client")}</b></button>
+      <button class="pick-b" onClick=${() => pick("editor")}><span class="pick-i">${ico.film}</span><b>${t("editor")}</b></button>
+    </div>` : html`<form class="lbox rise" onSubmit=${submit}>
+      <div class="row"><button type="button" class="ico" onClick=${() => { setPicked(false); set({ err: "" }); }}>${ui.lang === "ar" ? "→" : "←"}</button><b class="grow">${t(ui.side)}</b></div>
+      <input placeholder=${t("user")} value=${u} onInput=${e => setU(e.target.value)} autocapitalize="off" spellcheck="false" autocomplete="username" autofocus />
       <input type="password" placeholder=${t("pass")} value=${p} onInput=${e => setP(e.target.value)} autocomplete="current-password" />
       <div class="err">${ui.err}</div>
       <button class=${"btn" + (ui.busy ? " busy" : "")} type="submit">${t("signIn")}</button>
-    </form>
-    ${!LIVE ? html`<div class="demo">${t("demo")}: ${api.demoUsers().map(x => html`<button onClick=${() => { setU(x); setP("1234"); set({ side: x === "alizakria" || x === "youssef" ? "client" : "editor" }); }}>${x}</button> `)} — 1234</div>` : ""}
+    </form>`}
+    ${!LIVE ? html`<div class="demo">${t("demo")}: ${api.demoUsers().map(x => html`<button onClick=${() => { setU(x); setP("1234"); pick(x === "alizakria" || x === "youssef" ? "client" : "editor"); }}>${x}</button> `)} — 1234</div>` : ""}
   </div>`;
 }
 function setLang(l) { store("hub_lang", l); set({ lang: l }); document.documentElement.lang = l; document.documentElement.dir = l === "ar" ? "rtl" : "ltr"; if (db.me) api.updProfile({ lang: l }).catch(() => {}); }
