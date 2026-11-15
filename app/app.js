@@ -166,20 +166,22 @@ const List = ({ children }) => html`<div class="list">${children && children.len
 function Login() {
   const [u, setU] = useState(""), [p, setP] = useState(""), [picked, setPicked] = useState(false);
   const submit = async e => { e.preventDefault(); if (!u || !p) return; set({ busy: true, err: "" }); try { await api.login(u.trim().toLowerCase(), p, ui.side, { bad: t("badLogin"), side: t("wrongSide"), noRole: t("noRole") }); afterLogin(); } catch (er) { set({ err: er.message || t("badLogin") }); } finally { set({ busy: false }); } };
-  const pick = side => { set({ side, err: "" }); setPicked(true); };
+  const pick = side => { set({ side, err: "" }); setPicked(true); setTimeout(() => { const el = document.querySelector(".lfields input"); el && el.focus(); }, 380); };
+  const sideCls = !picked ? "" : ui.side === "client" ? " a" : " b";
   return html`<div class="login">
     <div class="corner"><button class="btn line sm" onClick=${() => setLang(ui.lang === "ar" ? "en" : "ar")}>${ui.lang === "ar" ? "EN" : "ع"}</button></div>
-    ${!picked ? html`<div class="lbox rise pick">
-      <div class="pick-q">${ui.lang === "ar" ? "داخل كـ" : "Sign in as"}</div>
-      <button class="pick-b" onClick=${() => pick("client")}><span class="pick-i">${ico.users}</span><b>${t("client")}</b></button>
-      <button class="pick-b" onClick=${() => pick("editor")}><span class="pick-i">${ico.film}</span><b>${t("editor")}</b></button>
-    </div>` : html`<form class="lbox rise" onSubmit=${submit}>
-      <div class="row"><button type="button" class="ico" onClick=${() => { setPicked(false); set({ err: "" }); }}>${ui.lang === "ar" ? "→" : "←"}</button><b class="grow">${t(ui.side)}</b></div>
-      <input placeholder=${t("user")} value=${u} onInput=${e => setU(e.target.value)} autocapitalize="off" spellcheck="false" autocomplete="username" autofocus />
-      <input type="password" placeholder=${t("pass")} value=${p} onInput=${e => setP(e.target.value)} autocomplete="current-password" />
-      <div class="err">${ui.err}</div>
-      <button class=${"btn" + (ui.busy ? " busy" : "")} type="submit">${t("signIn")}</button>
-    </form>`}
+    <form class=${"lbox rise" + (picked ? " open" : "")} onSubmit=${submit}>
+      <div class=${"gswitch" + sideCls}><i class="knob"></i>
+        <button type="button" class=${picked && ui.side === "client" ? "on" : ""} onClick=${() => pick("client")}>${ico.users}<span>${t("client")}</span></button>
+        <button type="button" class=${picked && ui.side === "editor" ? "on" : ""} onClick=${() => pick("editor")}>${ico.film}<span>${t("editor")}</span></button>
+      </div>
+      <div class="lfields"><div class="lfields-in">
+        <input placeholder=${t("user")} value=${u} onInput=${e => setU(e.target.value)} autocapitalize="off" spellcheck="false" autocomplete="username" tabindex=${picked ? 0 : -1} />
+        <input type="password" placeholder=${t("pass")} value=${p} onInput=${e => setP(e.target.value)} autocomplete="current-password" tabindex=${picked ? 0 : -1} />
+        <div class="err">${ui.err}</div>
+        <button class=${"btn" + (ui.busy ? " busy" : "")} type="submit" tabindex=${picked ? 0 : -1}>${t("signIn")}</button>
+      </div></div>
+    </form>
     ${!LIVE ? html`<div class="demo">${t("demo")}: ${api.demoUsers().map(x => html`<button onClick=${() => { setU(x); setP("1234"); pick(x === "alizakria" || x === "youssef" ? "client" : "editor"); }}>${x}</button> `)} — 1234</div>` : ""}
   </div>`;
 }
