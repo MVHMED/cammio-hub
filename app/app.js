@@ -1,4 +1,4 @@
-import { html, render, useState, useEffect, useRef } from "../vendor/preact-htm.js";
+import { html, render, useState, useEffect, useRef, useErrorBoundary } from "../vendor/preact-htm.js";
 import { T, EV, TOURS } from "./i18n.js";
 import { db, api, LIVE, onChange, UPLOAD_URL, H, D } from "./data.js";
 
@@ -567,13 +567,18 @@ function Tour() {
 }
 
 /* ================= ROOT ================= */
+function Safe({ children }) {
+  const [err, reset] = useErrorBoundary(e => console.error(e));
+  if (err) return html`<div class="login"><div class="lbox"><b>${ui.lang === "ar" ? "حصلت مشكلة في العرض" : "Something went wrong"}</b><code style="white-space:pre-wrap;font-size:11px">${String(err && err.message || err)}</code><button class="btn" onClick=${() => { set({ panel: null, sheet: null, route: null, tour: null }); reset(); }}>${ui.lang === "ar" ? "رجوع" : "Back"}</button><button class="btn line" onClick=${() => location.reload()}>${ui.lang === "ar" ? "تحديث الصفحة" : "Reload"}</button></div></div>`;
+  return children;
+}
 function Root() {
   const [, force] = useState(0);
   rerender = () => force(x => x + 1);
   useEffect(() => { const off = onChange(() => force(x => x + 1)); rerender(); return off; }, []);
   useEffect(() => { document.documentElement.lang = ui.lang; document.documentElement.dir = ui.lang === "ar" ? "rtl" : "ltr"; });
   if (!ui.ready) return html`<div class="loading"><span class="sig-s">Cammio Studio</span></div>`;
-  return html`${db.me ? html`<${Shell} />` : html`<${Login} />`}<div class="toasts">${ui.toasts.map(x => html`<div class="toast"><span class="dot"></span>${x.msg}</div>`)}</div><${Tour} /><div class="sig" aria-hidden="true"><small>by</small><svg width="168" height="40" viewBox="0 0 168 40"><text x="2" y="32" textLength="160" lengthAdjust="spacingAndGlyphs">Cammio Studio</text></svg></div>`;
+  return html`<${Safe}>${db.me ? html`<${Shell} />` : html`<${Login} />`}<//><div class="toasts">${ui.toasts.map(x => html`<div class="toast"><span class="dot"></span>${x.msg}</div>`)}</div><${Tour} /><div class="sig" aria-hidden="true"><small>by</small><svg width="168" height="40" viewBox="0 0 168 40"><text x="2" y="32" textLength="160" lengthAdjust="spacingAndGlyphs">Cammio Studio</text></svg></div>`;
 }
 
 /* notifications: toast + system notification when something new arrives */
