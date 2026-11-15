@@ -4,16 +4,24 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Cammio Studio Hub</title>
-<meta name="theme-color" content="#F6F6F3">
+<meta name="theme-color" content="#F3F1EE">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Cammio Hub">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Caveat:wght@700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="app/styles.css?v=7">
+<link rel="stylesheet" href="app/styles.css?v=8">
 <script>
 window.HUB_CONFIG = {
   SUPABASE_URL: "https://zysvapigcsjnimpjgryv.supabase.co",
   SUPABASE_ANON_KEY: "sb_publishable_h6CZL7l6UFrPSrLODPjS6Q_kWtxagfc",
   EMAIL_DOMAIN: "users.cammio.app",
-  UPLOAD_URL: "https://platform.krock.io/dashboard/projects"
+  UPLOAD_URL: "https://platform.krock.io/dashboard/projects",
+  VAPID_PUBLIC: "BLP04A1RLGSawK1q2AvoU47B47OwCaY4lQqZmd70pZNriSdJ1ucjzeiawCOZNLmVeFZLvcH3emEwHVRJoYD0efc"
 };
 window.addEventListener("error", function (e) { var b = document.getElementById("diag"); if (b && !document.querySelector(".shell .main *,.login .lbox")) { b.style.display = "block"; b.textContent = "Error: " + (e.message || e); } });
 </script>
@@ -22,6 +30,6 @@ window.addEventListener("error", function (e) { var b = document.getElementById(
 <body>
 <div id="root"></div>
 <div id="diag" style="display:none;position:fixed;bottom:10px;left:10px;right:10px;font:12px monospace;background:#fff;border:1px solid #ccc;padding:8px;border-radius:8px"></div>
-<script type="module" src="app/app.js?v=7"></script>
+<script type="module" src="app/app.js?v=8"></script>
 </body>
 </html>

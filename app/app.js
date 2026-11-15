@@ -1,6 +1,6 @@
 import { html, render, useState, useEffect, useRef, useErrorBoundary } from "../vendor/preact-htm.js";
-import { T, EV, TOURS } from "./i18n.js?v=7";
-import { db, api, LIVE, onChange, UPLOAD_URL, H, D } from "./data.js";
+import { T, EV, TOURS } from "./i18n.js?v=8";
+import { db, api, LIVE, onChange, UPLOAD_URL, H, D } from "./data.js?v=8";
 
 /* ================= state ================= */
 const store = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (_) { return null; } };
@@ -191,7 +191,7 @@ function Login() {
 function setLang(l) { store("hub_lang", l); set({ lang: l }); document.documentElement.lang = l; document.documentElement.dir = l === "ar" ? "rtl" : "ltr"; if (db.me) api.updProfile({ lang: l }).catch(() => {}); }
 function afterLogin() {
   const p = me(); if (p.lang && p.lang !== ui.lang) setLang(p.lang);
-  set({ route: defaultRoute(), err: "" });
+  set({ route: defaultRoute(), err: "" }); refreshPush(); const h = (location.hash || "").slice(1); if (/^[vtp]:/.test(h)) { setTimeout(() => openRef(h), 300); history.replaceState(null, "", location.pathname + location.search); }
   const TV = 4; if ((p.tour_version || 0) < TV) { api.updProfile({ tour_version: TV }).catch(() => {}); setTimeout(startTour, 600); }
 }
 
@@ -219,11 +219,11 @@ function Shell() {
     <div class="main-wrap">
       <header class="top">
         <div class="top-title">${(items.find(i => i[0] === route) || [])[1] || ""}</div><span class="grow"></span>
-        ${canAsk ? html`<button class="btn line sm hide-m" onClick=${() => { try { Notification.requestPermission().then(rerender); } catch (_) {} }}>🔔 ${t("enableN")}</button>` : ""}
+        
         <button class="ico" data-tour="bell" onClick=${() => { set({ sheet: { type: "notifs" } }); api.markRead().catch(() => {}); }}>${ico.bell}${unread ? html`<b>${unread}</b>` : ""}</button>
         <span class="show-m">${user}</span>
       </header>
-      <main class="main">${page()}</main>
+      <main class="main"><${PushCard} />${page()}</main>
     </div>
     <nav class="bottom">${items.map(([k, l, ic, n]) => html`<button class=${route === k ? "on" : ""} onClick=${() => go(k)}>${ic}<span>${l}</span>${n ? html`<em>${n}</em>` : ""}</button>`)}</nav>
     ${ui.panel ? html`<div class="scrim" onClick=${() => set({ panel: null })}></div><${Panel} />` : ""}
@@ -538,6 +538,7 @@ function AccountSheet() {
     <label>${t("titleL")}<input value=${f.title} onInput=${e => setF({ ...f, title: e.target.value })} /></label>
     <label>${t("lang")}<div class="opt"><button type="button" class=${ui.lang === "ar" ? "on" : ""} onClick=${() => setLang("ar")}>العربية</button><button type="button" class=${ui.lang === "en" ? "on" : ""} onClick=${() => setLang("en")}>English</button></div></label>
     <button class="btn" onClick=${() => run(async () => { await api.updProfile({ name: f.name.trim() || p.name, title: f.title.trim() }); toast(t("saved")); })}>${t("save")}</button>
+    <div class="box"><div class="row"><b class="grow">${t("pushTitle")}</b>${pushState() === "on" ? html`<${Chip} k="k">✓<//>` : pushState() === "off" ? html`<button class="btn y sm" onClick=${() => run(enablePush)}>${t("pushBtn")}</button>` : ""}</div>${pushState() !== "on" && pushState() !== "off" ? html`<div class="tiny muted">${pushState() === "ios" ? t("pushIos") : pushState() === "denied" ? t("pushDenied") : t("pushNo")}</div>` : ""}</div>
     <hr /><label>${t("newPass")}<input type="password" value=${np} onInput=${e => setNp(e.target.value)} placeholder=${t("passShort")} autocomplete="new-password" /></label>
     <button class="btn line" onClick=${() => { if (np.length < 6) return toast(t("passShort")); run(async () => { await api.changePassword(np); setNp(""); toast(t("saved")); }); }}>${t("changePass")}</button>
     <button class="btn line" onClick=${() => run(async () => { await api.logout(); set({ route: null, sheet: null, panel: null }); })}>${t("signOut")}</button>
@@ -573,6 +574,28 @@ function Tour() {
   let top = r.bottom + 14; if (top + 170 > innerHeight) top = Math.max(10, r.top - 170); const left = Math.max(12, Math.min(innerWidth - tw - 12, r.left + r.width / 2 - tw / 2));
   return html`<div class="tour-block"></div><div class="tour-ring" style=${{ top: r.top - pad + "px", left: r.left - pad + "px", width: r.width + pad * 2 + "px", height: r.height + pad * 2 + "px" }}></div>
     <div class="tour-tip" style=${{ top: top + "px", left: left + "px", width: tw + "px" }}><div class="tiny muted">${tr.i + 1} / ${tr.steps.length}</div><p>${txt[ui.lang]}</p><div class="row"><button class="tiny muted grow" style="text-align:start" onClick=${() => set({ tour: null })}>${last ? "" : t("skip")}</button><button class=${"btn sm" + (last ? " y" : "")} onClick=${() => set({ tour: last ? null : { ...tr, i: tr.i + 1 } })}>${last ? t("gotIt") : t("next")}</button></div></div>`;
+}
+
+/* ================= PHONE PUSH ================= */
+const PUSH_OK = typeof navigator !== "undefined" && "serviceWorker" in navigator && typeof window.PushManager !== "undefined" && typeof Notification !== "undefined";
+const IS_IOS = /iphone|ipad|ipod/i.test(navigator.userAgent || "");
+const STANDALONE = (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;
+let swReg = null;
+if ("serviceWorker" in navigator) { navigator.serviceWorker.register("sw.js").then(r => { swReg = r; }).catch(() => {}); navigator.serviceWorker.addEventListener("message", e => { if (e.data && e.data.open) openRef(e.data.open); }); }
+const b64u = s => { const p = "=".repeat((4 - s.length % 4) % 4); const r = atob((s + p).replace(/-/g, "+").replace(/_/g, "/")); return Uint8Array.from(r, c => c.charCodeAt(0)); };
+function pushState() { if (!PUSH_OK) return IS_IOS && !STANDALONE ? "ios" : "no"; if (Notification.permission === "denied") return "denied"; return store("hub_push_" + db.me) === "1" && Notification.permission === "granted" ? "on" : "off"; }
+async function enablePush() {
+  if (!PUSH_OK) { toast(IS_IOS ? t("pushIos") : t("pushNo")); return; }
+  const perm = await Notification.requestPermission(); if (perm !== "granted") { toast(t("pushDenied")); rerender(); return; }
+  const reg = swReg || await navigator.serviceWorker.register("sw.js"); await navigator.serviceWorker.ready;
+  let sub = await reg.pushManager.getSubscription();
+  if (!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64u((window.HUB_CONFIG || {}).VAPID_PUBLIC) });
+  await api.savePush(sub.toJSON()); store("hub_push_" + db.me, "1"); toast(t("pushOn")); rerender();
+}
+async function refreshPush() { try { if (pushState() === "on") { const reg = await navigator.serviceWorker.ready; const sub = await reg.pushManager.getSubscription(); if (sub) await api.savePush(sub.toJSON()); else store("hub_push_" + db.me, "0"); } } catch (_) {} }
+function PushCard() {
+  const st = pushState(); if (st === "on") return null;
+  return html`<div class="pushcard"><span class="pi">${ico.bell}</span><div class="grow"><b>${t("pushTitle")}</b><div class="tiny muted">${st === "ios" ? t("pushIos") : st === "denied" ? t("pushDenied") : st === "no" ? t("pushNo") : t("pushSub")}</div></div>${st === "off" ? html`<button class="btn y sm" onClick=${() => run(enablePush)}>${t("pushBtn")}</button>` : ""}</div>`;
 }
 
 /* ================= ROOT ================= */

@@ -116,6 +116,7 @@ const live = {
   async setRate(editor, type, price) { (db.rates[editor] = db.rates[editor] || {})[type] = price; emit(); const { error } = await sb.from("editor_rates").upsert({ editor, type, price }); if (error) throw error; },
   async setSetting(key, value) { db.settings[key] = value; emit(); const { error } = await sb.from("settings").upsert({ key, value }); if (error) throw error; },
   async setAccount(client, patch) { db.accounts[client] = { ...(db.accounts[client] || {}), ...patch }; emit(); const { error } = await sb.from("client_accounts").upsert({ client, ...db.accounts[client] }); if (error) throw error; },
+  async savePush(j) { const { error } = await sb.rpc("save_push_sub", { p_endpoint: j.endpoint, p_p256dh: j.keys.p256dh, p_auth: j.keys.auth, p_ua: navigator.userAgent.slice(0, 200) }); if (error) throw error; },
   async fetchSheet(url, msgs) {
     const { data, error } = await sb.functions.invoke("sheet", { body: { url } });
     if (error) { let code = ""; try { code = (await error.context.json()).error; } catch (_) {} throw new Error(code === "not_public" ? msgs.notPublic : code === "bad_url" ? msgs.bad : msgs.err); }
@@ -208,6 +209,7 @@ const demo = {
   async setSetting(key, value) { this._all.settings[key] = value; this.view(); },
   async setAccount(client, patch) { this._all.accounts[client] = { ...(this._all.accounts[client] || {}), ...patch }; this.view(); },
   async fetchSheet(url, msgs) { throw new Error(msgs.err); },
+  async savePush() {},
   demoUsers: () => ["cammio", "ahmed", "alizakria", "youssef"],
 };
 function genVideos(A, p, isNew) { const step = { cOnce: 0, cDaily: 1, c2: 2, cWeek: 7 }[p.cad] || 0; for (let i = 0; i < p.count; i++) A.videos.push({ id: nid("v"), project: p.id, n: i + 1, due: p.first + i * step * D, stage: 0, pub: 0, round: 0, rs: null, link: "", pending: null, isNew: !!isNew, upd: Date.now(), deliveredAt: null, deliveredBy: null, price: null }); }
